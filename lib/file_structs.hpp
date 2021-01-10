@@ -1,17 +1,22 @@
+//@	{"targets":[{"name":"file_structs.hpp","type":"include"}]}
+
 #ifndef WAD64_FILE_STRUCTS_HPP
 #define WAD64_FILE_STRUCTS_HPP
 
 #include <cstdint>
+#include <array>
 
 namespace Wad64
 {
+	constexpr std::array<char, 8> MagicNumber{'x','W','A','D','6','4','\n','\0'};
+
 	/** The file header
 	*/
 	struct WadInfo
 	{
-		/** File magic number. Should read xWAD64'\n''\0'
+		/** File magic number. Should be equal to MagicNumber
 		 */
-		std::byte identification[8];
+		std::array<char, 8> identification;
 
 		/** The number of lumps in this file
 		*/
