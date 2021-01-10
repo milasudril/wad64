@@ -5,15 +5,16 @@
 
 #include <utility>
 #include <cstdint>
+#include <span>
 
 namespace Wad64
 {
 	template<class T>
 	concept IoPolicy = requires(T a)
 	{
-		{read(a, std::declval<void*>(), std::declval<std::size_t>())} -> std::convertible_to<std::size_t>;
-		{write(a, std::declval<void const*>(), std::declval<std::size_t>())} -> std::convertible_to<std::size_t>;
-		{lseek(a, std::declval<int64_t>(), std::declval<int>())} -> std::convertible_to<std::int64_t>;
+		{read(a, std::declval<std::span<std::byte>>())} -> std::same_as<std::size_t>;
+		{write(a, std::declval<std::span<std::byte const>>())} -> std::same_as<std::size_t>;
+		{seek(a, std::declval<int64_t>())} -> std::same_as<std::int64_t>;
 	};
 }
 
