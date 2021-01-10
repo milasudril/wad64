@@ -20,8 +20,38 @@ namespace Wad64
 		int64_t size;
 	};
 
-	// O_EXCL file must not exist
-	// O_CREAT create if does not exist
+	class FileCreationMode
+	{
+	public:
+		FileCreationMode():m_flags{0}{}
+
+		FileCreationMode& allowOverwrite()
+		{
+			m_flags |= AllowOverwrite;
+			return *this;
+		}
+
+		bool overwriteAllowed() const
+		{
+			return m_flags & AllowOverwrite;
+		}
+
+		FileCreationMode& allowCreation()
+		{
+			m_flags |= AllowCreation;
+			return *this;
+		}
+
+		bool creationAllowed() const
+		{
+			return m_flags & AllowCreation;
+		}
+
+	private:
+		static constexpr unsigned int AllowOverwrite = 0x1;
+		static constexpr unsigned int AllowCreation = 0x2;
+		unsigned int m_flags;
+	};
 
 	class Archive
 	{
@@ -34,8 +64,8 @@ namespace Wad64
 		std::optional<InputFile> open(std::u8string_view filename) const && = delete;
 		std::optional<OutputFile> open(std::u8string_view filename) && = delete;
 
-		std::optional<InputFile> open(std::u8string_view filename) const &;
-		std::optional<OutputFile> open(std::u8string_view filename /*, FileCreationMode*/) &;
+		std::optional<InputFile> open(std::u8string_view filename, FileCreationMode mode) const &;
+		std::optional<OutputFile> open(std::u8string_view filename, FileCreationMode mode) &;
 
 		auto ls() const
 		{
