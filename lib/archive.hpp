@@ -61,12 +61,6 @@ namespace Wad64
 
 		explicit Archive(FileReference ref);
 
-		std::optional<InputFile> open(std::u8string_view filename) const&& = delete;
-		std::optional<OutputFile> open(std::u8string_view filename) &&     = delete;
-
-		std::optional<InputFile> open(std::u8string_view filename) const&;
-		std::optional<OutputFile> open(std::u8string_view filename, FileCreationMode mode) &;
-
 		auto const& ls() const { return m_directory; }
 
 		std::optional<DirEntry> stat(std::u8string_view filename) const

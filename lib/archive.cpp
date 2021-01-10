@@ -41,14 +41,3 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 		                                 DirEntry{lump.filepos, lump.filepos + lump.size}};
 	                });
 }
-
-#if 0
-std::optional<Wad64::InputFile> Wad64::Archive::open(std::u8string_view filename) const&
-{
-	auto i = m_directory.find(filename);
-	if(i == std::end(m_directory))
-	{ return std::optional<InputFile>{}; }
-
-	return InputFile{m_file_ref, i->second};
-}
-#endif
