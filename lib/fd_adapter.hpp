@@ -5,6 +5,7 @@
 
 #include <unistd.h>
 
+#include <cstdint>
 #include <span>
 
 namespace Wad64
@@ -22,7 +23,7 @@ namespace Wad64
 
 	inline size_t write(FdAdapter fd, std::span<std::byte const> buffer)
 	{
-		return ::write(fd.fd, std::data(buffer), std:.size(buffer));
+		return ::write(fd.fd, std::data(buffer), std::size(buffer));
 	}
 
 	inline int64_t seek(FdAdapter fd, int64_t offset)
