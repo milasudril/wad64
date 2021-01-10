@@ -5,7 +5,4 @@
 
 static_assert(Wad64::RandomAccessFile<Wad64::FdAdapter>);
 
-int main()
-{
-	return 0;
-}
+int main() { return 0; }

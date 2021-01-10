@@ -1,14 +1,14 @@
 //@	{"targets":[{"name":"file_structs.hpp","type":"include"}]}
 
-#ifndef WAD64_FILE_STRUCTS_HPP
-#define WAD64_FILE_STRUCTS_HPP
+#ifndef TEXPAINTER_WAD64_LIB_FILESTRUCTS_HPP
+#define TEXPAINTER_WAD64_LIB_FILESTRUCTS_HPP
 
 #include <cstdint>
 #include <array>
 
 namespace Wad64
 {
-	constexpr std::array<char, 8> MagicNumber{'x','W','A','D','6','4','\n','\0'};
+	constexpr std::array<char, 8> MagicNumber{'x', 'W', 'A', 'D', '6', '4', '\n', '\0'};
 
 	/** The file header
 	*/

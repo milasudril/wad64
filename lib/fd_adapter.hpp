@@ -1,7 +1,7 @@
 //@	{"targets":[{"name":"fd_adapter.hpp","type":"include"}]}
 
-#ifndef WAD64_FDADAPTER_HPP
-#define WAD64_FDADAPTER_HPP
+#ifndef TEXPAINTER_WAD64_LIB_FDADAPTER_HPP
+#define TEXPAINTER_WAD64_LIB_FDADAPTER_HPP
 
 #include <unistd.h>
 
@@ -12,7 +12,7 @@ namespace Wad64
 {
 	struct FdAdapter
 	{
-		FdAdapter(int f):fd{f}{}
+		FdAdapter(int f): fd{f} {}
 		int fd;
 	};
 
@@ -26,9 +26,6 @@ namespace Wad64
 		return ::write(fd.fd, std::data(buffer), std::size(buffer));
 	}
 
-	inline int64_t seek(FdAdapter fd, int64_t offset)
-	{
-		return ::lseek(fd.fd, offset, SEEK_SET);
-	}
+	inline int64_t seek(FdAdapter fd, int64_t offset) { return ::lseek(fd.fd, offset, SEEK_SET); }
 }
 #endif

@@ -3,8 +3,8 @@
 //@	,"dependencies_extra":[{"ref":"archive.o","rel":"implementation"}]
 //@	}
 
-#ifndef WAD64_ARCHIVE_HPP
-#define WAD64_ARCHIVE_HPP
+#ifndef TEXPAINTER_WAD64_LIB_ARCHIVE_HPP
+#define TEXPAINTER_WAD64_LIB_ARCHIVE_HPP
 
 #include "./io_policy.hpp"
 
@@ -26,7 +26,7 @@ namespace Wad64
 	class FileCreationMode
 	{
 	public:
-		FileCreationMode():m_flags{0}{}
+		FileCreationMode(): m_flags{0} {}
 
 		FileCreationMode& allowOverwrite()
 		{
@@ -34,10 +34,7 @@ namespace Wad64
 			return *this;
 		}
 
-		bool overwriteAllowed() const
-		{
-			return m_flags & AllowOverwrite;
-		}
+		bool overwriteAllowed() const { return m_flags & AllowOverwrite; }
 
 		FileCreationMode& allowCreation()
 		{
@@ -45,14 +42,11 @@ namespace Wad64
 			return *this;
 		}
 
-		bool creationAllowed() const
-		{
-			return m_flags & AllowCreation;
-		}
+		bool creationAllowed() const { return m_flags & AllowCreation; }
 
 	private:
 		static constexpr unsigned int AllowOverwrite = 0x1;
-		static constexpr unsigned int AllowCreation = 0x2;
+		static constexpr unsigned int AllowCreation  = 0x2;
 		unsigned int m_flags;
 	};
 
@@ -60,31 +54,30 @@ namespace Wad64
 	{
 	public:
 		template<RandomAccessFile File>
-		explicit Archive(std::reference_wrapper<File> f):Archive{FileReference{f}}
+		explicit Archive(std::reference_wrapper<File> f): Archive{FileReference{f}}
 		{
 		}
 
 		explicit Archive(FileReference ref);
 
-		std::optional<InputFile> open(std::u8string_view filename) const && = delete;
-		std::optional<OutputFile> open(std::u8string_view filename) && = delete;
+		std::optional<InputFile> open(std::u8string_view filename) const&& = delete;
+		std::optional<OutputFile> open(std::u8string_view filename) &&     = delete;
 
-		std::optional<InputFile> open(std::u8string_view filename, FileCreationMode mode) const &;
+		std::optional<InputFile> open(std::u8string_view filename, FileCreationMode mode) const&;
 		std::optional<OutputFile> open(std::u8string_view filename, FileCreationMode mode) &;
 
 		auto ls() const
 		{
-			return std::ranges::transform_view{m_directory, [](auto const& item){
-				return std::pair{std::u8string_view{item.first}, FileInfo{item.second.size}};
-			}};
+			return std::ranges::transform_view{
+			    m_directory, [](auto const& item) {
+				    return std::pair{std::u8string_view{item.first}, FileInfo{item.second.size}};
+			    }};
 		}
 
 		std::optional<FileInfo> stat(std::u8string_view filename) const
 		{
 			if(auto i = m_directory.find(filename); i != std::end(m_directory))
-			{
-				return FileInfo{i->second.size};
-			}
+			{ return FileInfo{i->second.size}; }
 			return std::optional<FileInfo>{};
 		}
 

@@ -2,5 +2,4 @@
 
 #include "archive.hpp"
 
-int main()
-{}
+int main() {}

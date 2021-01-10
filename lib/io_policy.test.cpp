@@ -12,15 +12,9 @@ namespace
 		int64_t last_seek_offset;
 	};
 
-	size_t read(File&, std::span<std::byte> buffer)
-	{
-		return std::size(buffer);
-	}
+	size_t read(File&, std::span<std::byte> buffer) { return std::size(buffer); }
 
-	size_t write(File&, std::span<std::byte const> buffer)
-	{
-		return std::size(buffer);
-	}
+	size_t write(File&, std::span<std::byte const> buffer) { return std::size(buffer); }
 
 	int64_t seek(File& f, int64_t val)
 	{
