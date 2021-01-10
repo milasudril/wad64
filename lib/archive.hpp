@@ -63,7 +63,7 @@ namespace Wad64
 		std::optional<InputFile> open(std::u8string_view filename) const&& = delete;
 		std::optional<OutputFile> open(std::u8string_view filename) &&     = delete;
 
-		std::optional<InputFile> open(std::u8string_view filename, FileCreationMode mode) const&;
+		std::optional<InputFile> open(std::u8string_view filename) const&;
 		std::optional<OutputFile> open(std::u8string_view filename, FileCreationMode mode) &;
 
 		auto ls() const
