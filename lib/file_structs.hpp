@@ -34,13 +34,14 @@ namespace Wad64
 		/** The offset, from the beginning of file, to this lump
 		*/
 		int64_t filepos;
+
 		/** The size of this lump
 		*/
 		int64_t size;
 
 		/** The name of this lump (encoded in UTF-8). The name must not contain a ascii nul char.
 		*/
-		char8_t name[256 - 16];
+		std::array<char8_t, 256 - 16> name;
 	};
 }
 
