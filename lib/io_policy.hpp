@@ -10,7 +10,7 @@
 namespace Wad64
 {
 	template<class T>
-	concept IoPolicy = requires(T a)
+	concept RandomAccessFile = requires(T a)
 	{
 		{read(a, std::declval<std::span<std::byte>>())} -> std::same_as<std::size_t>;
 		{write(a, std::declval<std::span<std::byte const>>())} -> std::same_as<std::size_t>;

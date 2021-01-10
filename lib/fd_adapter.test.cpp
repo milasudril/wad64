@@ -3,7 +3,7 @@
 #include "./fd_adapter.hpp"
 #include "./io_policy.hpp"
 
-static_assert(Wad64::IoPolicy<Wad64::FdAdapter>);
+static_assert(Wad64::RandomAccessFile<Wad64::FdAdapter>);
 
 int main()
 {

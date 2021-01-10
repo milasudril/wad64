@@ -8,8 +8,8 @@
 class Archive
 {
 public:
-	template<IoPolicy policy>
-	explicit Archive(IoPolicy)
+	template<RandomAccessFile policy>
+	explicit Archive(RandomAccessFile)
 	{
 	}
 
