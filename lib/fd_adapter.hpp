@@ -16,16 +16,14 @@ namespace Wad64
 		int fd;
 	};
 
-	inline size_t read(FdAdapter fd, std::span<std::byte> buffer)
+	inline size_t read(FdAdapter fd, std::span<std::byte> buffer, int64_t offset)
 	{
-		return ::read(fd.fd, std::data(buffer), std::size(buffer));
+		return ::pread(fd.fd, std::data(buffer), std::size(buffer), offset);
 	}
 
-	inline size_t write(FdAdapter fd, std::span<std::byte const> buffer)
+	inline size_t write(FdAdapter fd, std::span<std::byte const> buffer, int64_t offset)
 	{
-		return ::write(fd.fd, std::data(buffer), std::size(buffer));
+		return ::pwrite(fd.fd, std::data(buffer), std::size(buffer), offset);
 	}
-
-	inline int64_t seek(FdAdapter fd, int64_t offset) { return ::lseek(fd.fd, offset, SEEK_SET); }
 }
 #endif
