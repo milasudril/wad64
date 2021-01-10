@@ -80,6 +80,8 @@ namespace Wad64
 
 		FileReference m_file_ref;
 		int64_t m_start_offset;
+		int64_t m_initial_end_offset;
+
 		int64_t m_write_offset;
 		int64_t m_end_offset;
 	};
