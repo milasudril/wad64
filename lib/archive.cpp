@@ -5,6 +5,7 @@
 #include "./archive_error.hpp"
 
 #include <bit>
+#include <algorithm>
 
 Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 {
@@ -35,9 +36,42 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 
 		                offset += n_read;
 
-		                lump.name.back() = '\0';  // make sure that lump is zero terminated;
+		                lump.name.back() = '\0';  // make sure that lump name is zero terminated
 
 		                return std::pair{std::u8string{std::data(lump.name)},
 		                                 DirEntry{lump.filepos, lump.filepos + lump.size}};
 	                });
+}
+
+Wad64::DirEntry Wad64::Archive::moveFile(std::u8string_view filename, int64_t new_size)
+{
+	auto i = m_directory.find(filename);
+
+	if(i == std::end(m_directory))
+	{ i = m_directory.insert(std::pair{filename, DirEntry{0, 0}}).first; }
+
+	if(i->second.end - i->second.begin == new_size) [[likely]]
+	{ return i->second; }
+
+	std::vector<DirEntry> by_start_pos;
+	by_start_pos.reserve(m_directory.size());
+	std::ranges::transform(m_directory, std::back_inserter(by_start_pos), [](auto const& item){
+		return item.second;
+	});
+	std::ranges::sort(by_start_pos, [](auto const& a, auto const& b) {
+		return a.begin < b.begin;
+	});
+	auto gap = std::ranges::adjacent_find(by_start_pos, [new_size](auto const& a, auto const& b) {
+		return b.begin - a.end >= new_size;
+	});
+
+	if(gap == std::end(by_start_pos))
+	{
+		i->second = DirEntry{by_start_pos.back().end, by_start_pos.back().end  + new_size};
+		return i->second;
+	}
+
+	i->second = DirEntry{gap->end, gap->end + new_size};
+
+	return i->second;
 }

@@ -42,6 +42,8 @@ namespace Wad64
 
 		FileReference fileReference() const { return m_file_ref; }
 
+		DirEntry moveFile(std::u8string_view filename, int64_t new_size);
+
 	private:
 		std::map<std::u8string, DirEntry, std::less<>> m_directory;
 		FileReference m_file_ref;
