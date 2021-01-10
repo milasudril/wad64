@@ -1,4 +1,4 @@
-//@	{"targets":[{"name":"iopolicy.hpp","type":"include"}]}
+//@	{"targets":[{"name":"io_policy.hpp","type":"include"}]}
 
 #ifndef WAD64_IOPOLICY_HPP
 #define WAD64_IOPOLICY_HPP

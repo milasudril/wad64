@@ -1,4 +1,4 @@
-//@	{"targets":[{"name":"file_structs.test","type":"application"}]}
+//@	{"targets":[{"name":"file_structs.test","type":"application", "autorun":1}]}
 
 #include "./file_structs.hpp"
 
