@@ -7,6 +7,7 @@
 
 #include "./archive_error.hpp"
 #include "./fd_adapter.hpp"
+#include "./io_policy.hpp"
 
 #include <cstdlib>
 #include <string>
@@ -32,7 +33,7 @@ namespace Wad64
 	public:
 		TempFile(): fd{detail::make_tmp_file()} {}
 
-		void copyTo(int fd_out, int64_t output_start_offset);
+		void copyTo(FileReference fd_out, int64_t output_start_offset);
 
 		size_t write(std::span<std::byte const> buffer, int64_t offset)
 		{

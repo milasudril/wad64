@@ -20,7 +20,7 @@ namespace Wad64
 		{
 			auto info = archive.get().stat(filename);
 			if(!info.has_value()) { throw ArchiveError{"File does not exist"}; }
-			m_file_ref     = archive.get().fileReference();
+
 			m_start_offset = info->begin;
 			m_read_offset  = info->begin;
 			m_end_offset   = info->end;

@@ -67,7 +67,7 @@ namespace Wad64
 			auto offset_new = m_write_offset;
 			switch(mode)
 			{
-				case SeekMode::Set: offset_new = m_start_offset + offset; break;
+				case SeekMode::Set: offset_new = 0 + offset; break;
 
 				case SeekMode::Cur: offset_new = m_write_offset + offset; break;
 
@@ -82,16 +82,13 @@ namespace Wad64
 		}
 
 	private:
-		int64_t offsetRel(int64_t val) const { return val - m_start_offset; }
+		int64_t offsetRel(int64_t val) const { return val - 0; }
 		TempFile m_tmp_file;
-
-		FileReference m_file_ref;
-		int64_t m_start_offset;
-		int64_t m_initial_end_offset;
 
 		int64_t m_write_offset;
 		int64_t m_end_offset;
 		std::reference_wrapper<Archive> m_archive;
+		std::u8string m_filename;
 	};
 }
 #endif
