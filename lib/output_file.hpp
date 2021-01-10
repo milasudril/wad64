@@ -8,6 +8,7 @@
 
 #include "./archive.hpp"
 #include "./seek_mode.hpp"
+#include "./temp_file.hpp"
 
 namespace Wad64
 {
@@ -52,7 +53,12 @@ namespace Wad64
 			return n;
 		}
 
-		size_t write(std::span<std::byte const> buffer, int64_t offset) const;
+		size_t write(std::span<std::byte const> buffer, int64_t offset) const
+		{
+			auto n = m_tmp_file.write(buffer, offset);
+
+			return n;
+		}
 
 		~OutputFile();
 
@@ -77,6 +83,7 @@ namespace Wad64
 
 	private:
 		int64_t offsetRel(int64_t val) const { return val - m_start_offset; }
+		mutable TempFile m_tmp_file;
 
 		FileReference m_file_ref;
 		int64_t m_start_offset;
