@@ -15,40 +15,10 @@
 
 namespace Wad64
 {
-	class InputFile;
-	class OutputFile;
-
 	struct DirEntry
 	{
 		int64_t begin;
 		int64_t end;
-	};
-
-	class FileCreationMode
-	{
-	public:
-		FileCreationMode(): m_flags{0} {}
-
-		FileCreationMode& allowOverwrite()
-		{
-			m_flags |= AllowOverwrite;
-			return *this;
-		}
-
-		bool overwriteAllowed() const { return m_flags & AllowOverwrite; }
-
-		FileCreationMode& allowCreation()
-		{
-			m_flags |= AllowCreation;
-			return *this;
-		}
-
-		bool creationAllowed() const { return m_flags & AllowCreation; }
-
-	private:
-		static constexpr unsigned int AllowOverwrite = 0x1;
-		static constexpr unsigned int AllowCreation  = 0x2;
-		unsigned int m_flags;
 	};
 
 	class Archive
