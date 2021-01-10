@@ -57,9 +57,11 @@ namespace Wad64
 	{
 	public:
 		template<RandomAccessFile File>
-		explicit Archive(std::reference_wrapper<File> f):m_file_ref{f}
+		explicit Archive(std::reference_wrapper<File> f):Archive{FileReference{f}}
 		{
 		}
+
+		explicit Archive(FileReference ref);
 
 		std::optional<InputFile> open(std::u8string_view filename) const && = delete;
 		std::optional<OutputFile> open(std::u8string_view filename) && = delete;
