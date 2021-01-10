@@ -5,15 +5,19 @@
 
 #include "./io_policy.hpp"
 
-class Archive
+namespace Wad64
 {
-public:
-	template<RandomAccessFile policy>
-	explicit Archive(RandomAccessFile)
+	class Archive
 	{
-	}
+	public:
+		template<RandomAccessFile File>
+		explicit Archive(std::reference_wrapper<File> f):m_file_ref{f}
+		{
+		}
 
-private:
-};
+	private:
+		FileReference m_file_ref;
+	};
+}
 
 #endif
