@@ -2,17 +2,9 @@
 
 #include "./archive.hpp"
 #include "./file_structs.hpp"
+#include "./archive_error.hpp"
 
-#include <stdexcept>
 #include <bit>
-
-namespace
-{
-	struct ArchiveError: std::runtime_error
-	{
-		explicit ArchiveError(std::string&& msg): std::runtime_error{std::move(msg)} {}
-	};
-}
 
 Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 {
@@ -46,7 +38,7 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 		                lump.name.back() = '\0';  // make sure that lump is zero terminated;
 
 		                return std::pair{std::u8string{std::data(lump.name)},
-		                                 DirEntry{lump.filepos, lump.size}};
+		                                 DirEntry{lump.filepos, lump.filepos + lump.size}};
 	                });
 }
 
@@ -57,9 +49,6 @@ std::optional<Wad64::InputFile> Wad64::Archive::open(std::u8string_view filename
 	if(i == std::end(m_directory))
 	{ return std::optional<InputFile>{}; }
 
-	if(m_file_ref.seek(i->second.offset) == -1)
-	{throw ArchiveError{"Failed to open entry. Seek error."}; }
-
-	return InputFile{m_file_ref, i->second.size};
+	return InputFile{m_file_ref, i->second};
 }
 #endif

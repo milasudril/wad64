@@ -18,9 +18,10 @@ namespace Wad64
 	class InputFile;
 	class OutputFile;
 
-	struct FileInfo
+	struct DirEntry
 	{
-		int64_t size;
+		int64_t begin;
+		int64_t end;
 	};
 
 	class FileCreationMode
@@ -66,28 +67,18 @@ namespace Wad64
 		std::optional<InputFile> open(std::u8string_view filename) const&;
 		std::optional<OutputFile> open(std::u8string_view filename, FileCreationMode mode) &;
 
-		auto ls() const
-		{
-			return std::ranges::transform_view{
-			    m_directory, [](auto const& item) {
-				    return std::pair{std::u8string_view{item.first}, FileInfo{item.second.size}};
-			    }};
-		}
+		auto const& ls() const { return m_directory; }
 
-		std::optional<FileInfo> stat(std::u8string_view filename) const
+		std::optional<DirEntry> stat(std::u8string_view filename) const
 		{
 			if(auto i = m_directory.find(filename); i != std::end(m_directory))
-			{ return FileInfo{i->second.size}; }
-			return std::optional<FileInfo>{};
+			{ return i->second; }
+			return std::optional<DirEntry>{};
 		}
 
-	private:
-		struct DirEntry
-		{
-			int64_t offset;
-			int64_t size;
-		};
+		FileReference fileReference() const { return m_file_ref; }
 
+	private:
 		std::map<std::u8string, DirEntry, std::less<>> m_directory;
 		FileReference m_file_ref;
 	};
