@@ -18,20 +18,19 @@ namespace Wad64
 		FdAdapter make_tmp_file()
 		{
 			char buffer[] = "/tmp/XXXXXX";
-			auto fd = mkstemp(buffer);
-			if(fd == -1)
-			{ throw ArchiveError{"Failed to create temp file"}; }
+			auto fd       = mkstemp(buffer);
+			if(fd == -1) { throw ArchiveError{"Failed to create temp file"}; }
 
 			unlink(buffer);
 
 			return fd;
 		}
- 	}
+	}
 
 	class TempFile
 	{
 	public:
-		TempFile():fd{detail::make_tmp_file()}{}
+		TempFile(): fd{detail::make_tmp_file()} {}
 
 		void copyTo(int fd_out, int64_t output_start_offset);
 
@@ -40,10 +39,7 @@ namespace Wad64
 			return Wad64::write(fd, buffer, offset);
 		}
 
-		~TempFile()
-		{
-			close(fd.fd);
-		}
+		~TempFile() { close(fd.fd); }
 
 	private:
 		FdAdapter fd;

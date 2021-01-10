@@ -53,10 +53,10 @@ namespace Wad64
 			return n;
 		}
 
-		size_t write(std::span<std::byte const> buffer, int64_t offset) const
+		size_t write(std::span<std::byte const> buffer, int64_t offset)
 		{
-			auto n = m_tmp_file.write(buffer, offset);
-
+			auto n       = m_tmp_file.write(buffer, offset);
+			m_end_offset = std::max(offset + n, static_cast<size_t>(m_end_offset));
 			return n;
 		}
 
@@ -83,7 +83,7 @@ namespace Wad64
 
 	private:
 		int64_t offsetRel(int64_t val) const { return val - m_start_offset; }
-		mutable TempFile m_tmp_file;
+		TempFile m_tmp_file;
 
 		FileReference m_file_ref;
 		int64_t m_start_offset;
@@ -91,6 +91,7 @@ namespace Wad64
 
 		int64_t m_write_offset;
 		int64_t m_end_offset;
+		std::reference_wrapper<Archive> m_archive;
 	};
 }
 #endif
