@@ -1,4 +1,7 @@
-//@	{"targets":[{"name":"archive.hpp","type":"include"}]}
+//@	{
+//@	 "targets":[{"name":"archive.hpp","type":"include"}]
+//@	,"dependencies_extra":[{"ref":"archive.o","rel":"implementation"}]
+//@	}
 
 #ifndef WAD64_ARCHIVE_HPP
 #define WAD64_ARCHIVE_HPP
