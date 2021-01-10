@@ -1,0 +1,174 @@
+{
+	"directoryoptions": {
+		"paths_full_reject": [],
+		"paths_reject": [
+			"..",
+			".",
+			".git",
+			"__targets"
+		],
+		"recursive": 1
+	},
+	"source_files": [
+		"."
+	],
+	"target_hooks": [
+		{
+			"config": {
+				"appcompile": {
+					"args": [
+						"-std=c++20",
+						"-g",
+						"{cxxversion}",
+						"-Wall",
+						"{cflags_extra}",
+						"{iquote}",
+						"{includedir}",
+						"-DMAIKE_TARGET_DIRECTORY={target_directory}",
+						"-DMAIKE_CURRENT_DIRECTORY={current_directory}",
+						"{includes_extra}",
+						"-o",
+						"{target}",
+						"{source}",
+						"{libdir}",
+						"{dependencies}"
+					],
+					"name": "g++-10"
+				},
+				"autorun_launcher": {
+					"args": [],
+					"name": ""
+				},
+				"cflags_extra": [
+					"Wno-parentheses",
+					"Werror",
+					"Wextra",
+					"mavx2",
+					"O3"
+				],
+				"cflags_format": "-^",
+				"dllcompile": {
+					"args": [
+						"-std=c++20",
+						"-g",
+						"{cxxversion}",
+						"-Wall",
+						"{cflags_extra}",
+						"{iquote}",
+						"{includedir}",
+						"-DMAIKE_TARGET_DIRECTORY={target_directory}",
+						"-DMAIKE_CURRENT_DIRECTORY={current_directory}",
+						"{includes_extra}",
+						"-shared",
+						"-o",
+						"{target}",
+						"{source}",
+						"{libdir}",
+						"{dependencies}"
+					],
+					"name": "g++-10"
+				},
+				"include_format": "-include^",
+				"includedir": [],
+				"includedir_format": "-I^",
+				"includedir_noscan": [],
+				"iquote": [
+					".",
+					"libenum"
+				],
+				"iquote_format": "-iquote^",
+				"libcompile": {
+					"args": [
+						"rcs",
+						"{target}",
+						"{dependencies}"
+					],
+					"name": "ar"
+				},
+				"libdir": [],
+				"libdir_format": "-L^",
+				"libext_format": "-l^",
+				"libint_format": "-l:^",
+				"mode": "c++",
+				"objcompile": {
+					"args": [
+						"-std=c++20",
+						"-c",
+						"-g",
+						"{cxxversion}",
+						"-Wall",
+						"{cflags_extra}",
+						"{iquote}",
+						"{includedir}",
+						"-DMAIKE_TARGET_DIRECTORY={target_directory}",
+						"-DMAIKE_CURRENT_DIRECTORY={current_directory}",
+						"{includes_extra}",
+						"-o",
+						"{target}",
+						"{source}"
+					],
+					"name": "g++-10"
+				},
+				"pkgconfig": {
+					"args": [
+						"{action}",
+						"{libname}"
+					],
+					"name": "pkg-config"
+				},
+				"stdprefix": "-std=",
+				"versionquery": {
+					"args": [
+						"-E",
+						"-dM",
+						"-x",
+						"c++",
+						"{nullfile}"
+					],
+					"name": "g++-10"
+				}
+			},
+			"filename_exts": [
+				".c++",
+				".cc",
+				".cpp",
+				".cxx",
+				".h",
+				".h++",
+				".hh",
+				".hpp",
+				".hxx"
+			],
+			"name": "targetcxx_default",
+			"plugin": "targetcxx"
+		},
+		{
+			"config": {
+				"command": {
+					"args": [
+						"__targets",
+						"{source}",
+						"{target}"
+					],
+					"name": "devtools/imgproc_gen/make_imgproc.py"
+				},
+				"dependencies": [
+					{
+						"ref": "maikeconfig.json",
+						"rel": "misc"
+					}
+				],
+				"filename_ext": ".hpp"
+			},
+			"filename_exts": [
+				".imgproc.md"
+			],
+			"name": "imgproc",
+			"plugin": "targettrivial"
+		}
+	],
+	"targetinfo": {
+		"project_root": "",
+		"target_directory": "__targets"
+	}
+}
