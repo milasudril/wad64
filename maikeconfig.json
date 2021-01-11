@@ -36,14 +36,16 @@
 					"name": "g++-10"
 				},
 				"autorun_launcher": {
-					"args": [],
-					"name": ""
+					"args": ["{target}"],
+					"name": "./testrunner.sh"
 				},
 				"cflags_extra": [
 					"Wconversion",
 					"Werror",
 					"Wextra",
-					"mavx2"
+					"mavx2",
+					"fprofile-arcs",
+					"ftest-coverage"
 				],
 				"cflags_format": "-^",
 				"dllcompile": {
@@ -72,8 +74,7 @@
 				"includedir_format": "-I^",
 				"includedir_noscan": [],
 				"iquote": [
-					".",
-					"libenum"
+					"."
 				],
 				"iquote_format": "-iquote^",
 				"libcompile": {
@@ -140,30 +141,6 @@
 			],
 			"name": "targetcxx_default",
 			"plugin": "targetcxx"
-		},
-		{
-			"config": {
-				"command": {
-					"args": [
-						"__targets",
-						"{source}",
-						"{target}"
-					],
-					"name": "devtools/imgproc_gen/make_imgproc.py"
-				},
-				"dependencies": [
-					{
-						"ref": "maikeconfig.json",
-						"rel": "misc"
-					}
-				],
-				"filename_ext": ".hpp"
-			},
-			"filename_exts": [
-				".imgproc.md"
-			],
-			"name": "imgproc",
-			"plugin": "targettrivial"
 		}
 	],
 	"targetinfo": {
