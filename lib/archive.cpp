@@ -7,6 +7,15 @@
 #include <bit>
 #include <algorithm>
 
+namespace
+{
+	template<class T>
+	constexpr int64_t size()
+	{
+		return static_cast<int64_t>(sizeof(T));
+	}
+}
+
 Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 {
 	WadInfo info;
@@ -17,7 +26,8 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 
 	if(n_read != sizeof(info) && n_read != 0) { throw ArchiveError{"Invalid Wad64 file"}; }
 
-	if(info.identification != MagicNumber || info.infotablesofs < 0 || info.numlumps < 0)
+	if(info.identification != MagicNumber || info.infotablesofs <= size<WadInfo>()
+	   || info.numlumps < 0)
 	{ throw ArchiveError{"Invalid Wad64 file"}; }
 
 	static_assert(std::endian::native == std::endian::little);
@@ -42,11 +52,13 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 		                                 DirEntry{lump.filepos, lump.filepos + lump.size}};
 	                });
 
-	m_file_offsets.reserve(m_directory.size());
-	std::ranges::transform(m_directory, std::back_inserter(m_file_offsets), [](auto const& item){
+	m_file_offsets.reserve(info.numlumps + 1);
+	std::ranges::transform(m_directory, std::back_inserter(m_file_offsets), [](auto const& item) {
 		return item.second;
 	});
-	std::ranges::sort(m_file_offsets, [](auto a, auto b) {return a.begin < b.begin;});
+	m_file_offsets.push_back(
+	    DirEntry{info.infotablesofs, info.infotablesofs + size<FileLump>() * info.numlumps});
+	std::ranges::sort(m_file_offsets, [](auto a, auto b) { return a.begin < b.begin; });
 }
 
 
