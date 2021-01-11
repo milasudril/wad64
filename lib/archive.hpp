@@ -46,6 +46,7 @@ namespace Wad64
 
 	private:
 		std::map<std::u8string, DirEntry, std::less<>> m_directory;
+		std::vector<DirEntry> m_file_offsets;
 		FileReference m_file_ref;
 	};
 }

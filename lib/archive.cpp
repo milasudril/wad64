@@ -41,8 +41,16 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 		                return std::pair{std::u8string{std::data(lump.name)},
 		                                 DirEntry{lump.filepos, lump.filepos + lump.size}};
 	                });
+
+	m_file_offsets.reserve(m_directory.size());
+	std::ranges::transform(m_directory, std::back_inserter(m_file_offsets), [](auto const& item){
+		return item.second;
+	});
+	std::ranges::sort(m_file_offsets, [](auto a, auto b) {return a.begin < b.begin;});
 }
 
+
+#if 0
 Wad64::DirEntry Wad64::Archive::moveFile(std::u8string_view filename, int64_t new_size)
 {
 	auto i = m_directory.find(filename);
@@ -75,3 +83,4 @@ Wad64::DirEntry Wad64::Archive::moveFile(std::u8string_view filename, int64_t ne
 
 	return i->second;
 }
+#endif

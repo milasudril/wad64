@@ -40,11 +40,10 @@
 					"name": ""
 				},
 				"cflags_extra": [
-					"Wno-parentheses",
+					"Wconversion",
 					"Werror",
 					"Wextra",
-					"mavx2",
-					"O3"
+					"mavx2"
 				],
 				"cflags_format": "-^",
 				"dllcompile": {
