@@ -1,9 +1,12 @@
 //@	{"targets":[{"name":"membuffer.test","type":"application", "autorun":1}]}
 
 #include "./membuffer.hpp"
+#include "./io_policy.hpp"
 
 #include <cassert>
 #include <algorithm>
+
+static_assert(Wad64::RandomAccessFile<Wad64::MemBuffer>);
 
 namespace Testcases
 {
