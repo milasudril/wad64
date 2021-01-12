@@ -37,7 +37,9 @@
 				},
 				"autorun_launcher": {
 					"args": [
-						"{target_directory}","{current_directory}", "{target}"
+						"{target_directory}",
+						"{current_directory}",
+						"{target}"
 					],
 					"name": "./testrunner.sh"
 				},

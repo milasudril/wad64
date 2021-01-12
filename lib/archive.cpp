@@ -26,7 +26,7 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 
 	if(n_read != sizeof(info) && n_read != 0) { throw ArchiveError{"Invalid Wad64 file"}; }
 
-	if(info.identification != MagicNumber || info.infotablesofs <= size<WadInfo>()
+	if(info.identification != MagicNumber || info.infotablesofs < size<WadInfo>()
 	   || info.numlumps < 0)
 	{ throw ArchiveError{"Invalid Wad64 file"}; }
 
