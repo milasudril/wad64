@@ -221,6 +221,137 @@ namespace Testcases
 			assert(static_cast<size_t>(res->begin) == start_ofs[k] + startoffset);
 			assert(static_cast<size_t>(res->end) == start_ofs[k] + startoffset + sizes[k]);
 		}
+
+		assert(!archive.stat("Non-existing entry").has_value());
+	}
+
+	void wad64ArchiveLoadDirentryInDirectory()
+	{
+		Wad64::WadInfo header{};
+		header.identification = Wad64::MagicNumber;
+		header.numlumps       = 4;
+		header.infotablesofs  = sizeof(header);
+
+		Wad64::MemBuffer buffer;
+		write(buffer, std::span{reinterpret_cast<std::byte const*>(&header), sizeof(header)}, 0);
+		assert(std::size(buffer.data) == sizeof(header));
+
+		std::array<Wad64::FileLump, 4> lumps{};
+		std::array<std::string, 4> names{"Bar", "Bulle", "Foo", "Kaka"};
+		std::array<int, 4> start_ofs{-1, 1, 3, 6};
+		std::array<int, 4> sizes{1, 2, 3, 5};
+		constexpr auto startoffset = sizeof(header) + sizeof(lumps);
+		for(int k = 0; k < 4; ++k)
+		{
+			lumps[k].filepos = startoffset + start_ofs[k];
+			lumps[k].size    = sizes[k];
+			std::ranges::copy(names[k], std::data(lumps[k].name));
+		}
+		std::minstd_rand rng;
+		std::ranges::shuffle(lumps, rng);
+
+		write(buffer,
+		      std::span{reinterpret_cast<std::byte const*>(&lumps), sizeof(lumps)},
+		      header.infotablesofs);
+
+		try
+		{
+			Wad64::Archive archive{std::ref(buffer)};
+			abort();
+		}
+		catch(...)
+		{}
+	}
+
+	void wad64ArchiveLoadOverlappingDirentries()
+	{
+		Wad64::WadInfo header{};
+		header.identification = Wad64::MagicNumber;
+		header.numlumps       = 4;
+		header.infotablesofs  = sizeof(header);
+
+		Wad64::MemBuffer buffer;
+		write(buffer, std::span{reinterpret_cast<std::byte const*>(&header), sizeof(header)}, 0);
+		assert(std::size(buffer.data) == sizeof(header));
+
+		std::array<Wad64::FileLump, 4> lumps{};
+		std::array<std::string, 4> names{"Bar", "Bulle", "Foo", "Kaka"};
+		std::array<int, 4> start_ofs{0, 1, 3, 6};
+		std::array<int, 4> sizes{1, 2, 4, 5};
+		constexpr auto startoffset = sizeof(header) + sizeof(lumps);
+		for(int k = 0; k < 4; ++k)
+		{
+			lumps[k].filepos = startoffset + start_ofs[k];
+			lumps[k].size    = sizes[k];
+			std::ranges::copy(names[k], std::data(lumps[k].name));
+		}
+		std::minstd_rand rng;
+		std::ranges::shuffle(lumps, rng);
+
+		write(buffer,
+		      std::span{reinterpret_cast<std::byte const*>(&lumps), sizeof(lumps)},
+		      header.infotablesofs);
+
+		try
+		{
+			Wad64::Archive archive{std::ref(buffer)};
+			abort();
+		}
+		catch(...)
+		{}
+	}
+
+	void wad64ArchiveLoadDirectoryDirNotFirst()
+	{
+		Wad64::WadInfo header{};
+		header.identification = Wad64::MagicNumber;
+		header.numlumps       = 4;
+		header.infotablesofs  = sizeof(header) + 11;
+
+		Wad64::MemBuffer buffer;
+		write(buffer, std::span{reinterpret_cast<std::byte const*>(&header), sizeof(header)}, 0);
+		assert(std::size(buffer.data) == sizeof(header));
+
+		std::array<Wad64::FileLump, 4> lumps{};
+		std::array<std::string, 4> names{"Bar", "Bulle", "Foo", "Kaka"};
+		std::array<int, 4> start_ofs{0, 1, 3, 6};
+		std::array<int, 4> sizes{1, 2, 3, 5};
+		constexpr auto startoffset = sizeof(header);
+		for(int k = 0; k < 4; ++k)
+		{
+			lumps[k].filepos = startoffset + start_ofs[k];
+			lumps[k].size    = sizes[k];
+			std::ranges::copy(names[k], std::data(lumps[k].name));
+		}
+		std::minstd_rand rng;
+		std::ranges::shuffle(lumps, rng);
+
+		write(buffer,
+		      std::span{reinterpret_cast<std::byte const*>(&lumps), sizeof(lumps)},
+		      header.infotablesofs);
+
+		Wad64::Archive archive{std::ref(buffer)};
+
+		auto const& dir = archive.ls();
+		assert(std::size(dir) == 4);
+		std::ranges::for_each(
+		    dir, [k = 0, &names, &start_ofs, &sizes, startoffset](auto const& item) mutable {
+			    assert(item.first == names[k]);
+			    assert(static_cast<size_t>(item.second.begin) == start_ofs[k] + startoffset);
+			    assert(static_cast<size_t>(item.second.end)
+			           == start_ofs[k] + startoffset + sizes[k]);
+			    ++k;
+		    });
+
+		for(int k = 0; k < 4; ++k)
+		{
+			auto res = archive.stat(names[k]);
+			assert(res.has_value());
+			assert(static_cast<size_t>(res->begin) == start_ofs[k] + startoffset);
+			assert(static_cast<size_t>(res->end) == start_ofs[k] + startoffset + sizes[k]);
+		}
+
+		assert(!archive.stat("Non-existing entry").has_value());
 	}
 }
 
@@ -235,4 +366,7 @@ int main()
 	Testcases::wad64ArchiveLoadTruncatedDirectory();
 	Testcases::wad64ArchiveLoadDirentryInHeader();
 	Testcases::wad64ArchiveLoadDirectory();
+	Testcases::wad64ArchiveLoadDirentryInDirectory();
+	Testcases::wad64ArchiveLoadOverlappingDirentries();
+	Testcases::wad64ArchiveLoadDirectoryDirNotFirst();
 }

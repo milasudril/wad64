@@ -42,10 +42,21 @@ namespace Testcases
 		assert(n4 == 3);
 		assert(std::ranges::equal(std::span{data(output), 5}, c));
 	}
+
+	void wad64MembufferWriteBeyondEof()
+	{
+		Wad64::MemBuffer buffer;
+		std::array<std::byte, 3> a{
+		    static_cast<std::byte>('F'), static_cast<std::byte>('o'), static_cast<std::byte>('o')};
+		auto const n1 = write(buffer, a, 4);
+		assert(n1 == 3);
+		assert(std::size(buffer.data) == 4 + 3);
+	}
 }
 
 int main()
 {
 	Testcases::wad64MembufferWriteRead();
+	Testcases::wad64MembufferWriteBeyondEof();
 	return 0;
 }
