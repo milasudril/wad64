@@ -5,6 +5,7 @@
 #include "./membuffer.hpp"
 #include "./file_structs.hpp"
 #include <cassert>
+#include <algorithm>
 
 
 namespace Testcases
@@ -119,6 +120,27 @@ namespace Testcases
 		{
 		}
 	}
+
+	void wad64ArchiveLoadTruncatedDirectory()
+	{
+		Wad64::WadInfo header{};
+		header.identification = Wad64::MagicNumber;
+		header.numlumps       = 1;
+		header.infotablesofs  = sizeof(header);
+
+		Wad64::MemBuffer buffer;
+		write(buffer, std::span{reinterpret_cast<std::byte const*>(&header), sizeof(header)}, 0);
+		assert(std::size(buffer.data) == sizeof(header));
+
+		try
+		{
+			Wad64::Archive archive{std::ref(buffer)};
+			abort();
+		}
+		catch(...)
+		{
+		}
+	}
 }
 
 int main()
@@ -129,4 +151,6 @@ int main()
 	Testcases::wad64ArchiveLoadBadMagicNumber();
 	Testcases::wad64ArchiveLoadDirectoryInsideHeader();
 	Testcases::wad64ArchiveLoadBadLumpCount();
+	Testcases::wad64ArchiveLoadTruncatedDirectory();
+//	Testcases::wad64ArchiveLoadDirentryInHeader();
 }
