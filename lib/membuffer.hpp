@@ -1,4 +1,4 @@
-//@	{"targets":[{"name":"membuffer.hpp","type":"object"}]}
+//@	{"targets":[{"name":"membuffer.hpp","type":"include"}]}
 
 #ifndef TEXPAINTER_WAD64_LIB_MEMBUFFER_HPP
 #define TEXPAINTER_WAD64_LIB_MEMBUFFER_HPP

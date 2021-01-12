@@ -60,11 +60,9 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 	    DirEntry{info.infotablesofs, info.infotablesofs + size<FileLump>() * info.numlumps});
 	std::ranges::sort(m_file_offsets, [](auto a, auto b) { return a.begin < b.begin; });
 
-	auto const i = std::ranges::adjacent_find(m_file_offsets, [](auto a, auto b) {
-		return a.end < b.begin;
-	});
-	if( i != std::end(m_file_offsets))
-	{ throw ArchiveError{"Overlapping file offsets"}; }
+	auto const i =
+	    std::ranges::adjacent_find(m_file_offsets, [](auto a, auto b) { return a.end < b.begin; });
+	if(i != std::end(m_file_offsets)) { throw ArchiveError{"Overlapping file offsets"}; }
 }
 
 

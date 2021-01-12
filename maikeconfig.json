@@ -36,7 +36,9 @@
 					"name": "g++-10"
 				},
 				"autorun_launcher": {
-					"args": ["{target}"],
+					"args": [
+						"{target}"
+					],
 					"name": "./testrunner.sh"
 				},
 				"cflags_extra": [
