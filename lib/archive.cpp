@@ -65,7 +65,7 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 	   != std::end(m_file_offsets))
 	{ throw ArchiveError{"Data points to header"}; }
 
-	if(std::ranges::adjacent_find(m_file_offsets, [](auto a, auto b) { return a.end < b.begin; })
+	if(std::ranges::adjacent_find(m_file_offsets, [](auto a, auto b) { return b.begin < a.end; })
 	   != std::end(m_file_offsets))
 	{ throw ArchiveError{"Overlapping file offsets"}; }
 }
