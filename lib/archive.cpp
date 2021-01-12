@@ -26,7 +26,8 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 
 	if(n_read != sizeof(info)) { throw ArchiveError{"Invalid Wad64 file"}; }
 
-	if(info.identification != MagicNumber || info.numlumps < 0 || info.infotablesofs < size<WadInfo>())
+	if(info.identification != MagicNumber || info.numlumps < 0
+	   || info.infotablesofs < size<WadInfo>())
 	{ throw ArchiveError{"Invalid Wad64 file"}; }
 
 	static_assert(std::endian::native == std::endian::little);
@@ -60,10 +61,13 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 	    DirEntry{info.infotablesofs, info.infotablesofs + size<FileLump>() * info.numlumps});
 	std::ranges::sort(m_file_offsets, [](auto a, auto b) { return a.begin < b.begin; });
 
-	if(std::ranges::find_if(m_file_offsets,[](auto a){ return a.begin < size<WadInfo>(); }) != std::end(m_file_offsets))
-	{throw ArchiveError{"Data points to header"};}
+	if(std::ranges::find_if(m_file_offsets, [](auto a) { return a.begin < size<WadInfo>(); })
+	   != std::end(m_file_offsets))
+	{ throw ArchiveError{"Data points to header"}; }
 
-	if(std::ranges::adjacent_find(m_file_offsets, [](auto a, auto b) { return a.end < b.begin; }) != std::end(m_file_offsets)) { throw ArchiveError{"Overlapping file offsets"}; }
+	if(std::ranges::adjacent_find(m_file_offsets, [](auto a, auto b) { return a.end < b.begin; })
+	   != std::end(m_file_offsets))
+	{ throw ArchiveError{"Overlapping file offsets"}; }
 }
 
 

@@ -14,8 +14,7 @@ namespace Wad64
 	class InputFile
 	{
 	public:
-		explicit InputFile(std::reference_wrapper<Archive const> archive,
-		                   std::string_view filename)
+		explicit InputFile(std::reference_wrapper<Archive const> archive, std::string_view filename)
 		    : m_file_ref{archive.get().fileReference()}
 		{
 			auto info = archive.get().stat(filename);

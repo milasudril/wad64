@@ -141,6 +141,35 @@ namespace Testcases
 		{
 		}
 	}
+
+	void wad64ArchiveLoadDirentryInHeader()
+	{
+		Wad64::WadInfo header{};
+		header.identification = Wad64::MagicNumber;
+		header.numlumps       = 1;
+		header.infotablesofs  = sizeof(header);
+
+		Wad64::MemBuffer buffer;
+		write(buffer, std::span{reinterpret_cast<std::byte const*>(&header), sizeof(header)}, 0);
+		assert(std::size(buffer.data) == sizeof(header));
+
+		Wad64::FileLump lump{};
+		lump.filepos = 5;
+		lump.size    = 4;
+		std::ranges::copy(std::string_view{"Foo"}, std::data(lump.name));
+		write(buffer,
+		      std::span{reinterpret_cast<std::byte const*>(&lump), sizeof(lump)},
+		      header.infotablesofs);
+
+		try
+		{
+			Wad64::Archive archive{std::ref(buffer)};
+			abort();
+		}
+		catch(...)
+		{
+		}
+	}
 }
 
 int main()
@@ -152,5 +181,5 @@ int main()
 	Testcases::wad64ArchiveLoadDirectoryInsideHeader();
 	Testcases::wad64ArchiveLoadBadLumpCount();
 	Testcases::wad64ArchiveLoadTruncatedDirectory();
-//	Testcases::wad64ArchiveLoadDirentryInHeader();
+	Testcases::wad64ArchiveLoadDirentryInHeader();
 }
