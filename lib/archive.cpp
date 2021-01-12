@@ -48,7 +48,7 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 
 		                lump.name.back() = '\0';  // make sure that lump name is zero terminated
 
-		                return std::pair{std::u8string{std::data(lump.name)},
+		                return std::pair{std::string{std::data(lump.name)},
 		                                 DirEntry{lump.filepos, lump.filepos + lump.size}};
 	                });
 
@@ -67,7 +67,7 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 
 
 #if 0
-Wad64::DirEntry Wad64::Archive::moveFile(std::u8string_view filename, int64_t new_size)
+Wad64::DirEntry Wad64::Archive::moveFile(std::string_view filename, int64_t new_size)
 {
 	auto i = m_directory.find(filename);
 

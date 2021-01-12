@@ -41,7 +41,7 @@ namespace Wad64
 
 		/** The name of this lump (encoded in UTF-8). The name must not contain a ascii nul char.
 		*/
-		std::array<char8_t, 256 - 16> name;
+		std::array<char, 256 - 16> name;
 	};
 }
 

@@ -6,7 +6,7 @@
 #include "./archive_error.hpp"
 
 Wad64::OutputFile::OutputFile(std::reference_wrapper<Archive> archive,
-                              std::u8string_view filename,
+                              std::string_view filename,
                               FileCreationMode mode)
     : m_write_offset{0}
     , m_end_offset{0}

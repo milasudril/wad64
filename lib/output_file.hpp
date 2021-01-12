@@ -43,7 +43,7 @@ namespace Wad64
 	{
 	public:
 		explicit OutputFile(std::reference_wrapper<Archive> archive,
-		                    std::u8string_view filename,
+		                    std::string_view filename,
 		                    FileCreationMode mode);
 
 		size_t write(std::span<std::byte const> buffer)
@@ -88,7 +88,7 @@ namespace Wad64
 		int64_t m_write_offset;
 		int64_t m_end_offset;
 		std::reference_wrapper<Archive> m_archive;
-		std::u8string m_filename;
+		std::string m_filename;
 	};
 }
 #endif

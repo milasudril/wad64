@@ -33,7 +33,7 @@ namespace Wad64
 
 		auto const& ls() const { return m_directory; }
 
-		std::optional<DirEntry> stat(std::u8string_view filename) const
+		std::optional<DirEntry> stat(std::string_view filename) const
 		{
 			if(auto i = m_directory.find(filename); i != std::end(m_directory))
 			{ return i->second; }
@@ -42,10 +42,10 @@ namespace Wad64
 
 		FileReference fileReference() const { return m_file_ref; }
 
-		DirEntry moveFile(std::u8string_view filename, int64_t new_size);
+		DirEntry moveFile(std::string_view filename, int64_t new_size);
 
 	private:
-		std::map<std::u8string, DirEntry, std::less<>> m_directory;
+		std::map<std::string, DirEntry, std::less<>> m_directory;
 		std::vector<DirEntry> m_file_offsets;
 		FileReference m_file_ref;
 	};
