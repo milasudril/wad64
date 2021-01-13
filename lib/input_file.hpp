@@ -59,7 +59,10 @@ namespace Wad64
 				return -1;
 			}
 			m_read_offset = offset_new;
+			return m_read_offset;
 		}
+
+		int64_t size() const { return m_end_offset - m_start_offset; }
 
 	private:
 		int64_t offsetRel(int64_t val) const { return val - m_start_offset; }
