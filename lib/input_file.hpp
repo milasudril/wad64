@@ -52,7 +52,14 @@ namespace Wad64
 		int64_t size() const { return Wad64::size(m_range);; }
 
 	private:
-		size_t read_impl(std::span<std::byte> buffer, int64_t offset) const;
+		size_t read_impl(std::span<std::byte> buffer, int64_t offset) const
+		{
+			auto const n = std::min(size() - offset, static_cast<int64_t>(buffer.size()));
+			if(n <= 0)
+			{ return 0; }
+
+			return m_file_ref.read(buffer.subspan(0, n), offset);
+		}
 
 		FileReference m_file_ref;
 		int64_t m_read_offset;
