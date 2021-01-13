@@ -33,6 +33,8 @@ namespace Wad64
 
 		size_t read(std::span<std::byte> buffer, int64_t offset) const
 		{
+			if(offset < 0)
+			{ return 0; }
 			return read_impl(buffer, offset + m_range.begin);
 		}
 
@@ -54,7 +56,7 @@ namespace Wad64
 	private:
 		size_t read_impl(std::span<std::byte> buffer, int64_t offset) const
 		{
-			auto const n = std::min(size() - offset, static_cast<int64_t>(buffer.size()));
+			auto const n = std::min(m_range.end - offset, static_cast<int64_t>(buffer.size()));
 			if(n <= 0)
 			{ return 0; }
 

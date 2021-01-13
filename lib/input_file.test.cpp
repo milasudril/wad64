@@ -70,6 +70,7 @@ namespace Testcases
 		Wad64::Archive archive{std::ref(src)};
 		Wad64::InputFile file{archive, "Kaka"};
 		assert(file.size() == 12);
+		assert(file.tell() == 0);
 	}
 
 	void wad64InputFileOpenReadFile()
@@ -77,9 +78,55 @@ namespace Testcases
 		auto src = generateData();
 		Wad64::Archive archive{std::ref(src)};
 		Wad64::InputFile file{archive, "Kaka"};
-
-
 		assert(file.size() == 12);
+
+		{
+			std::array<char, 32> buffer{};
+			std::ranges::fill(buffer, 'A');
+			auto orig = buffer;
+			auto const n1 = file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 32}, -5);
+			assert(n1 == 0);
+			assert(buffer == orig);
+		}
+
+		{
+			std::array<char, 32> buffer{};
+			std::ranges::fill(buffer, 'B');
+			auto orig = buffer;
+			auto const n1 = file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 32}, file.size());
+			assert(n1 == 0);
+			assert(buffer == orig);
+		}
+
+		{
+			std::array<char, 32> buffer{};
+			std::ranges::fill(buffer, 'C');
+			auto expected = buffer;
+			std::ranges::copy(std::string_view{"World"}, std::begin(expected));
+			auto const n1 = file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 32}, 7);
+			assert(n1 == 5);
+			assert(buffer == expected);
+		}
+
+		{
+			std::array<char, 32> buffer{};
+			std::ranges::fill(buffer, 'C');
+			auto expected = buffer;
+			std::ranges::copy(std::string_view{"lo, Wor"}, std::begin(expected));
+			auto const n1 = file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 7}, 3);
+			assert(n1 == 7);
+			assert(buffer == expected);
+		}
+
+		{
+			std::array<char, 32> buffer{};
+			std::ranges::fill(buffer, 'C');
+			auto expected = buffer;
+			std::ranges::copy(std::string_view{"Hello"}, std::begin(expected));
+			auto const n1 = file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 5}, 0);
+			assert(n1 == 5);
+			assert(buffer == expected);
+		}
 	}
 }
 
