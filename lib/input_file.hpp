@@ -26,19 +26,14 @@ namespace Wad64
 
 		size_t read(std::span<std::byte> buffer)
 		{
-			auto n = read(buffer, m_read_offset);
+			auto n = read_impl(buffer, m_read_offset);
 			m_read_offset += n;
 			return n;
 		}
 
 		size_t read(std::span<std::byte> buffer, int64_t offset) const
 		{
-			auto const bytes_left = m_range.end - offset;
-			if(bytes_left <= 0) { return 0; }
-
-			return m_file_ref.read(
-			    buffer.subspan(0, std::min(static_cast<size_t>(bytes_left), buffer.size())),
-			    m_range.begin + offset);
+			return read_impl(buffer, offset + m_range.begin);
 		}
 
 		int64_t seek(int64_t offset, SeekMode mode)
@@ -57,6 +52,8 @@ namespace Wad64
 		int64_t size() const { return Wad64::size(m_range);; }
 
 	private:
+		size_t read_impl(std::span<std::byte> buffer, int64_t offset) const;
+
 		FileReference m_file_ref;
 		int64_t m_read_offset;
 		ValidSeekRange m_range;
