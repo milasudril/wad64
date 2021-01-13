@@ -16,3 +16,7 @@ archive file format, with larger fields.
   can be emulated by follwing some convtion. For example, it is possible to us `/` in lump names.
 
 * Compression or encryption. It is possible to add compressed/encrypted lumps (in fact, a lump can contain anything), provided that the reader knows what compression/encryption scheme is used. The directory cannot be compressed/encryption.
+
+* File timestamps
+
+* Checksum
