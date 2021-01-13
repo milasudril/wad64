@@ -39,9 +39,10 @@ namespace Wad64
 		*/
 		int64_t size;
 
-		/** The name of this lump (encoded in UTF-8). The name must not contain a ascii nul char.
+		/** The name of this lump (encoded in UTF-8). The last character must be an ascii nul
+		 * character.
 		*/
-		std::array<char, 256 - 16> name;
+		std::array<char, 256> name;
 	};
 }
 
