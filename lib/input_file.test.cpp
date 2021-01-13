@@ -27,7 +27,7 @@ namespace
 		std::array<Wad64::FileLump, 4> lumps{};
 		std::array<std::string, 4> names{"Bar", "Bulle", "Foo", "Kaka"};
 		std::array<int, 4> start_ofs{0, 1, 3, 6};
-		std::array<int, 4> sizes{1, 2, 3, 5};
+		std::array<int, 4> sizes{1, 2, 3, 12};
 		constexpr auto startoffset = sizeof(header) + sizeof(lumps);
 		for(int k = 0; k < 4; ++k)
 		{
@@ -41,6 +41,9 @@ namespace
 		write(buffer,
 		      std::span{reinterpret_cast<std::byte const*>(&lumps), sizeof(lumps)},
 		      header.infotablesofs);
+
+		char const* hello = "Hello, World";
+		write(buffer, std::span{reinterpret_cast<std::byte const*>(hello), 12}, 6 + startoffset);
 		return buffer;
 	}
 }
@@ -66,7 +69,17 @@ namespace Testcases
 		auto src = generateData();
 		Wad64::Archive archive{std::ref(src)};
 		Wad64::InputFile file{archive, "Kaka"};
-		assert(file.size() == 5);
+		assert(file.size() == 12);
+	}
+
+	void wad64InputFileOpenReadFile()
+	{
+		auto src = generateData();
+		Wad64::Archive archive{std::ref(src)};
+		Wad64::InputFile file{archive, "Kaka"};
+
+
+		assert(file.size() == 12);
 	}
 }
 
@@ -74,5 +87,6 @@ int main()
 {
 	Testcases::wad64InputFileOpenNonExistingFile();
 	Testcases::wad64InputFileOpenExistingFile();
+	Testcases::wad64InputFileOpenReadFile();
 	return 0;
 }
