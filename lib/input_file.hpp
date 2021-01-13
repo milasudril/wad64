@@ -7,7 +7,7 @@
 
 #include "./archive.hpp"
 #include "./archive_error.hpp"
-#include "./seek_mode.hpp"
+#include "./seek.hpp"
 
 namespace Wad64
 {

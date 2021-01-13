@@ -7,7 +7,7 @@
 #define TEXPAINTER_WAD64_LIB_OUTPUTFILE_HPP
 
 #include "./archive.hpp"
-#include "./seek_mode.hpp"
+#include "./seek.hpp"
 #include "./temp_file.hpp"
 
 namespace Wad64
