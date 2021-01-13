@@ -22,6 +22,8 @@ namespace Wad64
 		int64_t end;
 	};
 
+	inline int64_t size(ValidSeekRange range) { return range.end - range.begin; }
+
 	inline int64_t offsetFromStart(int64_t val, ValidSeekRange range) { return val - range.begin; }
 
 	inline int64_t seek(int64_t current_pos, int64_t offset, ValidSeekRange range, SeekMode mode)

@@ -20,9 +20,8 @@ namespace Wad64
 			auto info = archive.get().stat(filename);
 			if(!info.has_value()) { throw ArchiveError{"File does not exist"}; }
 
-			m_start_offset = info->begin;
-			m_read_offset  = info->begin;
-			m_end_offset   = info->end;
+			m_range = ValidSeekRange{info->begin, info->end};
+			m_read_offset  = m_range.begin;
 		}
 
 		size_t read(std::span<std::byte> buffer)
@@ -34,43 +33,33 @@ namespace Wad64
 
 		size_t read(std::span<std::byte> buffer, int64_t offset) const
 		{
-			auto const bytes_left = m_end_offset - offset;
+			auto const bytes_left = m_range.end - offset;
 			if(bytes_left <= 0) { return 0; }
 
 			return m_file_ref.read(
 			    buffer.subspan(0, std::min(static_cast<size_t>(bytes_left), buffer.size())),
-			    m_start_offset + offset);
+			    m_range.begin + offset);
 		}
 
 		int64_t seek(int64_t offset, SeekMode mode)
 		{
-			auto offset_new = m_read_offset;
-			switch(mode)
-			{
-				case SeekMode::Set: offset_new = m_start_offset + offset; break;
-
-				case SeekMode::Cur: offset_new = m_read_offset + offset; break;
-
-				case SeekMode::End: offset_new = m_end_offset + offset; break;
-			}
-			if(offsetRel(offset_new) < 0)
-			{
-				errno = EINVAL;
-				return -1;
-			}
-			m_read_offset = offset_new;
-			return m_read_offset;
+			auto res = Wad64::seek(m_read_offset, offset, m_range, mode);
+			if(res == -1)
+			{ return -1; }
+			return m_read_offset - m_range.begin;
 		}
 
-		int64_t size() const { return m_end_offset - m_start_offset; }
+		int64_t tell() const
+		{
+			return m_read_offset - m_range.begin;
+		}
+
+		int64_t size() const { return Wad64::size(m_range);; }
 
 	private:
-		int64_t offsetRel(int64_t val) const { return val - m_start_offset; }
-
 		FileReference m_file_ref;
-		int64_t m_start_offset;
 		int64_t m_read_offset;
-		int64_t m_end_offset;
+		ValidSeekRange m_range;
 	};
 }
 
