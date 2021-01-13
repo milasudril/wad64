@@ -20,8 +20,8 @@ namespace Wad64
 			auto info = archive.get().stat(filename);
 			if(!info.has_value()) { throw ArchiveError{"File does not exist"}; }
 
-			m_range = ValidSeekRange{info->begin, info->end};
-			m_read_offset  = m_range.begin;
+			m_range       = ValidSeekRange{info->begin, info->end};
+			m_read_offset = m_range.begin;
 		}
 
 		size_t read(std::span<std::byte> buffer)
@@ -33,32 +33,31 @@ namespace Wad64
 
 		size_t read(std::span<std::byte> buffer, int64_t offset) const
 		{
-			if(offset < 0)
-			{ return 0; }
+			if(offset < 0) { return 0; }
 			return read_impl(buffer, offset + m_range.begin);
 		}
 
 		int64_t seek(int64_t offset, SeekMode mode)
 		{
 			auto res = Wad64::seek(m_read_offset, offset, m_range, mode);
-			if(res == -1)
-			{ return -1; }
+			if(res == -1) { return -1; }
+			m_read_offset = res;
 			return m_read_offset - m_range.begin;
 		}
 
-		int64_t tell() const
+		int64_t tell() const { return m_read_offset - m_range.begin; }
+
+		int64_t size() const
 		{
-			return m_read_offset - m_range.begin;
+			return Wad64::size(m_range);
+			;
 		}
-
-		int64_t size() const { return Wad64::size(m_range);; }
 
 	private:
 		size_t read_impl(std::span<std::byte> buffer, int64_t offset) const
 		{
 			auto const n = std::min(m_range.end - offset, static_cast<int64_t>(buffer.size()));
-			if(n <= 0)
-			{ return 0; }
+			if(n <= 0) { return 0; }
 
 			return m_file_ref.read(buffer.subspan(0, n), offset);
 		}

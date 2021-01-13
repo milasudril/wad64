@@ -61,7 +61,8 @@ namespace Testcases
 			abort();
 		}
 		catch(...)
-		{}
+		{
+		}
 	}
 
 	void wad64InputFileOpenExistingFile()
@@ -73,7 +74,7 @@ namespace Testcases
 		assert(file.tell() == 0);
 	}
 
-	void wad64InputFileOpenReadFile()
+	void wad64InputFileRead()
 	{
 		auto src = generateData();
 		Wad64::Archive archive{std::ref(src)};
@@ -84,7 +85,8 @@ namespace Testcases
 			std::array<char, 32> buffer{};
 			std::ranges::fill(buffer, 'A');
 			auto orig = buffer;
-			auto const n1 = file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 32}, -5);
+			auto const n1 =
+			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 32}, -5);
 			assert(n1 == 0);
 			assert(buffer == orig);
 		}
@@ -92,8 +94,9 @@ namespace Testcases
 		{
 			std::array<char, 32> buffer{};
 			std::ranges::fill(buffer, 'B');
-			auto orig = buffer;
-			auto const n1 = file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 32}, file.size());
+			auto orig     = buffer;
+			auto const n1 = file.read(
+			    std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 32}, file.size());
 			assert(n1 == 0);
 			assert(buffer == orig);
 		}
@@ -103,7 +106,8 @@ namespace Testcases
 			std::ranges::fill(buffer, 'C');
 			auto expected = buffer;
 			std::ranges::copy(std::string_view{"World"}, std::begin(expected));
-			auto const n1 = file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 32}, 7);
+			auto const n1 =
+			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 32}, 7);
 			assert(n1 == 5);
 			assert(buffer == expected);
 		}
@@ -113,7 +117,8 @@ namespace Testcases
 			std::ranges::fill(buffer, 'C');
 			auto expected = buffer;
 			std::ranges::copy(std::string_view{"lo, Wor"}, std::begin(expected));
-			auto const n1 = file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 7}, 3);
+			auto const n1 =
+			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 7}, 3);
 			assert(n1 == 7);
 			assert(buffer == expected);
 		}
@@ -123,9 +128,106 @@ namespace Testcases
 			std::ranges::fill(buffer, 'C');
 			auto expected = buffer;
 			std::ranges::copy(std::string_view{"Hello"}, std::begin(expected));
-			auto const n1 = file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 5}, 0);
+			auto const n1 =
+			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 5}, 0);
 			assert(n1 == 5);
 			assert(buffer == expected);
+		}
+	}
+
+	void wad64InputFileReadUpdateOffset()
+	{
+		auto src = generateData();
+		Wad64::Archive archive{std::ref(src)};
+		Wad64::InputFile file{archive, "Kaka"};
+		assert(file.size() == 12);
+
+		{
+			std::array<char, 5> buffer{};
+			std::array<char, 5> expected{};
+			std::ranges::copy(std::string_view{"Hello"}, std::begin(expected));
+
+			auto const n1 =
+			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 5});
+			assert(n1 == 5);
+			assert(buffer == expected);
+			assert(file.tell() == 5);
+		}
+
+		{
+			std::array<char, 7> buffer{};
+			std::array<char, 7> expected{};
+			std::ranges::copy(std::string_view{", World"}, std::begin(expected));
+
+			auto const n1 =
+			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 7});
+			assert(n1 == 7);
+			assert(buffer == expected);
+			assert(file.tell() == 12);
+		}
+	}
+
+	void wad64InputFileSeekAndRead()
+	{
+		auto src = generateData();
+		Wad64::Archive archive{std::ref(src)};
+		Wad64::InputFile file{archive, "Kaka"};
+		assert(file.size() == 12);
+
+
+		{
+			auto const res = file.seek(5, Wad64::SeekMode::Set);
+			assert(res == 5);
+
+			std::array<char, 7> buffer{};
+			std::array<char, 7> expected{};
+			std::ranges::copy(std::string_view{", World"}, std::begin(expected));
+
+			auto const n1 =
+			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 7});
+			assert(n1 == 7);
+			assert(buffer == expected);
+			assert(file.tell() == 12);
+		}
+	}
+
+	void wad64InputFileSeekBeyondEof()
+	{
+		auto src = generateData();
+		Wad64::Archive archive{std::ref(src)};
+		Wad64::InputFile file{archive, "Kaka"};
+		assert(file.size() == 12);
+
+
+		{
+			auto const res = file.seek(5, Wad64::SeekMode::End);
+			assert(res == file.size() + 5);
+
+			std::array<char, 32> buffer{};
+			std::ranges::fill(buffer, 'A');
+			auto orig = buffer;
+
+			auto const n1 =
+			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 1});
+			assert(n1 == 0);
+			assert(buffer == orig);
+			assert(file.tell() == res);
+		}
+	}
+
+	void wad64InputFileSeekBeforeEof()
+	{
+		auto src = generateData();
+		Wad64::Archive archive{std::ref(src)};
+		Wad64::InputFile file{archive, "Kaka"};
+		assert(file.size() == 12);
+
+		{
+			(void)file.seek(5, Wad64::SeekMode::Set);
+			assert(file.tell() == 5);
+			auto const res = file.seek(-1, Wad64::SeekMode::Set);
+			assert(res == -1);
+			assert(file.tell() == 5);
 		}
 	}
 }
@@ -134,6 +236,10 @@ int main()
 {
 	Testcases::wad64InputFileOpenNonExistingFile();
 	Testcases::wad64InputFileOpenExistingFile();
-	Testcases::wad64InputFileOpenReadFile();
+	Testcases::wad64InputFileRead();
+	Testcases::wad64InputFileReadUpdateOffset();
+	Testcases::wad64InputFileSeekAndRead();
+	Testcases::wad64InputFileSeekBeyondEof();
+	Testcases::wad64InputFileSeekBeforeEof();
 	return 0;
 }

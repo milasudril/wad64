@@ -2,8 +2,8 @@
 //@	 "targets":[{"name":"seek.hpp","type":"include"}]
 //@	}
 
-#ifndef TEXPAINTER_WAD64_LIB_SEEKMODE_HPP
-#define TEXPAINTER_WAD64_LIB_SEEKMODE_HPP
+#ifndef TEXPAINTER_WAD64_LIB_SEEK_HPP
+#define TEXPAINTER_WAD64_LIB_SEEK_HPP
 
 #include <cerrno>
 

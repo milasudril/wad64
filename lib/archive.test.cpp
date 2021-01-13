@@ -260,7 +260,8 @@ namespace Testcases
 			abort();
 		}
 		catch(...)
-		{}
+		{
+		}
 	}
 
 	void wad64ArchiveLoadOverlappingDirentries()
@@ -298,7 +299,8 @@ namespace Testcases
 			abort();
 		}
 		catch(...)
-		{}
+		{
+		}
 	}
 
 	void wad64ArchiveLoadDirectoryDirNotFirst()
