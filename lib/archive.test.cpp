@@ -80,27 +80,6 @@ namespace Testcases
 		}
 	}
 
-	void wad64ArchiveLoadDirectoryInsideHeader()
-	{
-		Wad64::WadInfo header{};
-		header.identification = Wad64::MagicNumber;
-		header.numlumps       = 0;
-		header.infotablesofs  = sizeof(header) - 1;
-
-		Wad64::MemBuffer buffer;
-		write(buffer, std::span{reinterpret_cast<std::byte const*>(&header), sizeof(header)}, 0);
-		assert(std::size(buffer.data) == sizeof(header));
-
-		try
-		{
-			Wad64::Archive archive{std::ref(buffer)};
-			abort();
-		}
-		catch(...)
-		{
-		}
-	}
-
 	void wad64ArchiveLoadDirectorySizeOverflow()
 	{
 		Wad64::WadInfo header{};
@@ -122,27 +101,6 @@ namespace Testcases
 		}
 		catch(...)
 		{}
-	}
-
-	void wad64ArchiveLoadBadLumpCount()
-	{
-		Wad64::WadInfo header{};
-		header.identification = Wad64::MagicNumber;
-		header.numlumps       = -1;
-		header.infotablesofs  = sizeof(header);
-
-		Wad64::MemBuffer buffer;
-		write(buffer, std::span{reinterpret_cast<std::byte const*>(&header), sizeof(header)}, 0);
-		assert(std::size(buffer.data) == sizeof(header));
-
-		try
-		{
-			Wad64::Archive archive{std::ref(buffer)};
-			abort();
-		}
-		catch(...)
-		{
-		}
 	}
 
 	void wad64ArchiveLoadTruncatedDirectory()
@@ -386,13 +344,12 @@ int main()
 	Testcases::wad64ArchiveLoadEmptyWithHeader();
 	Testcases::wad64ArchiveLoadTruncatedHeader();
 	Testcases::wad64ArchiveLoadBadMagicNumber();
-	Testcases::wad64ArchiveLoadDirectoryInsideHeader();
 	Testcases::wad64ArchiveLoadDirectorySizeOverflow();
-	Testcases::wad64ArchiveLoadBadLumpCount();
 	Testcases::wad64ArchiveLoadTruncatedDirectory();
 	Testcases::wad64ArchiveLoadDirentryInHeader();
 	Testcases::wad64ArchiveLoadDirectory();
 	Testcases::wad64ArchiveLoadDirentryInDirectory();
 	Testcases::wad64ArchiveLoadOverlappingDirentries();
 	Testcases::wad64ArchiveLoadDirectoryDirNotFirst();
+	return 0;
 }

@@ -27,8 +27,7 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 
 	if(n_read != sizeof(info)) { throw ArchiveError{"Invalid Wad64 file"}; }
 
-	if(info.identification != MagicNumber || info.numlumps < 0
-	   || info.infotablesofs < size<WadInfo>())
+	if(validate(info) != WadInfo::ValidationResult::NoError)
 	{ throw ArchiveError{"Invalid Wad64 file"}; }
 
 	static_assert(std::endian::native == std::endian::little);

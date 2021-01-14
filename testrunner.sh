@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 "$3"
 output_dir="$1/$2"
 mv *.gcda $output_dir/.

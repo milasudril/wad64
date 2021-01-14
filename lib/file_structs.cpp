@@ -15,12 +15,29 @@ namespace
 	}
 }
 
+Wad64::WadInfo::ValidationResult Wad64::validate(WadInfo const& info)
+{
+	using ValidationResult = WadInfo::ValidationResult;
+
+	if(info.identification != MagicNumber)
+	{ return ValidationResult::BadIdentifier; }
+
+	if(info.numlumps < 0)
+	{ return ValidationResult::NegativeSize; }
+
+	if(info.infotablesofs < size<WadInfo>())
+	{ return ValidationResult::BadPosition; }
+
+	return ValidationResult::NoError;
+}
+
+
 Wad64::FileLump::ValidationResult Wad64::validate(FileLump const& lump)
 {
 	using ValidationResult = FileLump::ValidationResult;
 
 	if(lump.filepos < size<WadInfo>())
-	{ return ValidationResult::BadPostion; }
+	{ return ValidationResult::BadPosition; }
 
 	if(lump.size < 0)
 	{ return ValidationResult::NegativeSize; }
