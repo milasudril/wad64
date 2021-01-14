@@ -101,6 +101,29 @@ namespace Testcases
 		}
 	}
 
+	void wad64ArchiveLoadDirectorySizeOverflow()
+	{
+		Wad64::WadInfo header{};
+		header.identification = Wad64::MagicNumber;
+		constexpr size_t N = std::numeric_limits<size_t>::max()/sizeof(Wad64::FileLump) + 2;
+		static_assert(N * sizeof(Wad64::FileLump) < N);
+		static_assert(N < static_cast<uint64_t>(std::numeric_limits<int64_t>::max()));
+		header.numlumps       = static_cast<int64_t>(N);
+		header.infotablesofs  = sizeof(header);
+
+		Wad64::MemBuffer buffer;
+		write(buffer, std::span{reinterpret_cast<std::byte const*>(&header), sizeof(header)}, 0);
+		assert(std::size(buffer.data) == sizeof(header));
+
+		try
+		{
+			Wad64::Archive archive{std::ref(buffer)};
+			abort();
+		}
+		catch(...)
+		{}
+	}
+
 	void wad64ArchiveLoadBadLumpCount()
 	{
 		Wad64::WadInfo header{};
@@ -364,6 +387,7 @@ int main()
 	Testcases::wad64ArchiveLoadTruncatedHeader();
 	Testcases::wad64ArchiveLoadBadMagicNumber();
 	Testcases::wad64ArchiveLoadDirectoryInsideHeader();
+	Testcases::wad64ArchiveLoadDirectorySizeOverflow();
 	Testcases::wad64ArchiveLoadBadLumpCount();
 	Testcases::wad64ArchiveLoadTruncatedDirectory();
 	Testcases::wad64ArchiveLoadDirentryInHeader();
