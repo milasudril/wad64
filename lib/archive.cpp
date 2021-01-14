@@ -70,6 +70,17 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 	{ throw ArchiveError{"Overlapping file offsets"}; }
 }
 
+bool Wad64::Archive::remove(std::string_view filename)
+{
+	auto const i_dir = m_directory.find(filename);
+	if(i_dir == std::end(m_directory))
+	{ return false; }
+
+	auto const i_offset = std::ranges::find(m_file_offsets, i_dir->second);
+	m_file_offsets.erase(i_offset);
+	return true;
+}
+
 
 #if 0
 Wad64::DirEntry Wad64::Archive::moveFile(std::string_view filename, int64_t new_size)

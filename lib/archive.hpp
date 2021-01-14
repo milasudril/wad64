@@ -19,6 +19,8 @@ namespace Wad64
 	{
 		int64_t begin;
 		int64_t end;
+
+		auto operator<=>(DirEntry const& a) const = default;
 	};
 
 	class Archive
@@ -39,6 +41,8 @@ namespace Wad64
 			{ return i->second; }
 			return std::optional<DirEntry>{};
 		}
+
+		bool remove(std::string_view filename);
 
 		FileReference fileReference() const { return m_file_ref; }
 
