@@ -52,7 +52,7 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 
 		int64_t dummy{};
 		if(__builtin_add_overflow(item.filepos, item.size, &dummy))
-		{ throw ArchiveError{"Computet EOF would be beyond addrasable range"}; }
+		{ throw ArchiveError{"Computed EOF would be beyond addrasable range"}; }
 
 		// TODO: Implement proper validation (name should be utf-8)
 		auto i_end = std::ranges::find(item.name, '\0');
