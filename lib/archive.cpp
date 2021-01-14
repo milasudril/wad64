@@ -36,6 +36,12 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 	// NOTE: The implementation below assumes that the infotables fits in virtual memory
 	static_assert(sizeof(std::size_t) == sizeof(int64_t));
 
+	if(info.numlumps == 0)
+	{
+		m_file_offsets.push_back(DirEntry{info.infotablesofs, info.infotablesofs});
+		return;
+	}
+
 	//	TODO: should use make_unique_for_overwrite but it is not yet in gcc
 	auto const direntries = std::make_unique<FileLump[]>(info.numlumps);
 	auto const dir_range = std::span{direntries.get(), static_cast<size_t>(info.numlumps)};
