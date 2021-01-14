@@ -6,6 +6,7 @@
 
 #include <bit>
 #include <algorithm>
+#include <memory>
 
 namespace
 {
@@ -20,7 +21,7 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 {
 	WadInfo info;
 	errno = 0;
-	auto const n_read =
+	auto n_read =
 	    m_file_ref.read(std::span{reinterpret_cast<std::byte*>(&info), sizeof(info)}, 0);
 	if(n_read == 0 || errno == EBADF) { return; }
 
@@ -34,24 +35,38 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 
 	// NOTE: The implementation below assumes that the infotables fits in virtual memory
 	static_assert(sizeof(std::size_t) == sizeof(int64_t));
-	std::generate_n(std::inserter(m_directory, std::end(m_directory)),
-	                info.numlumps,
-	                [src = m_file_ref, offset = info.infotablesofs]() mutable {
-		                FileLump lump;
-		                auto const n_read = src.read(
-		                    std::span{reinterpret_cast<std::byte*>(&lump), sizeof(lump)}, offset);
 
-		                if(n_read != sizeof(lump))
-		                { throw ArchiveError{"Failed to load infotables. File truncated?"}; }
+	//	TODO: should use make_unique_for_overwrite but it is not yet in gcc
+	auto const direntries = std::make_unique<FileLump[]>(info.numlumps);
+	auto const dir_range = std::span{direntries.get(), static_cast<size_t>(info.numlumps)};
+	n_read = m_file_ref.read(std::as_writable_bytes(dir_range), info.infotablesofs);
+	if(n_read != info.numlumps*sizeof(FileLump))
+	{ throw ArchiveError{"Failed to load infotables. File truncated?"}; }
 
-		                offset += n_read;
+	std::ranges::for_each(dir_range, [](auto const& item) {
+		if(item.filepos < size<WadInfo>())
+		{ throw ArchiveError{"A data points to header"}; }
 
-		                lump.name.back() = '\0';  // make sure that lump name is zero terminated
+		if(item.size < 0)
+		{ throw ArchiveError{"File sizes cannot be negative"}; }
 
-		                //TODO: validate lump.name as UTF-8
-		                return std::pair{std::string{std::data(lump.name)},
-		                                 DirEntry{lump.filepos, lump.filepos + lump.size}};
-	                });
+		int64_t dummy{};
+		if(__builtin_add_overflow(item.filepos, item.size, &dummy))
+		{ throw ArchiveError{"Computet EOF would be beyond addrasable range"}; }
+
+		// TODO: Implement proper validation (name should be utf-8)
+		auto i_end = std::ranges::find(item.name, '\0');
+		if(i_end == std::end(item.name))
+		{ throw ArchiveError{"Archive contains an invalid filename"}; }
+
+		i_end = std::find_if_not(i_end, std::end(item.name), [](auto ch){return ch == '\0';});
+		if(i_end != std::end(item.name))
+		{ throw ArchiveError{"Archive contains an invalid filename"}; }
+	});
+
+	std::ranges::transform(dir_range, std::inserter(m_directory, std::end(m_directory)), [](auto const& item) {
+		return std::pair{std::string{std::data(item.name)}, DirEntry{item.filepos, item.filepos + item.size}};
+	});
 
 	m_file_offsets.reserve(info.numlumps + 1);
 	std::ranges::transform(m_directory, std::back_inserter(m_file_offsets), [](auto const& item) {
