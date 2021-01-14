@@ -1,4 +1,7 @@
-//@	{"targets":[{"name":"file_structs.hpp","type":"include"}]}
+//@	{
+//@	 "targets":[{"name":"file_structs.hpp","type":"include"}]
+//@	,"dependencies_extra":[{"ref":"file_structs.o","rel":"implementation"}]
+//@	}
 
 #ifndef TEXPAINTER_WAD64_LIB_FILESTRUCTS_HPP
 #define TEXPAINTER_WAD64_LIB_FILESTRUCTS_HPP
@@ -43,7 +46,11 @@ namespace Wad64
 		 * character.
 		*/
 		std::array<char, 256> name;
+
+		enum class ValidationResult:int {NoError, BadPostion, NegativeSize, EndPointerOutOfRange, IllegalFilename};
 	};
+
+	FileLump::ValidationResult validate(FileLump const& lump);
 }
 
 #endif

@@ -49,25 +49,10 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 	if(n_read != info.numlumps*sizeof(FileLump))
 	{ throw ArchiveError{"Failed to load infotables. File truncated?"}; }
 
-	std::ranges::for_each(dir_range, [](auto const& item) {
-		if(item.filepos < size<WadInfo>())
-		{ throw ArchiveError{"A data points to header"}; }
-
-		if(item.size < 0)
-		{ throw ArchiveError{"File sizes cannot be negative"}; }
-
-		int64_t dummy{};
-		if(__builtin_add_overflow(item.filepos, item.size, &dummy))
-		{ throw ArchiveError{"Computed EOF would be beyond addrasable range"}; }
-
-		// TODO: Implement proper validation (name should be utf-8)
-		auto i_end = std::ranges::find(item.name, '\0');
-		if(i_end == std::end(item.name))
-		{ throw ArchiveError{"Archive contains an invalid filename"}; }
-
-		i_end = std::find_if_not(i_end, std::end(item.name), [](auto ch){return ch == '\0';});
-		if(i_end != std::end(item.name))
-		{ throw ArchiveError{"Archive contains an invalid filename"}; }
+	std::ranges::for_each(dir_range, []<class T>(T const& item) {
+		using ValidationResult = typename T::ValidationResult;
+		if(validate(item) != ValidationResult::NoError)
+		{ throw ArchiveError{"Invalid WAD64 archive"}; }
 	});
 
 	std::ranges::transform(dir_range, std::inserter(m_directory, std::end(m_directory)), [](auto const& item) {
