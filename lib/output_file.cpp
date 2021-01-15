@@ -8,21 +8,12 @@
 Wad64::OutputFile::OutputFile(std::reference_wrapper<Archive> archive,
                               std::string_view filename,
                               FileCreationMode mode)
-    : m_write_offset{0}
-    , m_end_offset{0}
-    , m_archive{archive}
-    , m_filename{filename}
+    : m_archive{archive}
+    , m_reservation{mode.creationAllowed() ? archive.get().insertFile(filename)
+                                           : archive.get().use(filename)}
 {
-	auto info = archive.get().stat(filename);
-	if(info.has_value() && !mode.overwriteAllowed())
-	{ throw ArchiveError{"Tried to overwrite already existing entry"}; }
+	if(!m_reservation.valid()) { throw ArchiveError{"Tried to write to non-existing entry"}; }
 
-	if(!info.has_value() && !mode.creationAllowed())
-	{ throw ArchiveError{"Tried to create a new entry"}; }
-}
-
-Wad64::OutputFile::~OutputFile()
-{
-	auto const entry = m_archive.get().moveFile(m_filename, m_end_offset);
-	m_tmp_file.copyTo(m_archive.get().fileReference(), entry.begin);
+	if(!mode.overwriteAllowed() && !m_reservation.fileInserted())
+	{ throw ArchiveError{"Tried to overwrite an existing entry"}; }
 }

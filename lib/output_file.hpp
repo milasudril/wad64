@@ -46,49 +46,16 @@ namespace Wad64
 		                    std::string_view filename,
 		                    FileCreationMode mode);
 
-		size_t write(std::span<std::byte const> buffer)
-		{
-			auto n = write(buffer, m_write_offset);
-			m_write_offset += n;
-			return n;
-		}
+		size_t write(std::span<std::byte const> buffer);
 
-		size_t write(std::span<std::byte const> buffer, int64_t offset)
-		{
-			auto n       = m_tmp_file.write(buffer, offset);
-			m_end_offset = std::max(offset + n, static_cast<size_t>(m_end_offset));
-			return n;
-		}
+		size_t write(std::span<std::byte const> buffer, int64_t offset);
 
 		~OutputFile();
 
-		int64_t seek(int64_t offset, SeekMode mode)
-		{
-			auto offset_new = m_write_offset;
-			switch(mode)
-			{
-				case SeekMode::Set: offset_new = 0 + offset; break;
-
-				case SeekMode::Cur: offset_new = m_write_offset + offset; break;
-
-				case SeekMode::End: offset_new = m_end_offset + offset; break;
-			}
-			if(offsetRel(offset_new) < 0)
-			{
-				errno = EINVAL;
-				return -1;
-			}
-			m_write_offset = offset_new;
-		}
-
 	private:
-		int64_t offsetRel(int64_t val) const { return val - 0; }
 		TempFile m_tmp_file;
-
-		int64_t m_write_offset;
-		int64_t m_end_offset;
 		std::reference_wrapper<Archive> m_archive;
-		std::string m_filename;
+		Archive::FilenameReservation m_reservation;
 	};
 }
 #endif

@@ -25,7 +25,32 @@ namespace Wad64
 
 	class Archive
 	{
+		using Directory = std::map<std::string, DirEntry, std::less<>>;
+
 	public:
+		class FilenameReservation
+		{
+		public:
+			bool fileInserted() const { return m_value.second; }
+			bool valid() const { return m_valid; }
+
+		private:
+			friend class Archive;
+
+			FilenameReservation(): m_valid{false} {}
+
+			explicit FilenameReservation(Directory::iterator i): m_valid{true}, m_value{i, false} {}
+
+			explicit FilenameReservation(std::pair<Directory::iterator, bool>&& val)
+			    : m_valid{true}
+			    , m_value{std::move(val)}
+			{
+			}
+
+			bool m_valid;
+			std::pair<Directory::iterator, bool> m_value;
+		};
+
 		template<RandomAccessFile File>
 		explicit Archive(std::reference_wrapper<File> f): Archive{FileReference{f}}
 		{
@@ -46,10 +71,21 @@ namespace Wad64
 
 		FileReference fileReference() const { return m_file_ref; }
 
-		DirEntry moveFile(std::string_view filename, int64_t new_size);
+		FilenameReservation insertFile(std::string_view filename)
+		{
+			return FilenameReservation{m_directory.insert(std::pair{filename, DirEntry{}})};
+		}
+
+		FilenameReservation use(std::string_view filename)
+		{
+			auto const i = m_directory.find(filename);
+			return i != std::end(m_directory) ? FilenameReservation{i} : FilenameReservation{};
+		}
+
+		void commitContent(FilenameReservation reservation, int64_t lump_size);
 
 	private:
-		std::map<std::string, DirEntry, std::less<>> m_directory;
+		Directory m_directory;
 		std::vector<DirEntry> m_file_offsets;
 		FileReference m_file_ref;
 	};

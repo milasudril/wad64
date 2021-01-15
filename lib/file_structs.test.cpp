@@ -18,8 +18,8 @@ namespace Testcases
 	{
 		Wad64::WadInfo info{};
 		info.identification[0] = 'A';
-		info.numlumps = 1;
-		info.infotablesofs = sizeof(Wad64::WadInfo);
+		info.numlumps          = 1;
+		info.infotablesofs     = sizeof(Wad64::WadInfo);
 		assert(validate(info) == Wad64::WadInfo::ValidationResult::BadIdentifier);
 	}
 
@@ -27,8 +27,8 @@ namespace Testcases
 	{
 		Wad64::WadInfo info{};
 		info.identification = Wad64::MagicNumber;
-		info.numlumps = -1;
-		info.infotablesofs = sizeof(Wad64::WadInfo);
+		info.numlumps       = -1;
+		info.infotablesofs  = sizeof(Wad64::WadInfo);
 		assert(validate(info) == Wad64::WadInfo::ValidationResult::NegativeSize);
 	}
 
@@ -36,8 +36,8 @@ namespace Testcases
 	{
 		Wad64::WadInfo info{};
 		info.identification = Wad64::MagicNumber;
-		info.numlumps = 1;
-		info.infotablesofs = sizeof(Wad64::WadInfo) - 1;
+		info.numlumps       = 1;
+		info.infotablesofs  = sizeof(Wad64::WadInfo) - 1;
 		assert(validate(info) == Wad64::WadInfo::ValidationResult::BadPosition);
 	}
 
@@ -45,8 +45,8 @@ namespace Testcases
 	{
 		Wad64::WadInfo info{};
 		info.identification = Wad64::MagicNumber;
-		info.numlumps = 1;
-		info.infotablesofs = sizeof(Wad64::WadInfo);
+		info.numlumps       = 1;
+		info.infotablesofs  = sizeof(Wad64::WadInfo);
 		assert(validate(info) == Wad64::WadInfo::ValidationResult::NoError);
 	}
 
@@ -54,7 +54,7 @@ namespace Testcases
 	{
 		Wad64::FileLump test{};
 		test.filepos = sizeof(Wad64::WadInfo) - 1;
-		test.size = 0;
+		test.size    = 0;
 		std::ranges::copy(std::string_view{"foobar"}, std::begin(test.name));
 
 		assert(validate(test) == Wad64::FileLump::ValidationResult::BadPosition);
@@ -64,7 +64,7 @@ namespace Testcases
 	{
 		Wad64::FileLump test{};
 		test.filepos = sizeof(Wad64::WadInfo);
-		test.size = -1;
+		test.size    = -1;
 		std::ranges::copy(std::string_view{"foobar"}, std::begin(test.name));
 
 		assert(validate(test) == Wad64::FileLump::ValidationResult::NegativeSize);
@@ -74,7 +74,7 @@ namespace Testcases
 	{
 		Wad64::FileLump test{};
 		test.filepos = sizeof(Wad64::WadInfo);
-		test.size = std::numeric_limits<int64_t>::max() - 1;
+		test.size    = std::numeric_limits<int64_t>::max() - 1;
 		std::ranges::copy(std::string_view{"foobar"}, std::begin(test.name));
 
 		assert(validate(test) == Wad64::FileLump::ValidationResult::EndPointerOutOfRange);
@@ -84,7 +84,7 @@ namespace Testcases
 	{
 		Wad64::FileLump test{};
 		test.filepos = sizeof(Wad64::WadInfo);
-		test.size = 123;
+		test.size    = 123;
 		std::ranges::fill(test.name, 'A');
 
 		assert(validate(test) == Wad64::FileLump::ValidationResult::IllegalFilename);
@@ -94,10 +94,10 @@ namespace Testcases
 	{
 		Wad64::FileLump test{};
 		test.filepos = sizeof(Wad64::WadInfo);
-		test.size = 123;
+		test.size    = 123;
 		std::ranges::fill(test.name, 'A');
 		test.name.back() = '\0';
-		test.name[35] = '\0';
+		test.name[35]    = '\0';
 
 		assert(validate(test) == Wad64::FileLump::ValidationResult::IllegalFilename);
 	}
@@ -106,7 +106,7 @@ namespace Testcases
 	{
 		Wad64::FileLump test{};
 		test.filepos = sizeof(Wad64::WadInfo);
-		test.size = 123;
+		test.size    = 123;
 		std::ranges::copy(std::string_view{"foobar"}, std::begin(test.name));
 
 		assert(validate(test) == Wad64::FileLump::ValidationResult::NoError);

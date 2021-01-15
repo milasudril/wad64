@@ -84,11 +84,11 @@ namespace Testcases
 	{
 		Wad64::WadInfo header{};
 		header.identification = Wad64::MagicNumber;
-		constexpr size_t N = std::numeric_limits<size_t>::max()/sizeof(Wad64::FileLump) + 2;
+		constexpr size_t N    = std::numeric_limits<size_t>::max() / sizeof(Wad64::FileLump) + 2;
 		static_assert(N * sizeof(Wad64::FileLump) < N);
 		static_assert(N < static_cast<uint64_t>(std::numeric_limits<int64_t>::max()));
-		header.numlumps       = static_cast<int64_t>(N);
-		header.infotablesofs  = sizeof(header);
+		header.numlumps      = static_cast<int64_t>(N);
+		header.infotablesofs = sizeof(header);
 
 		Wad64::MemBuffer buffer;
 		write(buffer, std::span{reinterpret_cast<std::byte const*>(&header), sizeof(header)}, 0);
@@ -100,7 +100,8 @@ namespace Testcases
 			abort();
 		}
 		catch(...)
-		{}
+		{
+		}
 	}
 
 	void wad64ArchiveLoadTruncatedDirectory()

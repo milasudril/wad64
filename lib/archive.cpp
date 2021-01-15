@@ -20,9 +20,8 @@ namespace
 Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 {
 	WadInfo info;
-	errno = 0;
-	auto n_read =
-	    m_file_ref.read(std::span{reinterpret_cast<std::byte*>(&info), sizeof(info)}, 0);
+	errno       = 0;
+	auto n_read = m_file_ref.read(std::span{reinterpret_cast<std::byte*>(&info), sizeof(info)}, 0);
 	if(n_read == 0 || errno == EBADF) { return; }
 
 	if(n_read != sizeof(info)) { throw ArchiveError{"Invalid Wad64 file"}; }
@@ -43,9 +42,9 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 
 	//	TODO: should use make_unique_for_overwrite but it is not yet in gcc
 	auto const direntries = std::make_unique<FileLump[]>(info.numlumps);
-	auto const dir_range = std::span{direntries.get(), static_cast<size_t>(info.numlumps)};
-	n_read = m_file_ref.read(std::as_writable_bytes(dir_range), info.infotablesofs);
-	if(n_read != info.numlumps*sizeof(FileLump))
+	auto const dir_range  = std::span{direntries.get(), static_cast<size_t>(info.numlumps)};
+	n_read                = m_file_ref.read(std::as_writable_bytes(dir_range), info.infotablesofs);
+	if(n_read != info.numlumps * sizeof(FileLump))
 	{ throw ArchiveError{"Failed to load infotables. File truncated?"}; }
 
 	std::ranges::for_each(dir_range, []<class T>(T const& item) {
@@ -54,9 +53,11 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 		{ throw ArchiveError{"Invalid WAD64 archive"}; }
 	});
 
-	std::ranges::transform(dir_range, std::inserter(m_directory, std::end(m_directory)), [](auto const& item) {
-		return std::pair{std::string{std::data(item.name)}, DirEntry{item.filepos, item.filepos + item.size}};
-	});
+	std::ranges::transform(
+	    dir_range, std::inserter(m_directory, std::end(m_directory)), [](auto const& item) {
+		    return std::pair{std::string{std::data(item.name)},
+		                     DirEntry{item.filepos, item.filepos + item.size}};
+	    });
 
 	m_file_offsets.reserve(info.numlumps + 1);
 	std::ranges::transform(m_directory, std::back_inserter(m_file_offsets), [](auto const& item) {
@@ -74,10 +75,12 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 bool Wad64::Archive::remove(std::string_view filename)
 {
 	auto const i_dir = m_directory.find(filename);
-	if(i_dir == std::end(m_directory))
-	{ return false; }
+	if(i_dir == std::end(m_directory)) { return false; }
 
 	auto const i_offset = std::ranges::find(m_file_offsets, i_dir->second);
+
+	if(i_offset == std::end(m_file_offsets)) { return true; }
+
 	m_file_offsets.erase(i_offset);
 	return true;
 }

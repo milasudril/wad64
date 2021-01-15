@@ -29,7 +29,13 @@ namespace Wad64
 		*/
 		int64_t infotablesofs;
 
-		enum class ValidationResult:int {NoError, BadPosition, NegativeSize, BadIdentifier};
+		enum class ValidationResult : int
+		{
+			NoError,
+			BadPosition,
+			NegativeSize,
+			BadIdentifier
+		};
 	};
 
 	WadInfo::ValidationResult validate(WadInfo const& info);
@@ -51,7 +57,14 @@ namespace Wad64
 		*/
 		std::array<char, 256> name;
 
-		enum class ValidationResult:int {NoError, BadPosition, NegativeSize, EndPointerOutOfRange, IllegalFilename};
+		enum class ValidationResult : int
+		{
+			NoError,
+			BadPosition,
+			NegativeSize,
+			EndPointerOutOfRange,
+			IllegalFilename
+		};
 	};
 
 	FileLump::ValidationResult validate(FileLump const& lump);
