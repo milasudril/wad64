@@ -78,9 +78,9 @@ bool Wad64::Archive::remove(std::string_view filename)
 	if(i_dir == std::end(m_directory)) { return false; }
 
 	auto const i_offset = std::ranges::find(m_file_offsets, i_dir->second);
+	m_directory.erase(i_dir);
 
 	if(i_offset == std::end(m_file_offsets)) { return true; }
-
 	m_file_offsets.erase(i_offset);
 	return true;
 }

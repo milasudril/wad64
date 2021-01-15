@@ -205,6 +205,33 @@ namespace Testcases
 		}
 
 		assert(!archive.stat("Non-existing entry").has_value());
+		assert(!archive.use("Non-existing entry").valid());
+
+		auto const non_inserted_item = archive.insertFile("Bar");
+		assert(non_inserted_item.valid());
+		assert(!non_inserted_item.fileInserted());
+
+		assert(archive.use("Bar").valid());
+		assert(!archive.use("Bar").fileInserted());
+
+		assert(archive.ls().size() == 4);
+		auto inserted_item = archive.insertFile("Kalle");
+		assert(inserted_item.valid());
+		assert(inserted_item.fileInserted());
+		assert(archive.ls().size() == 5);
+		assert(archive.use("Kalle").valid());
+		assert(!archive.use("Kalle").fileInserted());
+
+		assert(!archive.remove("Non-existing entry"));
+		assert(archive.ls().size() == 5);
+
+		assert(archive.remove("Kalle"));
+		assert(!archive.stat("Kalle").has_value());
+		assert(archive.ls().size() == 4);
+
+		assert(archive.remove("Bar"));
+		assert(archive.ls().size() == 3);
+		assert(!archive.stat("Bar").has_value());
 	}
 
 	void wad64ArchiveLoadDirentryInDirectory()
