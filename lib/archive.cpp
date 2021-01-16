@@ -81,47 +81,48 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 	    });
 }
 
+void Wad64::Archive::remove(Directory::iterator i_dir)
+{
+	m_gaps.push(Gap{i_dir->second.begin, i_dir->second.end - i_dir->second.begin});
+	auto const i_offset = std::ranges::find(m_file_offsets, i_dir->second);
+	m_directory.erase(i_dir);
+
+	if(i_offset == std::end(m_file_offsets)) { return; }
+	m_file_offsets.erase(i_offset);
+	return;
+}
+
 bool Wad64::Archive::remove(std::string_view filename)
 {
 	auto const i_dir = m_directory.find(filename);
 	if(i_dir == std::end(m_directory)) { return false; }
-
-	auto const i_offset = std::ranges::find(m_file_offsets, i_dir->second);
-	m_gaps.push(Gap{i_dir->second.begin, i_dir->second.end - i_dir->second.begin});
-	m_directory.erase(i_dir);
-
-	if(i_offset == std::end(m_file_offsets)) { return true; }
-	m_file_offsets.erase(i_offset);
+	remove(i_dir);
 	return true;
 }
 
 namespace
 {
 	constexpr std::array<std::byte, 4096> Zeros{};
+
+	void clearRange(Wad64::DirEntry e, Wad64::FileReference& ref)
+	{
+		auto offset    = e.begin;
+		auto const end = e.end;
+		while(offset != end)
+		{
+			auto const bytes_left = end - offset;
+			auto const to_write   = std::min(static_cast<size_t>(bytes_left), std::size(Zeros));
+			offset += ref.write(std::span{std::data(Zeros), to_write}, offset);
+		}
+	}
 }
 
 bool Wad64::Archive::secureRemove(std::string_view filename)
 {
 	auto const i_dir = m_directory.find(filename);
 	if(i_dir == std::end(m_directory)) { return false; }
-
-	{
-		auto offset    = i_dir->second.begin;
-		auto const end = i_dir->second.end;
-		while(offset != end)
-		{
-			auto const bytes_left = end - offset;
-			auto const to_write   = std::min(static_cast<size_t>(bytes_left), std::size(Zeros));
-			offset += m_file_ref.write(std::span{std::data(Zeros), to_write}, offset);
-		}
-	}
-
-	m_gaps.push(Gap{i_dir->second.begin, i_dir->second.end - i_dir->second.begin});
-	auto const i_offset = std::ranges::find(m_file_offsets, i_dir->second);
-	m_directory.erase(i_dir);
-
-	if(i_offset == std::end(m_file_offsets)) { return true; }
-	m_file_offsets.erase(i_offset);
+	clearRange(i_dir->second, m_file_ref);
+	remove(i_dir);
 	return true;
 }
 

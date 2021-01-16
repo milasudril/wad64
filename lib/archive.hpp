@@ -156,6 +156,8 @@ namespace Wad64
 
 		std::priority_queue<Gap, std::vector<Gap>, GapCompare> m_gaps;
 		FileReference m_file_ref;
+
+		void remove(Directory::iterator i_dir);
 	};
 }
 
