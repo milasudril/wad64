@@ -16,7 +16,7 @@ namespace Wad64
 {
 	namespace detail
 	{
-		FdAdapter make_tmp_file()
+		inline FdAdapter make_tmp_file()
 		{
 			char buffer[] = "/tmp/XXXXXX";
 			auto fd       = mkstemp(buffer);

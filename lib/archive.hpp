@@ -7,11 +7,13 @@
 #define TEXPAINTER_WAD64_LIB_ARCHIVE_HPP
 
 #include "./io_policy.hpp"
+#include "./fd_adapter.hpp"
 
 #include <map>
 #include <string>
 #include <optional>
 #include <ranges>
+#include <queue>
 
 namespace Wad64
 {
@@ -21,6 +23,12 @@ namespace Wad64
 		int64_t end;
 
 		auto operator<=>(DirEntry const& a) const = default;
+	};
+
+	struct Gap
+	{
+		int64_t position;
+		int64_t size;
 	};
 
 	/**
@@ -136,11 +144,19 @@ namespace Wad64
 			return i != std::end(m_directory) ? FilenameReservation{i} : FilenameReservation{};
 		}
 
-		void commitContent(FilenameReservation reservation, int64_t lump_size);
+		void commitContent(FilenameReservation reservation, FdAdapter src, int64_t lump_size);
 
 	private:
 		Directory m_directory;
 		std::vector<DirEntry> m_file_offsets;
+
+		struct GapCompare
+		{
+			bool operator()(Gap a, Gap b) const
+			{ return a.size > b.size; }
+		};
+
+		std::priority_queue<Gap, std::vector<Gap>, GapCompare> m_gaps;
 		FileReference m_file_ref;
 	};
 }

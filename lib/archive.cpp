@@ -78,6 +78,7 @@ bool Wad64::Archive::remove(std::string_view filename)
 	if(i_dir == std::end(m_directory)) { return false; }
 
 	auto const i_offset = std::ranges::find(m_file_offsets, i_dir->second);
+	m_gaps.push(Gap{i_dir->second.begin, i_dir->second.end - i_dir->second.begin});
 	m_directory.erase(i_dir);
 
 	if(i_offset == std::end(m_file_offsets)) { return true; }
@@ -106,12 +107,18 @@ bool Wad64::Archive::secureRemove(std::string_view filename)
 		}
 	}
 
+	m_gaps.push(Gap{i_dir->second.begin, i_dir->second.end - i_dir->second.begin});
 	auto const i_offset = std::ranges::find(m_file_offsets, i_dir->second);
 	m_directory.erase(i_dir);
 
 	if(i_offset == std::end(m_file_offsets)) { return true; }
 	m_file_offsets.erase(i_offset);
 	return true;
+}
+
+
+void Wad64::Archive::commitContent(FilenameReservation, FdAdapter, int64_t)
+{
 }
 
 
