@@ -8,29 +8,21 @@
 
 namespace Testcases
 {
-	void wad64OutputFileCreationAllowedFileExists()
-	{}
+	void wad64OutputFileCreationAllowedFileExists() {}
 
-	void wad64OutputFileCreationAllowedFileDoesNotExist()
-	{}
+	void wad64OutputFileCreationAllowedFileDoesNotExist() {}
 
-	void wad64OutputFileCreationNotAllowedFileExists()
-	{}
+	void wad64OutputFileCreationNotAllowedFileExists() {}
 
-	void wad64OutputFileCreationNotAllowedFileDoesNotExist()
-	{}
+	void wad64OutputFileCreationNotAllowedFileDoesNotExist() {}
 
-	void wad64OutputFileOverwriteAllowedFileExists()
-	{}
+	void wad64OutputFileOverwriteAllowedFileExists() {}
 
-	void wad64OutputFileOverwriteAllowedFileDoesNotExist()
-	{}
+	void wad64OutputFileOverwriteAllowedFileDoesNotExist() {}
 
-	void wad64OutputFileOverwriteNotAllowedFileExists()
-	{}
+	void wad64OutputFileOverwriteNotAllowedFileExists() {}
 
-	void wad64OutputFileOverwriteNotAllowedFileDoesNotExist()
-	{}
+	void wad64OutputFileOverwriteNotAllowedFileDoesNotExist() {}
 }
 
 int main()

@@ -39,7 +39,6 @@ namespace Wad64
 		using Directory = std::map<std::string, DirEntry, std::less<>>;
 
 	public:
-
 		/**
 		 * \brief Holder for a reference to a directory entry, that should be used to store a file
 		 *
@@ -152,8 +151,7 @@ namespace Wad64
 
 		struct GapCompare
 		{
-			bool operator()(Gap a, Gap b) const
-			{ return a.size > b.size; }
+			bool operator()(Gap a, Gap b) const { return a.size > b.size; }
 		};
 
 		std::priority_queue<Gap, std::vector<Gap>, GapCompare> m_gaps;

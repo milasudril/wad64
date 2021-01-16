@@ -70,6 +70,15 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 	if(std::ranges::adjacent_find(m_file_offsets, [](auto a, auto b) { return b.begin < a.end; })
 	   != std::end(m_file_offsets))
 	{ throw ArchiveError{"Overlapping file offsets"}; }
+
+	std::ranges::for_each(
+	    m_file_offsets,
+	    [prev_end = static_cast<int64_t>(sizeof(info)), &gaps = m_gaps](auto val) mutable {
+		    auto const gap_size = val.begin - prev_end;
+		    auto const gap_end  = val.begin;
+		    if(gap_size != 0) { gaps.push(Gap{gap_end, gap_size}); }
+		    prev_end = val.end;
+	    });
 }
 
 bool Wad64::Archive::remove(std::string_view filename)
@@ -97,12 +106,12 @@ bool Wad64::Archive::secureRemove(std::string_view filename)
 	if(i_dir == std::end(m_directory)) { return false; }
 
 	{
-		auto offset = i_dir->second.begin;
+		auto offset    = i_dir->second.begin;
 		auto const end = i_dir->second.end;
 		while(offset != end)
 		{
 			auto const bytes_left = end - offset;
-			auto const to_write = std::min(static_cast<size_t>(bytes_left), std::size(Zeros));
+			auto const to_write   = std::min(static_cast<size_t>(bytes_left), std::size(Zeros));
 			offset += m_file_ref.write(std::span{std::data(Zeros), to_write}, offset);
 		}
 	}
@@ -117,10 +126,7 @@ bool Wad64::Archive::secureRemove(std::string_view filename)
 }
 
 
-void Wad64::Archive::commitContent(FilenameReservation, FdAdapter, int64_t)
-{
-}
-
+void Wad64::Archive::commitContent(FilenameReservation, FdAdapter, int64_t) {}
 
 
 #if 0
