@@ -130,6 +130,8 @@ void Wad64::Archive::commit(FilenameReservation&& reservation, FdAdapter, int64_
 	auto const largest_gap = m_gaps.top();
 	auto const position = largest_gap.size < size? m_file_offsets.back().end : largest_gap.begin;
 	reservation.m_value.first->second = DirEntry{position, position + size};
-
 //	TODO: m_file_ref.copy(src, size);
+
+	if(largest_gap.size >= size)
+	{ m_gaps.pop(); }
 }
