@@ -85,6 +85,36 @@ bool Wad64::Archive::remove(std::string_view filename)
 	return true;
 }
 
+namespace
+{
+	constexpr std::array<std::byte, 4096> Zeros{};
+}
+
+bool Wad64::Archive::secureRemove(std::string_view filename)
+{
+	auto const i_dir = m_directory.find(filename);
+	if(i_dir == std::end(m_directory)) { return false; }
+
+	{
+		auto offset = i_dir->second.begin;
+		auto const end = i_dir->second.end;
+		while(offset != end)
+		{
+			auto const bytes_left = end - offset;
+			auto const to_write = std::min(static_cast<size_t>(bytes_left), std::size(Zeros));
+			offset += m_file_ref.write(std::span{std::data(Zeros), to_write}, offset);
+		}
+	}
+
+	auto const i_offset = std::ranges::find(m_file_offsets, i_dir->second);
+	m_directory.erase(i_dir);
+
+	if(i_offset == std::end(m_file_offsets)) { return true; }
+	m_file_offsets.erase(i_offset);
+	return true;
+}
+
+
 
 #if 0
 Wad64::DirEntry Wad64::Archive::moveFile(std::string_view filename, int64_t new_size)
