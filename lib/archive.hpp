@@ -23,15 +23,33 @@ namespace Wad64
 		auto operator<=>(DirEntry const& a) const = default;
 	};
 
+	/**
+	 * \brief Class representing a WAD64 archive
+	*/
 	class Archive
 	{
 		using Directory = std::map<std::string, DirEntry, std::less<>>;
 
 	public:
+
+		/**
+		 * \brief Holder for a reference to a directory entry, that should be used to store a file
+		 *
+		 */
 		class FilenameReservation
 		{
 		public:
+			/**
+			 * \brief Indicates whether or not a new directory entry was inserted when this
+			 * FilenameResrvation was created
+			*/
 			bool fileInserted() const { return m_value.second; }
+
+			/**
+			 * \brief Indicates whether or not this FilenameReservation is valid. For example,
+			 * if the reservation was retrieved by calling `use` on the Archive, and
+			 * the requested file  did not exist, then the reservation will be invalid.
+			 */
 			bool valid() const { return m_valid; }
 
 		private:
@@ -51,6 +69,9 @@ namespace Wad64
 			std::pair<Directory::iterator, bool> m_value;
 		};
 
+		/**
+		 * \brief Initiates an Archive from `f`
+		*/
 		template<RandomAccessFile File>
 		explicit Archive(std::reference_wrapper<File> f): Archive{FileReference{f}}
 		{
@@ -58,8 +79,15 @@ namespace Wad64
 
 		explicit Archive(FileReference ref);
 
+		/**
+		 * \brief Retrieves a full directory listing
+		*/
 		auto const& ls() const { return m_directory; }
 
+		/**
+		 * \brief Checks whether or not `filename` exists in the archive, and if so, returns
+		 * information about where the file is located
+		*/
 		std::optional<DirEntry> stat(std::string_view filename) const
 		{
 			if(auto i = m_directory.find(filename); i != std::end(m_directory))
@@ -67,15 +95,41 @@ namespace Wad64
 			return std::optional<DirEntry>{};
 		}
 
+		/**
+		 * \brief Removes `filename` from the directory and frees the space occupied by the file. If
+		 * the file existed, it is removed and the function returns true. Otherwise, it does nothing
+		 * but returns false.
+		 *
+		 * \note This function does not overwrite the original content. To do so, call,
+		 * secureRemove.
+		 *
+		 * \note Any references to the corresponding directory entries
+		 */
 		bool remove(std::string_view filename);
 
+		bool secureRemove(std::string_view filename);
+
+		/**
+		 * \brief Retrieves the FileReference used for I/O
+		*/
 		FileReference fileReference() const { return m_file_ref; }
 
-		FilenameReservation insertFile(std::string_view filename)
+		/**
+		 * \brief Tries to insert `filename` into the directory. If the file already existed nothing
+		 * happens. Regardless whether or not `filename` was inserted, a FilenameReservation is
+		 * returned that stores a reference to the directory entry that corresponds to `filename`.
+		 * To determine whether or not a new entry was inserted, call `fileInserted` on the
+		 * FilenameReservation.
+		*/
+		FilenameReservation insert(std::string_view filename)
 		{
 			return FilenameReservation{m_directory.insert(std::pair{filename, DirEntry{}})};
 		}
 
+		/**
+		 * \breif Marks `filename` for use. If there is no corresponding directory entry, then the
+		 * returned FilenameReservation will be invalid.
+		 */
 		FilenameReservation use(std::string_view filename)
 		{
 			auto const i = m_directory.find(filename);

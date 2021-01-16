@@ -207,7 +207,7 @@ namespace Testcases
 		assert(!archive.stat("Non-existing entry").has_value());
 		assert(!archive.use("Non-existing entry").valid());
 
-		auto const non_inserted_item = archive.insertFile("Bar");
+		auto const non_inserted_item = archive.insert("Bar");
 		assert(non_inserted_item.valid());
 		assert(!non_inserted_item.fileInserted());
 
@@ -215,7 +215,7 @@ namespace Testcases
 		assert(!archive.use("Bar").fileInserted());
 
 		assert(archive.ls().size() == 4);
-		auto inserted_item = archive.insertFile("Kalle");
+		auto inserted_item = archive.insert("Kalle");
 		assert(inserted_item.valid());
 		assert(inserted_item.fileInserted());
 		assert(archive.ls().size() == 5);
