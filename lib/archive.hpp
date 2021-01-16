@@ -27,7 +27,7 @@ namespace Wad64
 
 	struct Gap
 	{
-		int64_t position;
+		int64_t begin;
 		int64_t size;
 	};
 
@@ -143,7 +143,7 @@ namespace Wad64
 			return i != std::end(m_directory) ? FilenameReservation{i} : FilenameReservation{};
 		}
 
-		void commitContent(FilenameReservation reservation, FdAdapter src, int64_t lump_size);
+		void commit(FilenameReservation&& reservation, FdAdapter src, int64_t lump_size);
 
 	private:
 		Directory m_directory;
