@@ -127,11 +127,19 @@ bool Wad64::Archive::secureRemove(std::string_view filename)
 
 void Wad64::Archive::commit(FilenameReservation&& reservation, FdAdapter, int64_t size)
 {
-	auto const largest_gap = m_gaps.top();
-	auto const position = largest_gap.size < size? m_file_offsets.back().end : largest_gap.begin;
+	auto const position = [](auto& gaps, int64_t last_offset, int64_t size) {
+		if(gaps.size() != 0)
+		{
+			auto largest_gap = gaps.top();
+			if(largest_gap.size < size)
+			{ return last_offset; }
+			gaps.pop();
+
+			return largest_gap.size < size? last_offset : largest_gap.begin;
+		}
+		return last_offset;
+	}(m_gaps, m_file_offsets.back().end, size);
+
 	reservation.m_value.first->second = DirEntry{position, position + size};
 //	TODO: m_file_ref.copy(src, size);
-
-	if(largest_gap.size >= size)
-	{ m_gaps.pop(); }
 }

@@ -31,19 +31,21 @@ namespace Wad64
 	class TempFile
 	{
 	public:
-		TempFile(): fd{detail::make_tmp_file()} {}
+		TempFile(): m_fd{detail::make_tmp_file()} {}
 
 		void copyTo(FileReference fd_out, int64_t output_start_offset);
 
 		size_t write(std::span<std::byte const> buffer, int64_t offset)
 		{
-			return Wad64::write(fd, buffer, offset);
+			return Wad64::write(m_fd, buffer, offset);
 		}
 
-		~TempFile() { close(fd.fd); }
+		~TempFile() { close(m_fd.fd); }
+
+		auto fd() const { return m_fd; }
 
 	private:
-		FdAdapter fd;
+		FdAdapter m_fd;
 	};
 }
 

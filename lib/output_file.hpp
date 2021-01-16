@@ -15,27 +15,33 @@ namespace Wad64
 	class FileCreationMode
 	{
 	public:
-		FileCreationMode(): m_flags{0} {}
+		struct AllowOverwrite{};
 
-		FileCreationMode& allowOverwrite()
+		struct AllowCreation{};
+
+		constexpr FileCreationMode(AllowOverwrite): m_flags{AllowOverwriteFlag} {}
+
+		constexpr FileCreationMode(AllowCreation): m_flags{AllowCreationFlag} {}
+
+		constexpr FileCreationMode& allowOverwrite()
 		{
-			m_flags |= AllowOverwrite;
+			m_flags |= AllowOverwriteFlag;
 			return *this;
 		}
 
-		bool overwriteAllowed() const { return m_flags & AllowOverwrite; }
+		constexpr bool overwriteAllowed() const { return m_flags & AllowOverwriteFlag; }
 
-		FileCreationMode& allowCreation()
+		constexpr FileCreationMode& allowCreation()
 		{
-			m_flags |= AllowCreation;
+			m_flags |= AllowCreationFlag;
 			return *this;
 		}
 
-		bool creationAllowed() const { return m_flags & AllowCreation; }
+		constexpr bool creationAllowed() const { return m_flags & AllowCreationFlag; }
 
 	private:
-		static constexpr unsigned int AllowOverwrite = 0x1;
-		static constexpr unsigned int AllowCreation  = 0x2;
+		static constexpr unsigned int AllowOverwriteFlag = 0x1;
+		static constexpr unsigned int AllowCreationFlag  = 0x2;
 		unsigned int m_flags;
 	};
 
@@ -50,10 +56,14 @@ namespace Wad64
 
 		size_t write(std::span<std::byte const> buffer, int64_t offset);
 
-		~OutputFile();
+		~OutputFile()
+		{
+			m_archive.get().commit(std::move(m_reservation), m_tmp_file.fd(), m_bytes_written);
+		}
 
 	private:
 		TempFile m_tmp_file;
+		int64_t m_bytes_written;
 		std::reference_wrapper<Archive> m_archive;
 		Archive::FilenameReservation m_reservation;
 	};

@@ -14,6 +14,6 @@ Wad64::OutputFile::OutputFile(std::reference_wrapper<Archive> archive,
 {
 	if(!m_reservation.valid()) { throw ArchiveError{"Tried to write to non-existing entry"}; }
 
-	if(!mode.overwriteAllowed() && !m_reservation.fileInserted())
+	if(!mode.overwriteAllowed() && !m_reservation.fileInserted() && mode.creationAllowed())
 	{ throw ArchiveError{"Tried to overwrite an existing entry"}; }
 }
