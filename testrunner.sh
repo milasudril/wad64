@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-"$3"
 output_dir="$1/$2"
+"$3"
 mv *.gcda $output_dir/.
 mv *.gcno $output_dir/.
