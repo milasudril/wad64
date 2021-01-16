@@ -16,6 +16,8 @@ int64_t Wad64::seek(int64_t current_pos, int64_t offset, ValidSeekRange range, S
 		case SeekMode::Cur: offset_new = current_pos + offset; break;
 
 		case SeekMode::End: offset_new = range.end + offset; break;
+
+		default: __builtin_unreachable();  // LCOV_EXCL_LINE
 	}
 
 	if(offsetFromStart(offset_new, range) < 0)
