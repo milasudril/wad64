@@ -40,7 +40,7 @@ namespace Wad64
 			return Wad64::write(m_fd, buffer, offset);
 		}
 
-		~TempFile() { close(m_fd.fd); }
+		~TempFile() { close(m_fd); }
 
 		auto fd() const { return m_fd; }
 
