@@ -87,7 +87,13 @@ Wad64::Archive::Archive(FileReference ref): m_eof{0}, m_file_ref{ref}
 
 void Wad64::Archive::remove(Directory::iterator i_dir)
 {
-	m_gaps.push(Gap{i_dir->second.begin, i_dir->second.end - i_dir->second.begin});
+	auto const size = i_dir->second.end == m_eof?
+		std::numeric_limits<int64_t>::max() : i_dir->second.end - i_dir->second.begin;
+	m_gaps.push(Gap{i_dir->second.begin, size});
+	if(i_dir->second.end == m_eof)
+	{
+		m_eof = i_dir->second.begin;
+	}
 	m_directory.erase(i_dir);
 	return;
 }
