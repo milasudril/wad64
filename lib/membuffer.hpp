@@ -3,6 +3,8 @@
 #ifndef WAD64_LIB_MEMBUFFER_HPP
 #define WAD64_LIB_MEMBUFFER_HPP
 
+#include "./fd_adapter.hpp"
+
 #include <vector>
 #include <cstddef>
 #include <span>
@@ -29,6 +31,14 @@ namespace Wad64
 		std::copy_n(std::data(buffer), n, std::data(f.data) + offset);
 		std::copy_n(std::data(buffer) + n, std::size(buffer) - n, std::back_inserter(f.data));
 		return std::size(buffer);
+	}
+
+	inline size_t write(MemBuffer& f, FdAdapter src, int64_t size, int64_t offset)
+	{
+		auto const n = size + offset;
+		if(static_cast<int64_t>(std::size(f.data)) < n) { f.data.resize(n); }
+
+		return read(src, std::span{std::data(f.data) + offset, static_cast<size_t>(size)}, 0);
 	}
 }
 

@@ -126,7 +126,7 @@ bool Wad64::Archive::secureRemove(std::string_view filename)
 	return true;
 }
 
-void Wad64::Archive::commit(FilenameReservation&& reservation, FdAdapter, int64_t size)
+void Wad64::Archive::commit(FilenameReservation&& reservation, FdAdapter src, int64_t size)
 {
 	auto const position = [](auto& gaps, int64_t last_offset, int64_t size) {
 		if(gaps.size() != 0)
@@ -140,7 +140,7 @@ void Wad64::Archive::commit(FilenameReservation&& reservation, FdAdapter, int64_
 		return last_offset;
 	}(m_gaps, m_eof, size);
 
-	//	TODO: m_file_ref.copy(src, position, size);
+	m_file_ref.write(src, size, position);
 	reservation.m_value.first->second = DirEntry{position, position + size};
 	m_eof                             = std::max(m_eof, position + size);
 }

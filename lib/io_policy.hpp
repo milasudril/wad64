@@ -3,6 +3,8 @@
 #ifndef WAD64_LIB_IOPOLICY_HPP
 #define WAD64_LIB_IOPOLICY_HPP
 
+#include "./fd_adapter.hpp"
+
 #include <utility>
 #include <cstdint>
 #include <span>
@@ -22,6 +24,11 @@ namespace Wad64
 			write(a, std::declval<std::span<std::byte const>>(), std::declval<int64_t>())
 		}
 		->std::same_as<std::size_t>;
+
+		{
+			write(a, std::declval<FdAdapter>(), std::declval<int64_t>(), std::declval<int64_t>())
+		}
+		->std::same_as<size_t>;
 	};
 
 	namespace detail
@@ -37,6 +44,12 @@ namespace Wad64
 		{
 			return write(*reinterpret_cast<File*>(handle), buffer, offset);
 		}
+
+		template<RandomAccessFile File>
+		size_t write_from_fd(void* handle, FdAdapter fd, int64_t size, int64_t offset)
+		{
+			return write(*reinterpret_cast<File*>(handle), fd, size, offset);
+		}
 	}
 
 	class FileReference
@@ -47,6 +60,7 @@ namespace Wad64
 		    : m_ref{&file.get()}
 		    , m_read{detail::read<File>}
 		    , m_write{detail::write<File>}
+		    , m_write_from_fd{detail::write_from_fd<File>}
 		{
 		}
 
@@ -60,12 +74,18 @@ namespace Wad64
 			return m_write(m_ref, buffer, offset);
 		}
 
+		size_t write(FdAdapter src, int64_t size, int64_t offset)
+		{
+			return m_write_from_fd(m_ref, src, size, offset);
+		}
+
 		void* handle() const { return m_ref; }
 
 	private:
 		void* m_ref;
 		size_t (*m_read)(void*, std::span<std::byte>, int64_t offset);
 		size_t (*m_write)(void*, std::span<std::byte const>, int64_t offset);
+		size_t (*m_write_from_fd)(void*, FdAdapter, int64_t, int64_t);
 	};
 }
 
