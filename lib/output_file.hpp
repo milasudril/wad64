@@ -9,42 +9,10 @@
 #include "./archive.hpp"
 #include "./seek.hpp"
 #include "./temp_file.hpp"
+#include "./file_creation_mode.hpp"
 
 namespace Wad64
 {
-	class FileCreationMode
-	{
-	public:
-		struct AllowOverwrite{};
-
-		struct AllowCreation{};
-
-		constexpr FileCreationMode(AllowOverwrite): m_flags{AllowOverwriteFlag} {}
-
-		constexpr FileCreationMode(AllowCreation): m_flags{AllowCreationFlag} {}
-
-		constexpr FileCreationMode& allowOverwrite()
-		{
-			m_flags |= AllowOverwriteFlag;
-			return *this;
-		}
-
-		constexpr bool overwriteAllowed() const { return m_flags & AllowOverwriteFlag; }
-
-		constexpr FileCreationMode& allowCreation()
-		{
-			m_flags |= AllowCreationFlag;
-			return *this;
-		}
-
-		constexpr bool creationAllowed() const { return m_flags & AllowCreationFlag; }
-
-	private:
-		static constexpr unsigned int AllowOverwriteFlag = 0x1;
-		static constexpr unsigned int AllowCreationFlag  = 0x2;
-		unsigned int m_flags;
-	};
-
 	class OutputFile
 	{
 	public:
