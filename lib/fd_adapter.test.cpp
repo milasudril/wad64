@@ -1,9 +1,10 @@
-//@	{"targets":[{"name":"fd_adapter.test","type":"application", "autorun":1}]}
+//@	{"targets":[{"name":"fd_adapter.test","type":"application", "dependencies":[{"ref":"dl","rel":"external"}], "autorun":1}]}
 
 #include "./fd_adapter.hpp"
 #include "./io_policy.hpp"
 
 #include <sys/stat.h>
+#include <dlfcn.h>
 
 #include <cassert>
 #include <cstdio>
@@ -25,6 +26,24 @@ namespace
 		assert(fd.fd != -1);
 		write(fd, std::as_bytes(std::span{content}), 0);
 		close(fd);
+	}
+}
+
+using ReadFunc = ssize_t (*)(int, void* buf, size_t count, off_t offset);
+using WriteFunc   = ssize_t (*)(int, void const* buf, size_t count, off_t offset);
+
+extern "C"
+{
+	ssize_t pread(int fd, void* buf, size_t count, off_t offset)
+	{
+		auto real_func = reinterpret_cast<ReadFunc>(dlsym(RTLD_NEXT, "pread"));
+		return real_func(fd, buf, std::max(count, static_cast<size_t>(4)), offset);
+	}
+
+	ssize_t pwrite(int fd, void const* buf, size_t count, off_t offset)
+	{
+		auto real_func = reinterpret_cast<WriteFunc>(dlsym(RTLD_NEXT, "pwrite"));
+		return real_func(fd, buf, std::max(count, static_cast<size_t>(3)), offset);
 	}
 }
 
