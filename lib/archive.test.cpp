@@ -18,6 +18,7 @@ namespace Testcases
 
 		assert(archive.fileReference().handle() == &buff);
 		assert(std::size(archive.ls()) == 0);
+		assert(archive.size() == static_cast<int64_t>(std::size(buff.data)));
 	}
 
 	void wad64ArchiveLoadEmptyWithHeader()
@@ -34,6 +35,7 @@ namespace Testcases
 		Wad64::Archive archive{std::ref(buffer)};
 		assert(archive.fileReference().handle() == &buffer);
 		assert(std::size(archive.ls()) == 0);
+		assert(archive.size() == static_cast<int64_t>(std::size(buffer.data)));
 	}
 
 	void wad64ArchiveLoadTruncatedHeader()
@@ -184,6 +186,7 @@ namespace Testcases
 		      header.infotablesofs);
 
 		Wad64::Archive archive{std::ref(buffer)};
+		assert(archive.size() == static_cast<int64_t>(std::size(buffer.data)) + 11);
 
 		auto const& dir = archive.ls();
 		assert(std::size(dir) == 4);
@@ -342,6 +345,7 @@ namespace Testcases
 		      header.infotablesofs);
 
 		Wad64::Archive archive{std::ref(buffer)};
+		assert(archive.size() == static_cast<int64_t>(std::size(buffer.data)));
 
 		auto const& dir = archive.ls();
 		assert(std::size(dir) == 4);

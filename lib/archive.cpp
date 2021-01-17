@@ -17,7 +17,7 @@ namespace
 	}
 }
 
-Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
+Wad64::Archive::Archive(FileReference ref): m_eof{0}, m_file_ref{ref}
 {
 	WadInfo info;
 	errno       = 0;
@@ -36,7 +36,7 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 
 	if(info.numlumps == 0)
 	{
-		m_file_offsets.push_back(DirEntry{info.infotablesofs, info.infotablesofs});
+		m_eof = info.infotablesofs;
 		return;
 	}
 
@@ -59,20 +59,24 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 		                     DirEntry{item.filepos, item.filepos + item.size}};
 	    });
 
-	m_file_offsets.reserve(info.numlumps + 1);
-	std::ranges::transform(m_directory, std::back_inserter(m_file_offsets), [](auto const& item) {
+	std::vector<DirEntry> file_offsets;
+	file_offsets.reserve(info.numlumps + 1);
+	std::ranges::transform(m_directory, std::back_inserter(file_offsets), [](auto const& item) {
 		return item.second;
 	});
-	m_file_offsets.push_back(
-	    DirEntry{info.infotablesofs, info.infotablesofs + size<FileLump>() * info.numlumps});
-	std::ranges::sort(m_file_offsets, [](auto a, auto b) { return a.begin < b.begin; });
+	file_offsets.push_back(
+	    DirEntry{info.infotablesofs, info.infotablesofs + ::size<FileLump>() * info.numlumps});
+	std::ranges::sort(file_offsets, [](auto a, auto b) { return a.begin < b.begin; });
 
-	if(std::ranges::adjacent_find(m_file_offsets, [](auto a, auto b) { return b.begin < a.end; })
-	   != std::end(m_file_offsets))
+	m_eof = file_offsets.back().end;
+
+	if(std::ranges::adjacent_find(file_offsets, [](auto a, auto b) { return b.begin < a.end; })
+	   != std::end(file_offsets))
 	{ throw ArchiveError{"Overlapping file offsets"}; }
 
+
 	std::ranges::for_each(
-	    m_file_offsets,
+	    file_offsets,
 	    [prev_end = static_cast<int64_t>(sizeof(info)), &gaps = m_gaps](auto val) mutable {
 		    auto const gap_size = val.begin - prev_end;
 		    auto const gap_end  = val.begin;
@@ -84,11 +88,7 @@ Wad64::Archive::Archive(FileReference ref): m_file_ref{ref}
 void Wad64::Archive::remove(Directory::iterator i_dir)
 {
 	m_gaps.push(Gap{i_dir->second.begin, i_dir->second.end - i_dir->second.begin});
-	auto const i_offset = std::ranges::find(m_file_offsets, i_dir->second);
 	m_directory.erase(i_dir);
-
-	if(i_offset == std::end(m_file_offsets)) { return; }
-	m_file_offsets.erase(i_offset);
 	return;
 }
 
@@ -138,8 +138,10 @@ void Wad64::Archive::commit(FilenameReservation&& reservation, FdAdapter, int64_
 			return largest_gap.size < size ? last_offset : largest_gap.begin;
 		}
 		return last_offset;
-	}(m_gaps, m_file_offsets.back().end, size);
+	}(m_gaps, m_eof, size);
 
+	//	TODO: m_file_ref.copy(src, position, size);
 	reservation.m_value.first->second = DirEntry{position, position + size};
-	//	TODO: m_file_ref.copy(src, size);
+	m_eof = std::max(m_eof, position + size);
+
 }

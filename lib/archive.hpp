@@ -145,16 +145,18 @@ namespace Wad64
 
 		void commit(FilenameReservation&& reservation, FdAdapter src, int64_t lump_size);
 
+		int64_t size() const { return m_eof; }
+
 	private:
 		Directory m_directory;
-		std::vector<DirEntry> m_file_offsets;
-
 		struct GapCompare
 		{
 			bool operator()(Gap a, Gap b) const { return a.size > b.size; }
 		};
-
 		std::priority_queue<Gap, std::vector<Gap>, GapCompare> m_gaps;
+		int64_t m_eof;
+
+
 		FileReference m_file_ref;
 
 		void remove(Directory::iterator i_dir);
