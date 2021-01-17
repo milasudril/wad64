@@ -49,7 +49,7 @@ namespace
 
 namespace Testcases
 {
-	void wad64OutputFileCreationAllowedFileDoesNotExist()
+	void wad64OutputFileCreationAllowedFileDoesNotExist()  //010
 	{
 		auto data = generateData();
 		Wad64::Archive archive{std::ref(data)};
@@ -57,7 +57,7 @@ namespace Testcases
 		assert(archive.stat("New file").has_value());
 	}
 
-	void wad64OutputFileCreationNotAllowedFileExists()
+	void wad64OutputFileCreationNotAllowedFileExists()  //101
 	{
 		auto data = generateData();
 		Wad64::Archive archive{std::ref(data)};
@@ -66,7 +66,7 @@ namespace Testcases
 		assert(std::size(archive.ls()) == std::size(dir));
 	}
 
-	void wad64OutputFileCreationNotAllowedFileDoesNotExist()
+	void wad64OutputFileCreationNotAllowedFileDoesNotExist()  //100
 	{
 		auto data = generateData();
 		Wad64::Archive archive{std::ref(data)};
@@ -79,7 +79,7 @@ namespace Testcases
 		{}
 	}
 
-	void wad64OutputFileCreationAllowedOverwriteDisallowedFileExists()
+	void wad64OutputFileCreationAllowedOverwriteDisallowedFileExists()  //011
 	{
 		auto data = generateData();
 		Wad64::Archive archive{std::ref(data)};
@@ -92,7 +92,7 @@ namespace Testcases
 		{}
 	}
 
-	void wad64OutputFileCreationAllowedOverwriteAllowedFileExists()
+	void wad64OutputFileCreationAllowedOverwriteAllowedFileExists()  // 111
 	{
 		auto data = generateData();
 		Wad64::Archive archive{std::ref(data)};
@@ -100,6 +100,17 @@ namespace Testcases
 		auto const& dir = archive.ls();
 		Wad64::OutputFile output{std::ref(archive), "Kaka",	Wad64::FileCreationMode{Wad64::FileCreationMode::AllowCreation{}}.allowOverwrite()};
 		assert(std::size(archive.ls()) == std::size(dir));
+	}
+
+	void wad64OutputFileCreationAllowedOverwriteAllowedFileDoesNotExist()  // 110
+	{
+		auto data = generateData();
+		Wad64::Archive archive{std::ref(data)};
+
+		auto const dir = archive.ls();
+		Wad64::OutputFile output{std::ref(archive), "New file",	Wad64::FileCreationMode{Wad64::FileCreationMode::AllowCreation{}}.allowOverwrite()};
+		assert(std::size(archive.ls()) == std::size(dir) + 1);
+		assert(archive.stat("New file").has_value());
 	}
 }
 
@@ -110,5 +121,6 @@ int main()
 	Testcases::wad64OutputFileCreationNotAllowedFileDoesNotExist();
 	Testcases::wad64OutputFileCreationAllowedOverwriteDisallowedFileExists();
 	Testcases::wad64OutputFileCreationAllowedOverwriteAllowedFileExists();
+	Testcases::wad64OutputFileCreationAllowedOverwriteAllowedFileDoesNotExist();
 	return 0;
 }
