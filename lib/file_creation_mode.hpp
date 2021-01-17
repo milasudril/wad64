@@ -12,12 +12,12 @@ namespace Wad64
 	public:
 		static constexpr FileCreationMode AllowOverwrite()
 		{
-			return FileCreationMode{FileCreationMode::AllowOverwriteFlag};
+			return FileCreationMode{AllowOverwriteFlag};
 		}
 
 		static constexpr FileCreationMode AllowCreation()
 		{
-			return FileCreationMode{FileCreationMode::AllowCreationFlag};
+			return FileCreationMode{AllowCreationFlag};
 		}
 
 		constexpr FileCreationMode& allowOverwrite()
