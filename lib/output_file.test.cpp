@@ -121,6 +121,30 @@ namespace Testcases
 		assert(std::size(archive.ls()) == std::size(dir) + 1);
 		assert(archive.stat("New file").has_value());
 	}
+
+	void wad64OoutputFileWrite()
+	{
+		auto data = generateData();
+		constexpr std::string_view text{"This is a test"};
+		Wad64::Archive archive{std::ref(data)};
+		{
+			Wad64::OutputFile output{
+				std::ref(archive), "New file", Wad64::FileCreationMode::AllowCreation()};
+
+			assert(output.size() == 0);
+			assert(output.tell() == 0);
+
+			auto const n_written = output.write(std::as_bytes(std::span{text}));
+			assert(n_written == std::size(text));
+			assert(output.size() == static_cast<int64_t>(std::size(text)));
+		}
+
+		auto item = archive.stat("New file");
+		assert(item.has_value());
+		assert(item->end - item->begin == static_cast<int64_t>(std::size(text)));
+		assert(std::ranges::equal(std::span{std::data(data.data) + item->begin,std::size(text)},
+								  std::as_bytes(std::span{text})));
+	}
 }
 
 int main()
@@ -131,5 +155,7 @@ int main()
 	Testcases::wad64OutputFileCreationAllowedOverwriteDisallowedFileExists();
 	Testcases::wad64OutputFileCreationAllowedOverwriteAllowedFileExists();
 	Testcases::wad64OutputFileCreationAllowedOverwriteAllowedFileDoesNotExist();
+
+	Testcases::wad64OoutputFileWrite();
 	return 0;
 }
