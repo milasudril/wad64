@@ -26,8 +26,7 @@ namespace Wad64
 
 	size_t write(FdAdapter fd, std::span<std::byte const> buffer, int64_t offset);
 
-	inline void close(FdAdapter fd)
-	{::close(fd.fd); }
+	inline void close(FdAdapter fd) { ::close(fd.fd); }
 
 	FdAdapter open(char const* filename, IoMode io_mode, FileCreationMode creation_mode);
 }

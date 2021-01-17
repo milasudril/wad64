@@ -6,6 +6,8 @@
 
 #include <cassert>
 
+#include <cstdio>
+
 namespace Testcases
 {
 	void wad64FileCreationModeAllowOverwrite()
@@ -35,6 +37,31 @@ namespace Testcases
 		assert(mode.overwriteAllowed());
 		assert(mode.creationAllowed());
 	}
+
+
+	void wad64FileCreationModeToFdFlagsCreationAllowedOverwriteNotAllowed()
+	{
+		auto mode  = Wad64::FileCreationMode::AllowCreation();
+		auto flags = fdFlags(mode);
+		assert(flags & O_CREAT);
+		assert(flags & O_EXCL);
+	}
+
+	void wad64FileCreationModeToFdFlagsCreationAllowedOverwriteAllowed()
+	{
+		auto mode  = Wad64::FileCreationMode::AllowCreation().allowOverwrite();
+		auto flags = fdFlags(mode);
+		assert(flags & O_CREAT);
+		assert(!(flags & O_EXCL));
+		assert(flags & O_TRUNC);
+	}
+
+	void wad64FileCreationModeToFdFlagsCreationNotAllowed()
+	{
+		auto mode  = Wad64::FileCreationMode::AllowOverwrite();
+		auto flags = fdFlags(mode);
+		assert(flags == O_TRUNC);
+	}
 }
 
 int main()
@@ -43,5 +70,9 @@ int main()
 	Testcases::wad64FileCreationModeAllowOverwriteEnableCreation();
 	Testcases::wad64FileCreationModeAllowCreation();
 	Testcases::wad64FileCreationModeAllowCreationEnableOverwrite();
+
+	Testcases::wad64FileCreationModeToFdFlagsCreationAllowedOverwriteNotAllowed();
+	Testcases::wad64FileCreationModeToFdFlagsCreationAllowedOverwriteAllowed();
+	Testcases::wad64FileCreationModeToFdFlagsCreationNotAllowed();
 	return 0;
 }

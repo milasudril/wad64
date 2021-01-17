@@ -53,7 +53,8 @@ namespace Testcases
 	{
 		auto data = generateData();
 		Wad64::Archive archive{std::ref(data)};
-		Wad64::OutputFile output{std::ref(archive), "New file", Wad64::FileCreationMode::AllowCreation()};
+		Wad64::OutputFile output{
+		    std::ref(archive), "New file", Wad64::FileCreationMode::AllowCreation()};
 		assert(archive.stat("New file").has_value());
 	}
 
@@ -62,7 +63,8 @@ namespace Testcases
 		auto data = generateData();
 		Wad64::Archive archive{std::ref(data)};
 		auto const& dir = archive.ls();
-		Wad64::OutputFile output{std::ref(archive), "Kaka", Wad64::FileCreationMode::AllowOverwrite()};
+		Wad64::OutputFile output{
+		    std::ref(archive), "Kaka", Wad64::FileCreationMode::AllowOverwrite()};
 		assert(std::size(archive.ls()) == std::size(dir));
 	}
 
@@ -72,11 +74,13 @@ namespace Testcases
 		Wad64::Archive archive{std::ref(data)};
 		try
 		{
-			Wad64::OutputFile output{std::ref(archive), "New file", Wad64::FileCreationMode::AllowOverwrite()};
+			Wad64::OutputFile output{
+			    std::ref(archive), "New file", Wad64::FileCreationMode::AllowOverwrite()};
 			abort();
 		}
 		catch(...)
-		{}
+		{
+		}
 	}
 
 	void wad64OutputFileCreationAllowedOverwriteDisallowedFileExists()  //011
@@ -85,11 +89,13 @@ namespace Testcases
 		Wad64::Archive archive{std::ref(data)};
 		try
 		{
-			Wad64::OutputFile output{std::ref(archive), "Kaka", Wad64::FileCreationMode::AllowCreation()};
+			Wad64::OutputFile output{
+			    std::ref(archive), "Kaka", Wad64::FileCreationMode::AllowCreation()};
 			abort();
 		}
 		catch(...)
-		{}
+		{
+		}
 	}
 
 	void wad64OutputFileCreationAllowedOverwriteAllowedFileExists()  // 111
@@ -98,7 +104,8 @@ namespace Testcases
 		Wad64::Archive archive{std::ref(data)};
 
 		auto const& dir = archive.ls();
-		Wad64::OutputFile output{std::ref(archive), "Kaka", Wad64::FileCreationMode::AllowCreation().allowOverwrite()};
+		Wad64::OutputFile output{
+		    std::ref(archive), "Kaka", Wad64::FileCreationMode::AllowCreation().allowOverwrite()};
 		assert(std::size(archive.ls()) == std::size(dir));
 	}
 
@@ -108,7 +115,9 @@ namespace Testcases
 		Wad64::Archive archive{std::ref(data)};
 
 		auto const dir = archive.ls();
-		Wad64::OutputFile output{std::ref(archive), "New file", Wad64::FileCreationMode::AllowCreation().allowOverwrite()};
+		Wad64::OutputFile output{std::ref(archive),
+		                         "New file",
+		                         Wad64::FileCreationMode::AllowCreation().allowOverwrite()};
 		assert(std::size(archive.ls()) == std::size(dir) + 1);
 		assert(archive.stat("New file").has_value());
 	}

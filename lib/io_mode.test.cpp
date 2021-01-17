@@ -35,6 +35,30 @@ namespace Testcases
 		assert(mode.readAllowed());
 		assert(mode.writeAllowed());
 	}
+
+	void wad64IoModeToFdFlagsReadAllowedWriteNotAllowed()
+	{
+		auto mode  = Wad64::IoMode::AllowRead();
+		auto flags = fdFlags(mode);
+
+		assert(flags == O_RDONLY);
+	}
+
+	void wad64IoModeToFdFlagsReadAllowedWriteAllowed()
+	{
+		auto mode  = Wad64::IoMode::AllowRead().allowWrite();
+		auto flags = fdFlags(mode);
+
+		assert(flags == O_RDWR);
+	}
+
+	void wad64IoModeToFdFlagsReadNotAllowedWriteAllowed()
+	{
+		auto mode  = Wad64::IoMode::AllowWrite();
+		auto flags = fdFlags(mode);
+
+		assert(flags == O_WRONLY);
+	}
 }
 
 int main()
@@ -43,5 +67,9 @@ int main()
 	Testcases::wad64IoModeAllowReadEnableWrite();
 	Testcases::wad64IoModeAllowWrite();
 	Testcases::wad64IoModeAllowWriteEnableRead();
+
+	Testcases::wad64IoModeToFdFlagsReadAllowedWriteNotAllowed();
+	Testcases::wad64IoModeToFdFlagsReadAllowedWriteAllowed();
+	Testcases::wad64IoModeToFdFlagsReadNotAllowedWriteAllowed();
 	return 0;
 }
