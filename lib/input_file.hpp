@@ -2,8 +2,8 @@
 //@	 "targets":[{"name":"input_file.hpp","type":"include"}]
 //@	}
 
-#ifndef TEXPAINTER_WAD64_LIB_INPUTFILE_HPP
-#define TEXPAINTER_WAD64_LIB_INPUTFILE_HPP
+#ifndef WAD64_LIB_INPUTFILE_HPP
+#define WAD64_LIB_INPUTFILE_HPP
 
 #include "./archive.hpp"
 #include "./archive_error.hpp"

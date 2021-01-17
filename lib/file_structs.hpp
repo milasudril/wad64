@@ -3,8 +3,8 @@
 //@	,"dependencies_extra":[{"ref":"file_structs.o","rel":"implementation"}]
 //@	}
 
-#ifndef TEXPAINTER_WAD64_LIB_FILESTRUCTS_HPP
-#define TEXPAINTER_WAD64_LIB_FILESTRUCTS_HPP
+#ifndef WAD64_LIB_FILESTRUCTS_HPP
+#define WAD64_LIB_FILESTRUCTS_HPP
 
 #include <cstdint>
 #include <array>

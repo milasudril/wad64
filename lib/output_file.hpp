@@ -3,8 +3,8 @@
 //@	,"dependencies_extra":[{"ref":"output_file.o","rel":"implementation"}]
 //@	}
 
-#ifndef TEXPAINTER_WAD64_LIB_OUTPUTFILE_HPP
-#define TEXPAINTER_WAD64_LIB_OUTPUTFILE_HPP
+#ifndef WAD64_LIB_OUTPUTFILE_HPP
+#define WAD64_LIB_OUTPUTFILE_HPP
 
 #include "./archive.hpp"
 #include "./seek.hpp"

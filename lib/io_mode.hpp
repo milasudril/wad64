@@ -2,8 +2,8 @@
 //@	 "targets":[{"name":"io_mode.hpp","type":"include"}]
 //@	}
 
-#ifndef TEXPAINTER_WAD64_LIB_IOMODE_HPP
-#define TEXPAINTER_WAD64_LIB_IOMODE_HPP
+#ifndef WAD64_LIB_IOMODE_HPP
+#define WAD64_LIB_IOMODE_HPP
 
 #include <fcntl.h>
 
