@@ -8,7 +8,10 @@
 Wad64::OutputFile::OutputFile(std::reference_wrapper<Archive> archive,
                               std::string_view filename,
                               FileCreationMode mode)
-    : m_archive{archive}
+    : m_tmp_file{"/tmp", FdOwner::TempFile{}}
+    , m_write_offset{0}
+    , m_range{0, 0}
+    , m_archive{archive}
     , m_reservation{mode.creationAllowed() ? archive.get().insert(filename)
                                            : archive.get().use(filename)}
 {
