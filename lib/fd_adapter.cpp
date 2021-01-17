@@ -4,6 +4,8 @@
 
 #include "./fd_adapter.hpp"
 
+#include <fcntl.h>
+
 #include <stdexcept>
 
 size_t Wad64::read(FdAdapter fd, std::span<std::byte> buffer, int64_t offset)
@@ -49,4 +51,34 @@ size_t Wad64::write(FdAdapter fd, std::span<std::byte const> buffer, int64_t off
 
 	}
 	return std::size(buffer);
+}
+
+Wad64::FdAdapter Wad64::open(char const* filename, IoMode io_mode, FileCreationMode creation_mode)
+{
+	auto flags = O_CLOEXEC;
+
+	if(io_mode.readAllowed())
+	{
+		flags |= io_mode.writeAllowed() ? O_RDWR : O_RDONLY;
+	}
+	else
+	{
+		flags |= O_WRONLY;
+	}
+
+	if(io_mode.writeAllowed())
+	{
+		if(creation_mode.creationAllowed())
+		{
+			flags |= O_CREAT;
+			if(!creation_mode.overwriteAllowed())
+			{
+				flags |= O_EXCL;
+			}
+		}
+		else
+		{ flags |= O_TRUNC; }
+	}
+
+	return FdAdapter{::open(filename, S_IRUSR | S_IWUSR)};
 }

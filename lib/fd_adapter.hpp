@@ -6,6 +6,9 @@
 #ifndef TEXPAINTER_WAD64_LIB_FDADAPTER_HPP
 #define TEXPAINTER_WAD64_LIB_FDADAPTER_HPP
 
+#include "./io_mode.hpp"
+#include "./file_creation_mode.hpp"
+
 #include <cstdint>
 #include <span>
 
@@ -25,5 +28,7 @@ namespace Wad64
 
 	inline void close(FdAdapter fd)
 	{::close(fd.fd); }
+
+	FdAdapter open(char const* filename, IoMode io_mode, FileCreationMode creation_mode);
 }
 #endif
