@@ -29,7 +29,7 @@ namespace Wad64
 
 		size_t write(std::span<std::byte const> buffer, int64_t offset)
 		{
-			auto ret = Wad64::write(m_tmp_file, buffer, offset);
+			auto ret    = Wad64::write(m_tmp_file, buffer, offset);
 			m_range.end = std::max(m_range.end, offset + static_cast<int64_t>(ret));
 			return ret;
 		}

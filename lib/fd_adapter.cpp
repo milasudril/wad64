@@ -66,15 +66,14 @@ Wad64::FdAdapter Wad64::open(char const* filename, IoMode io_mode, FileCreationM
 size_t Wad64::write(FdAdapter target, FdAdapter src, int64_t src_size, int64_t target_offset)
 {
 	loff_t src_offet = 0;
-	auto remaining = src_size;
+	auto remaining   = src_size;
 	while(remaining != 0)
 	{
-		auto const n_written = copy_file_range(src.fd, &src_offet, target.fd, &target_offset, remaining, 0);
-		if(n_written == -1)
-		{ throw std::runtime_error{"I/O error"}; }
+		auto const n_written =
+		    copy_file_range(src.fd, &src_offet, target.fd, &target_offset, remaining, 0);
+		if(n_written == -1) { throw std::runtime_error{"I/O error"}; }
 
-		if(n_written == 0)
-		{ return src_offet; }
+		if(n_written == 0) { return src_offet; }
 
 		remaining -= n_written;
 	}

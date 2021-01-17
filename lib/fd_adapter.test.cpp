@@ -29,8 +29,8 @@ namespace
 	}
 }
 
-using ReadFunc = ssize_t (*)(int, void* buf, size_t count, off_t offset);
-using WriteFunc   = ssize_t (*)(int, void const* buf, size_t count, off_t offset);
+using ReadFunc  = ssize_t (*)(int, void* buf, size_t count, off_t offset);
+using WriteFunc = ssize_t (*)(int, void const* buf, size_t count, off_t offset);
 
 extern "C"
 {
@@ -246,18 +246,21 @@ namespace Testcases
 		auto const test_dir =
 		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
 
-		auto const filename = test_dir / "my_file";
+		auto const filename       = test_dir / "my_file";
 		constexpr auto content_sv = std::string_view{"This is a test file"};
-		auto content = std::string{content_sv};
+		auto content              = std::string{content_sv};
 		createFile(filename.c_str(), content);
 
-		std::array<char, 2*std::size(content_sv)> buffer{};
-		auto fd = open(filename.c_str(), Wad64::IoMode::AllowRead(), Wad64::FileCreationMode::AllowCreation());
+		std::array<char, 2 * std::size(content_sv)> buffer{};
+		auto fd = open(
+		    filename.c_str(), Wad64::IoMode::AllowRead(), Wad64::FileCreationMode::AllowCreation());
 		unlink(filename.c_str());
 		assert(fd.fd != -1);
 		auto n = read(fd, std::as_writable_bytes(std::span{buffer}), 5);
 		assert(n == strlen("is a test file"));
-		assert((std::equal(std::begin(buffer), std::begin(buffer) + n, std::begin(std::string_view{"is a test file"}))));
+		assert((std::equal(std::begin(buffer),
+		                   std::begin(buffer) + n,
+		                   std::begin(std::string_view{"is a test file"}))));
 	}
 
 	void wad64FdAdapterReadCompleted()
@@ -265,13 +268,14 @@ namespace Testcases
 		auto const test_dir =
 		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
 
-		auto const filename = test_dir / "my_file";
+		auto const filename       = test_dir / "my_file";
 		constexpr auto content_sv = std::string_view{"This is a test file"};
-		auto content = std::string{content_sv};
+		auto content              = std::string{content_sv};
 		createFile(filename.c_str(), content);
 
 		std::array<char, std::size(content_sv)> buffer{};
-		auto fd = open(filename.c_str(), Wad64::IoMode::AllowRead(), Wad64::FileCreationMode::AllowCreation());
+		auto fd = open(
+		    filename.c_str(), Wad64::IoMode::AllowRead(), Wad64::FileCreationMode::AllowCreation());
 		unlink(filename.c_str());
 		assert(fd.fd != -1);
 		auto n = read(fd, std::as_writable_bytes(std::span{buffer}), 0);

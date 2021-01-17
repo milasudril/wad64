@@ -14,23 +14,23 @@ namespace Wad64
 	class FdOwner
 	{
 	public:
-		template<class ... Args>
-		explicit FdOwner(char const* filename, Args&& ... args):m_fd{open(filename, std::forward<Args>(args)...)}
+		template<class... Args>
+		explicit FdOwner(char const* filename, Args&&... args)
+		    : m_fd{open(filename, std::forward<Args>(args)...)}
 		{
-			if(m_fd.fd == -1)
-			{ throw std::runtime_error{"Failed to open file"}; }
+			if(m_fd.fd == -1) { throw std::runtime_error{"Failed to open file"}; }
 		}
 
-		struct TempFile{};
-
-		explicit FdOwner(char const* dir, TempFile):m_fd{createTempFile(dir)}
+		struct TempFile
 		{
-			if(m_fd.fd == -1)
-			{ throw std::runtime_error{"Failed to create temporary file"}; }
+		};
+
+		explicit FdOwner(char const* dir, TempFile): m_fd{createTempFile(dir)}
+		{
+			if(m_fd.fd == -1) { throw std::runtime_error{"Failed to create temporary file"}; }
 		}
 
-		FdOwner(FdOwner&& other):m_fd{std::exchange(other.m_fd, FdAdapter{-1})}
-		{}
+		FdOwner(FdOwner&& other): m_fd{std::exchange(other.m_fd, FdAdapter{-1})} {}
 
 		FdOwner& operator=(FdOwner&& other)
 		{
@@ -43,23 +43,31 @@ namespace Wad64
 
 		~FdOwner()
 		{
-			if(m_fd.fd != -1)
-			{ close(m_fd); }
+			if(m_fd.fd != -1) { close(m_fd); }
 		}
 
-		FdAdapter get() const {return m_fd; }
+		FdAdapter get() const { return m_fd; }
 
 	private:
 		FdAdapter m_fd;
 	};
 
 	inline size_t read(FdOwner const& fd, std::span<std::byte> buffer, int64_t offset)
-	{ return read(fd.get(), buffer, offset); }
+	{
+		return read(fd.get(), buffer, offset);
+	}
 
 	inline size_t write(FdOwner const& fd, std::span<std::byte const> buffer, int64_t offset)
-	{ return write(fd.get(), buffer, offset); }
+	{
+		return write(fd.get(), buffer, offset);
+	}
 
-	inline size_t write(FdOwner const& target, FdAdapter src, int64_t src_size, int64_t target_offset)
-	{ return write(target.get(), src, src_size, target_offset); }
+	inline size_t write(FdOwner const& target,
+	                    FdAdapter src,
+	                    int64_t src_size,
+	                    int64_t target_offset)
+	{
+		return write(target.get(), src, src_size, target_offset);
+	}
 }
 #endif
