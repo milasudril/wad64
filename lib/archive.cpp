@@ -142,6 +142,5 @@ void Wad64::Archive::commit(FilenameReservation&& reservation, FdAdapter, int64_
 
 	//	TODO: m_file_ref.copy(src, position, size);
 	reservation.m_value.first->second = DirEntry{position, position + size};
-	m_eof = std::max(m_eof, position + size);
-
+	m_eof                             = std::max(m_eof, position + size);
 }
