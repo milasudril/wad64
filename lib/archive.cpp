@@ -138,7 +138,7 @@ void Wad64::Archive::commit(FilenameReservation&& reservation, FdAdapter src, in
 			if(largest_gap.size < size) { return last_offset; }
 			gaps.pop();
 
-			return largest_gap.size < size ? last_offset : largest_gap.begin;
+			return largest_gap.begin;
 		}
 		return last_offset;
 	}(m_gaps, m_eof, size);
