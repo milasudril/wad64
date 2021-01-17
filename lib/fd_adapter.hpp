@@ -13,6 +13,7 @@
 #include <span>
 
 #include <unistd.h>
+#include <fcntl.h>
 
 namespace Wad64
 {
@@ -29,5 +30,10 @@ namespace Wad64
 	inline void close(FdAdapter fd) { ::close(fd.fd); }
 
 	FdAdapter open(char const* filename, IoMode io_mode, FileCreationMode creation_mode);
+
+	inline FdAdapter createTempFile(char const* dir)
+	{
+		return FdAdapter{::open(dir, O_RDWR | O_TMPFILE, S_IWUSR | S_IRUSR)};
+	}
 }
 #endif

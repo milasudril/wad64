@@ -278,6 +278,13 @@ namespace Testcases
 		assert(n == std::size(content_sv));
 		assert(std::equal(std::begin(buffer), std::begin(buffer) + n, std::begin(content_sv)));
 	}
+
+	void wad64FdAdapterCreateTempFile()
+	{
+		auto fd = Wad64::createTempFile("/tmp");
+		assert(fd.fd != -1);
+		close(fd);
+	}
 }
 
 int main()
@@ -298,5 +305,7 @@ int main()
 
 	Testcases::wad64FdAdapterReadFromOffset();
 	Testcases::wad64FdAdapterReadCompleted();
+
+	Testcases::wad64FdAdapterCreateTempFile();
 	return 0;
 }
