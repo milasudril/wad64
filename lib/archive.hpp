@@ -8,6 +8,8 @@
 
 #include "./io_policy.hpp"
 #include "./fd_adapter.hpp"
+#include "./archive_error.hpp"
+#include "./file_structs.hpp"
 
 #include <map>
 #include <string>
@@ -130,6 +132,8 @@ namespace Wad64
 		*/
 		FilenameReservation insert(std::string_view filename)
 		{
+			if(!validateFilename(filename))
+			{ throw ArchiveError{"Invalid filenmae"}; }
 			return FilenameReservation{m_directory.insert(std::pair{filename, DirEntry{}})};
 		}
 
