@@ -111,6 +111,45 @@ namespace Testcases
 
 		assert(validate(test) == Wad64::FileLump::ValidationResult::NoError);
 	}
+
+	void wad64ValidateFilenameValid()
+	{
+		std::string test;
+		std::generate_n(std::back_inserter(test), 255, [k = 0]() mutable {
+			++k;
+			return (k - 1)%26 + 64;
+		});
+
+		assert(Wad64::validateFilename(test));
+	}
+
+	void wad64ValidateFilenameInvalid()
+	{
+		std::string test;
+		std::generate_n(std::back_inserter(test), 255, [k = 0]() mutable {
+			++k;
+			return (k - 1)%26 + 64;
+		});
+
+		for(int k = 0; k < ' '; ++k)
+		{
+			test[1] = static_cast<char>(k);
+			assert(!Wad64::validateFilename(test));
+		}
+		test[1] = ' ';
+		assert(Wad64::validateFilename(test));
+	}
+
+	void wad64ValidateFilenameTooLong()
+	{
+		std::string test;
+		std::generate_n(std::back_inserter(test), 256, [k = 0]() mutable {
+			++k;
+			return (k + 64)%26;
+		});
+
+		assert(!Wad64::validateFilename(test));
+	}
 }
 
 int main()
@@ -125,5 +164,8 @@ int main()
 	Testcases::wad64ValidateFileLumpNameNotNullTerminated();
 	Testcases::wad64ValidateFileLumpNameNullInTheMiddle();
 	Testcases::wad64ValidateFileLumpNoError();
+	Testcases::wad64ValidateFilenameValid();
+	Testcases::wad64ValidateFilenameInvalid();
+	Testcases::wad64ValidateFilenameTooLong();
 	return 0;
 }

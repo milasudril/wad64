@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <array>
+#include <string_view>
 
 namespace Wad64
 {
@@ -40,6 +41,8 @@ namespace Wad64
 
 	WadInfo::ValidationResult validate(WadInfo const& info);
 
+	constexpr size_t NameSize = 256;
+
 	/** A dictionary entry
 	 */
 	struct FileLump
@@ -55,7 +58,7 @@ namespace Wad64
 		/** The name of this lump (encoded in UTF-8). The last character must be an ascii nul
 		 * character.
 		*/
-		std::array<char, 256> name;
+		std::array<char, NameSize> name;
 
 		enum class ValidationResult : int
 		{
@@ -66,6 +69,8 @@ namespace Wad64
 			IllegalFilename
 		};
 	};
+
+	bool validateFilename(std::string_view name);
 
 	FileLump::ValidationResult validate(FileLump const& lump);
 }
