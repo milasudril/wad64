@@ -44,3 +44,48 @@ Wad64::Directory::Directory(std::span<FileLump> entries, DirEntry reserved_space
 		    prev_end = val.end;
 	    });
 }
+
+void Wad64::Directory::remove(Storage::iterator i_dir)
+{
+	auto const size = i_dir->second.end == m_eof ? std::numeric_limits<int64_t>::max()
+	                                             : i_dir->second.end - i_dir->second.begin;
+	m_gaps.push(Gap{i_dir->second.begin, size});
+	if(i_dir->second.end == m_eof) { m_eof = i_dir->second.begin; }
+	m_content.erase(i_dir);
+	return;
+}
+
+bool Wad64::Directory::remove(std::string_view filename)
+{
+	auto const i_dir = m_content.find(filename);
+	if(i_dir == std::end(m_content)) { return false; }
+	remove(i_dir);
+	return true;
+}
+
+
+namespace
+{
+	constexpr std::array<std::byte, 4096> Zeros{};
+
+	void clearRange(Wad64::DirEntry e, Wad64::FileReference ref)
+	{
+		auto offset    = e.begin;
+		auto const end = e.end;
+		while(offset != end)
+		{
+			auto const bytes_left = end - offset;
+			auto const to_write   = std::min(static_cast<size_t>(bytes_left), std::size(Zeros));
+			offset += ref.write(std::span{std::data(Zeros), to_write}, offset);
+		}
+	}
+}
+
+bool Wad64::Directory::secureRemove(std::string_view filename, FileReference ref)
+{
+	auto const i_dir = m_content.find(filename);
+	if(i_dir == std::end(m_content)) { return false; }
+	clearRange(i_dir->second, ref);
+	remove(i_dir);
+	return true;
+}

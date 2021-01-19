@@ -8,6 +8,7 @@
 
 #include "./file_structs.hpp"
 #include "./archive_error.hpp"
+#include "./io_policy.hpp"
 
 #include <map>
 #include <queue>
@@ -96,9 +97,14 @@ namespace Wad64
 		 * the file existed, it is removed and the function returns true. Otherwise, it does nothing
 		 * but returns false.
 		 *
+		 * \note This function does not overwrite the original content. To do so, call,
+		 * secureRemove.
+		 *
 		 * \note Any references to the corresponding directory entries
 		 */
 		bool remove(std::string_view filename);
+
+		bool secureRemove(std::string_view filename, FileReference file);
 
 		/**
 		 * \brief Tries to insert `filename` into the directory. If the file already existed nothing
@@ -134,6 +140,8 @@ namespace Wad64
 		};
 		std::priority_queue<Gap, std::vector<Gap>, GapCompare> m_gaps;
 		int64_t m_eof;
+
+		void remove(Storage::iterator i_dir);
 	};
 }
 
