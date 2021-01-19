@@ -71,9 +71,9 @@ namespace Wad64
 			std::pair<Storage::iterator, bool> m_value;
 		};
 
-		Directory() : m_eof{0} {}
+		explicit Directory() : m_eof{sizeof(WadInfo)} {}
 
-		explicit Directory(std::span<FileLump> directory, DirEntry reserved_space, int64_t data_offset);
+		explicit Directory(std::span<FileLump> directory, DirEntry reserved_space);
 
 		/**
 		 * \brief Retrieves a full directory listing

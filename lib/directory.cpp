@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-Wad64::Directory::Directory(std::span<FileLump> entries, DirEntry reserved_space, int64_t data_offset)
+Wad64::Directory::Directory(std::span<FileLump> entries, DirEntry reserved_space)
 {
 	std::ranges::for_each(entries, []<class T>(T const& item) {
 		using ValidationResult = typename T::ValidationResult;
@@ -37,7 +37,7 @@ Wad64::Directory::Directory(std::span<FileLump> entries, DirEntry reserved_space
 
 	std::ranges::for_each(
 	    file_offsets,
-	    [prev_end = data_offset, &gaps = m_gaps](auto val) mutable {
+	    [prev_end = static_cast<int64_t>(sizeof(WadInfo)), &gaps = m_gaps](auto val) mutable {
 		    auto const gap_size = val.begin - prev_end;
 		    auto const gap_end  = val.begin;
 		    if(gap_size != 0) { gaps.push(Gap{gap_end, gap_size}); }
