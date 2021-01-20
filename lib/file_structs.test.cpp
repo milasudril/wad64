@@ -117,7 +117,7 @@ namespace Testcases
 		std::string test;
 		std::generate_n(std::back_inserter(test), 255, [k = 0]() mutable {
 			++k;
-			return (k - 1)%26 + 64;
+			return (k - 1) % 26 + 64;
 		});
 
 		assert(Wad64::validateFilename(test));
@@ -128,7 +128,7 @@ namespace Testcases
 		std::string test;
 		std::generate_n(std::back_inserter(test), 255, [k = 0]() mutable {
 			++k;
-			return (k - 1)%26 + 64;
+			return (k - 1) % 26 + 64;
 		});
 
 		for(int k = 0; k < ' '; ++k)
@@ -145,7 +145,7 @@ namespace Testcases
 		std::string test;
 		std::generate_n(std::back_inserter(test), 256, [k = 0]() mutable {
 			++k;
-			return (k + 64)%26;
+			return (k + 64) % 26;
 		});
 
 		assert(!Wad64::validateFilename(test));

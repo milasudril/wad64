@@ -132,8 +132,7 @@ namespace Wad64
 		*/
 		FilenameReservation insert(std::string_view filename)
 		{
-			if(!validateFilename(filename))
-			{ throw ArchiveError{"Invalid filenmae"}; }
+			if(!validateFilename(filename)) { throw ArchiveError{"Invalid filenmae"}; }
 			return FilenameReservation{m_directory.insert(std::pair{filename, DirEntry{}})};
 		}
 

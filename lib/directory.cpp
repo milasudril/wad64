@@ -22,9 +22,8 @@ Wad64::Directory::Directory(std::span<FileLump> entries, DirEntry reserved_space
 
 	std::vector<DirEntry> file_offsets;
 	file_offsets.reserve(std::size(entries) + 1);
-	std::ranges::transform(m_content, std::back_inserter(file_offsets), [](auto const& item) {
-		return item.second;
-	});
+	std::ranges::transform(
+	    m_content, std::back_inserter(file_offsets), [](auto const& item) { return item.second; });
 	file_offsets.push_back(reserved_space);
 	std::ranges::sort(file_offsets, [](auto a, auto b) { return a.begin < b.begin; });
 
@@ -88,4 +87,26 @@ bool Wad64::Directory::secureRemove(std::string_view filename, FileReference ref
 	clearRange(i_dir->second, ref);
 	remove(i_dir);
 	return true;
+}
+
+Wad64::Directory::GapConsumer Wad64::Directory::commit(FilenameReservation&& reservation,
+                                                       int64_t req_size)
+{
+	if(m_gaps.size() != 0)
+	{
+		auto largest_gap = m_gaps.top();
+		if(largest_gap.size < req_size)
+		{
+			return GapConsumer{reservation.m_value.first->second,
+			                   DirEntry{m_eof, m_eof + req_size},
+			                   m_eof,
+			                   nullptr};
+		}
+		return GapConsumer{reservation.m_value.first->second,
+		                   DirEntry{largest_gap.begin, largest_gap.begin + req_size},
+		                   m_eof,
+		                   &m_gaps};
+	}
+	return GapConsumer{
+	    reservation.m_value.first->second, DirEntry{m_eof, m_eof + req_size}, m_eof, nullptr};
 }

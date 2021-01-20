@@ -35,7 +35,7 @@ namespace
 	{
 		// TODO: Implement proper validation (name should be utf-8)
 
-		auto i = std::ranges::find_if(name, [](auto val){return val >= 0 && val < ' ';});
+		auto i = std::ranges::find_if(name, [](auto val) { return val >= 0 && val < ' '; });
 
 		if(i != std::end(name)) { return false; }
 		return true;
@@ -46,7 +46,8 @@ namespace
 		auto const i_end = std::ranges::find(name, '\0');
 		if(i_end == std::end(name)) { return false; }
 
-		auto const i_not_nul = std::find_if_not(i_end, std::end(name), [](auto ch) { return ch == '\0'; });
+		auto const i_not_nul =
+		    std::find_if_not(i_end, std::end(name), [](auto ch) { return ch == '\0'; });
 		if(i_not_nul != std::end(name)) { return false; }
 
 		return validate_filename(std::span{std::begin(name), i_end});
@@ -55,8 +56,7 @@ namespace
 
 bool Wad64::validateFilename(std::string_view name)
 {
-	if(std::size(name) >= static_cast<size_t>(Wad64::NameSize))
-	{ return false; }
+	if(std::size(name) >= static_cast<size_t>(Wad64::NameSize)) { return false; }
 
 	return validate_filename(std::span{std::begin(name), std::size(name)});
 }
@@ -73,8 +73,7 @@ Wad64::FileLump::ValidationResult Wad64::validate(FileLump const& lump)
 	if(__builtin_add_overflow(lump.filepos, lump.size, &dummy))
 	{ return ValidationResult::EndPointerOutOfRange; }
 
-	if(!validate_filename(lump.name))
-	{return ValidationResult::IllegalFilename; }
+	if(!validate_filename(lump.name)) { return ValidationResult::IllegalFilename; }
 
 	return ValidationResult::NoError;
 }

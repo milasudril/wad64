@@ -3,8 +3,8 @@
 //@	,"dependencies_extra":[{"ref":"directory.o", "rel":"implementation"}]
 //@	}
 
-#ifndef LIB_WAD64_DIRECTORY_HPP
-#define LIB_WAD64_DIRECTORY_HPP
+#ifndef WAD64_LIB_DIRECTORY_HPP
+#define WAD64_LIB_DIRECTORY_HPP
 
 #include "./file_structs.hpp"
 #include "./archive_error.hpp"
@@ -34,6 +34,13 @@ namespace Wad64
 	class Directory
 	{
 		using Storage = std::map<std::string, DirEntry, std::less<>>;
+
+		struct GapCompare
+		{
+			bool operator()(Gap a, Gap b) const { return a.size > b.size; }
+		};
+		using GapStorage = std::priority_queue<Gap, std::vector<Gap>, GapCompare>;
+
 	public:
 		/**
 		 * \brief Holder for a reference to a directory entry, that should be used to store a file
@@ -72,7 +79,37 @@ namespace Wad64
 			std::pair<Storage::iterator, bool> m_value;
 		};
 
-		explicit Directory() : m_eof{sizeof(WadInfo)} {}
+		class GapConsumer
+		{
+		public:
+			explicit GapConsumer(std::reference_wrapper<DirEntry> entry,
+			                     DirEntry entry_to_store,
+			                     std::reference_wrapper<int64_t> eof,
+			                     GapStorage* gaps)
+			    : m_entry{entry}
+			    , m_entry_to_store{entry_to_store}
+			    , m_eof{eof}
+			    , m_gaps{gaps}
+			{
+			}
+
+			GapConsumer(GapConsumer&&) = delete;
+
+			~GapConsumer()
+			{
+				m_entry.get() = m_entry_to_store;
+				m_eof.get()   = std::max(m_eof.get(), m_entry_to_store.end);
+				if(m_gaps != nullptr) { m_gaps->pop(); }
+			}
+
+		private:
+			std::reference_wrapper<DirEntry> m_entry;
+			DirEntry m_entry_to_store;
+			std::reference_wrapper<int64_t> m_eof;
+			GapStorage* m_gaps;
+		};
+
+		explicit Directory(): m_eof{sizeof(WadInfo)} {}
 
 		explicit Directory(std::span<FileLump> directory, DirEntry reserved_space);
 
@@ -87,8 +124,7 @@ namespace Wad64
 		*/
 		std::optional<DirEntry> stat(std::string_view filename) const
 		{
-			if(auto i = m_content.find(filename); i != std::end(m_content))
-			{ return i->second; }
+			if(auto i = m_content.find(filename); i != std::end(m_content)) { return i->second; }
 			return std::optional<DirEntry>{};
 		}
 
@@ -115,8 +151,7 @@ namespace Wad64
 		*/
 		FilenameReservation insert(std::string_view filename)
 		{
-			if(!validateFilename(filename))
-			{ throw ArchiveError{"Invalid filenmae"}; }
+			if(!validateFilename(filename)) { throw ArchiveError{"Invalid filenmae"}; }
 			return FilenameReservation{m_content.insert(std::pair{filename, DirEntry{}})};
 		}
 
@@ -132,13 +167,12 @@ namespace Wad64
 
 		int64_t eofOffset() const { return m_eof; }
 
+		GapConsumer commit(FilenameReservation&& reservation, int64_t req_size);
+
 	private:
 		Storage m_content;
-		struct GapCompare
-		{
-			bool operator()(Gap a, Gap b) const { return a.size > b.size; }
-		};
-		std::priority_queue<Gap, std::vector<Gap>, GapCompare> m_gaps;
+
+		GapStorage m_gaps;
 		int64_t m_eof;
 
 		void remove(Storage::iterator i_dir);
