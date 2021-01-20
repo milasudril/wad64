@@ -56,7 +56,7 @@ namespace Wad64
 		int64_t m_write_offset;
 		ValidSeekRange m_range;
 		std::reference_wrapper<Archive> m_archive;
-		Archive::FilenameReservation m_reservation;
+		Directory::FilenameReservation m_reservation;
 	};
 }
 #endif

@@ -18,7 +18,7 @@ namespace Testcases
 
 		assert(archive.fileReference().handle() == &buff);
 		assert(std::size(archive.ls()) == 0);
-		assert(archive.size() == static_cast<int64_t>(std::size(buff.data)));
+		assert(archive.size() == sizeof(Wad64::WadInfo));
 	}
 
 	void wad64ArchiveLoadEmptyWithHeader()
@@ -35,6 +35,7 @@ namespace Testcases
 		Wad64::Archive archive{std::ref(buffer)};
 		assert(archive.fileReference().handle() == &buffer);
 		assert(std::size(archive.ls()) == 0);
+		printf("%ld\n", archive.size());
 		assert(archive.size() == static_cast<int64_t>(std::size(buffer.data)));
 	}
 

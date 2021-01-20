@@ -95,6 +95,8 @@ namespace Wad64
 
 			GapConsumer(GapConsumer&&) = delete;
 
+			operator int64_t() const & { return m_entry_to_store.begin; }
+
 			~GapConsumer()
 			{
 				m_entry.get() = m_entry_to_store;
