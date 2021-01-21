@@ -53,7 +53,7 @@ namespace Wad64
 			 * \brief Indicates whether or not a new directory entry was inserted when this
 			 * FilenameResrvation was created
 			*/
-			bool fileInserted() const { return m_value.second; }
+			bool fileInserted() const { return m_storage != nullptr; }
 
 			/**
 			 * \brief Indicates whether or not this FilenameReservation is valid. For example,
@@ -65,18 +65,20 @@ namespace Wad64
 		private:
 			friend class Directory;
 
-			FilenameReservation(): m_valid{false} {}
+			FilenameReservation(): m_valid{false}, m_storage{nullptr} {}
 
-			explicit FilenameReservation(Storage::iterator i): m_valid{true}, m_value{i, false} {}
+			explicit FilenameReservation(Storage::iterator i): m_valid{true}, m_storage{nullptr}, m_value{i} {}
 
-			explicit FilenameReservation(std::pair<Storage::iterator, bool>&& val)
+			explicit FilenameReservation(Storage* storage, Storage::iterator&& val)
 			    : m_valid{true}
+			    , m_storage{storage}
 			    , m_value{std::move(val)}
 			{
 			}
 
 			bool m_valid;
-			std::pair<Storage::iterator, bool> m_value;
+			Storage* m_storage;
+			Storage::iterator m_value;
 		};
 
 		explicit Directory(): m_eof{sizeof(WadInfo)} {}
@@ -122,7 +124,8 @@ namespace Wad64
 		FilenameReservation insert(std::string_view filename)
 		{
 			if(!validateFilename(filename)) { throw ArchiveError{"Invalid filenmae"}; }
-			return FilenameReservation{m_content.insert(std::pair{filename, DirEntry{}})};
+			auto res = m_content.insert(std::pair{filename, DirEntry{}});
+			return FilenameReservation{res.second?&m_content:nullptr, std::move(res.first)};
 		}
 
 		/**
@@ -147,13 +150,13 @@ namespace Wad64
 				{
 					auto entry = DirEntry{m_eof, m_eof + req_size};
 					action(entry);
-					reservation.m_value.first->second = entry;
+					reservation.m_value->second = entry;
 					m_eof += req_size;
 					return;
 				}
 				auto entry = DirEntry{largest_gap.begin, largest_gap.begin + req_size};
 				action(entry);
-				reservation.m_value.first->second = entry;
+				reservation.m_value->second = entry;
 				m_gaps.pop();
 				m_eof = std::max(m_eof, largest_gap.begin + req_size);
 				if(largest_gap.size - req_size > 0)
@@ -162,7 +165,7 @@ namespace Wad64
 			}
 			auto entry = DirEntry{m_eof, m_eof + req_size};
 			action(entry);
-			reservation.m_value.first->second = entry;
+			reservation.m_value->second = entry;
 			m_eof += req_size;
 		}
 
