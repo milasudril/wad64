@@ -94,8 +94,9 @@ namespace Wad64
 
 		void commit(Directory::FilenameReservation&& reservation, FdAdapter src, int64_t size)
 		{
-			auto position = m_directory.commit(std::move(reservation), size);
-			m_file_ref.write(src, size, position);
+			m_directory.commit(std::move(reservation), size, [target = m_file_ref, src](DirEntry entry) mutable {
+				target.write(src, entry.end - entry.begin, entry.begin);
+			});
 		}
 
 		int64_t size() const { return m_directory.eofOffset(); }

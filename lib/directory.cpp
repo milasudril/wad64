@@ -88,25 +88,3 @@ bool Wad64::Directory::secureRemove(std::string_view filename, FileReference ref
 	remove(i_dir);
 	return true;
 }
-
-Wad64::Directory::GapConsumer Wad64::Directory::commit(FilenameReservation&& reservation,
-                                                       int64_t req_size)
-{
-	if(m_gaps.size() != 0)
-	{
-		auto largest_gap = m_gaps.top();
-		if(largest_gap.size < req_size)
-		{
-			return GapConsumer{reservation.m_value.first->second,
-			                   DirEntry{m_eof, m_eof + req_size},
-			                   m_eof,
-			                   nullptr};
-		}
-		return GapConsumer{reservation.m_value.first->second,
-		                   DirEntry{largest_gap.begin, largest_gap.begin + req_size},
-		                   m_eof,
-		                   &m_gaps};
-	}
-	return GapConsumer{
-	    reservation.m_value.first->second, DirEntry{m_eof, m_eof + req_size}, m_eof, nullptr};
-}

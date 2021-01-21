@@ -79,38 +79,6 @@ namespace Wad64
 			std::pair<Storage::iterator, bool> m_value;
 		};
 
-		class GapConsumer
-		{
-		public:
-			explicit GapConsumer(std::reference_wrapper<DirEntry> entry,
-			                     DirEntry entry_to_store,
-			                     std::reference_wrapper<int64_t> eof,
-			                     GapStorage* gaps)
-			    : m_entry{entry}
-			    , m_entry_to_store{entry_to_store}
-			    , m_eof{eof}
-			    , m_gaps{gaps}
-			{
-			}
-
-			GapConsumer(GapConsumer&&) = delete;
-
-			operator int64_t() const & { return m_entry_to_store.begin; }
-
-			~GapConsumer()
-			{
-				m_entry.get() = m_entry_to_store;
-				m_eof.get()   = std::max(m_eof.get(), m_entry_to_store.end);
-				if(m_gaps != nullptr) { m_gaps->pop(); }
-			}
-
-		private:
-			std::reference_wrapper<DirEntry> m_entry;
-			DirEntry m_entry_to_store;
-			std::reference_wrapper<int64_t> m_eof;
-			GapStorage* m_gaps;
-		};
-
 		explicit Directory(): m_eof{sizeof(WadInfo)} {}
 
 		explicit Directory(std::span<FileLump> directory, DirEntry reserved_space);
@@ -169,7 +137,35 @@ namespace Wad64
 
 		int64_t eofOffset() const { return m_eof; }
 
-		GapConsumer commit(FilenameReservation&& reservation, int64_t req_size);
+		template<class Action>
+		void commit(FilenameReservation&& reservation, int64_t req_size, Action&& action)
+		{
+			if(m_gaps.size() != 0)
+			{
+				auto largest_gap = m_gaps.top();
+				if(largest_gap.size < req_size)
+				{
+					auto entry = DirEntry{m_eof, m_eof + req_size};
+					action(entry);
+					reservation.m_value.first->second = entry;
+					m_eof += req_size;
+					return;
+				}
+				auto entry = DirEntry{largest_gap.begin, largest_gap.begin + req_size};
+				action(entry);
+				reservation.m_value.first->second = entry;
+				m_gaps.pop();
+				m_eof = std::max(m_eof, largest_gap.begin + req_size);
+			//	if(largest_gap.size - req_size > 0)
+			//	{m_gaps.push(Gap{largest_gap.begin + req_size, largest_gap.size - req_size});}
+			//
+				return;
+			}
+			auto entry = DirEntry{m_eof, m_eof + req_size};
+			action(entry);
+			reservation.m_value.first->second = entry;
+			m_eof += req_size;
+		}
 
 	private:
 		Storage m_content;
