@@ -12,7 +12,7 @@ Wad64::OutputFile::OutputFile(std::reference_wrapper<Archive> archive,
     , m_write_offset{0}
     , m_range{0, 0}
     , m_archive{archive}
-    , m_reservation{mode.creationAllowed() ? archive.get().insert(filename)
+    , m_reservation{mode.creationAllowed() ? archive.get().reserve(filename)
                                            : archive.get().use(filename)}
 {
 	if(!m_reservation.valid()) { throw ArchiveError{"Tried to write to non-existing entry"}; }

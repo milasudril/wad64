@@ -72,15 +72,11 @@ namespace Wad64
 		FileReference fileReference() const { return m_file_ref; }
 
 		/**
-		 * \brief Tries to insert `filename` into the directory. If the file already existed nothing
-		 * happens. Regardless whether or not `filename` was inserted, a FilenameReservation is
-		 * returned that stores a reference to the directory entry that corresponds to `filename`.
-		 * To determine whether or not a new entry was inserted, call `fileInserted` on the
-		 * FilenameReservation.
+		 * \brief Tries to insert `filename` into the directory. For details \see Directory::reserve
 		*/
-		decltype(auto) insert(std::string_view filename)
+		Directory::FilenameReservation reserve(std::string_view filename)
 		{
-			return m_directory.insert(filename);
+			return m_directory.reserve(filename);
 		}
 
 		/**

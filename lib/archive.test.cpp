@@ -210,21 +210,20 @@ namespace Testcases
 		assert(!archive.stat("Non-existing entry").has_value());
 		assert(!archive.use("Non-existing entry").valid());
 
-		auto const non_inserted_item = archive.insert("Bar");
+		auto const non_inserted_item = archive.reserve("Bar");
 		assert(non_inserted_item.valid());
 		assert(!non_inserted_item.fileInserted());
 		assert(archive.use("Bar").valid());
 		assert(!archive.use("Bar").fileInserted());
 
 		assert(archive.ls().size() == 4);
-		auto inserted_item = archive.insert("Kalle");
+		auto inserted_item = archive.reserve("Kalle");
 		assert(inserted_item.valid());
 		assert(inserted_item.fileInserted());
 		assert(archive.ls().size() == 5);
 		assert(archive.use("Kalle").valid());
 		assert(!archive.use("Kalle").fileInserted());
-		inserted_item.reset();
-		assert(!inserted_item.fileInserted());
+		archive.commit(std::move(inserted_item), Wad64::FdAdapter{-1}, 0);
 
 		assert(!archive.remove("Non-existing entry"));
 		assert(archive.ls().size() == 5);

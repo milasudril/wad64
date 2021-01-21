@@ -77,8 +77,6 @@ namespace Wad64
 			 */
 			bool valid() const { return m_valid; }
 
-			void reset()
-			{ m_storage = nullptr; }
 
 			~FilenameReservation()
 			{
@@ -101,6 +99,9 @@ namespace Wad64
 			    , m_value{std::move(val)}
 			{
 			}
+
+			void reset()
+			{ m_storage = nullptr; }
 
 			bool m_valid;
 			Storage* m_storage;
@@ -146,10 +147,13 @@ namespace Wad64
 		 * returned that stores a reference to the directory entry that corresponds to `filename`.
 		 * To determine whether or not a new entry was inserted, call `fileInserted` on the
 		 * FilenameReservation.
+		 *
+		 * When the FilenameReservation goes out of scope the item is removed, unless the
+		 * reservation is commited with `commit`.
 		*/
-		FilenameReservation insert(std::string_view filename)
+		FilenameReservation reserve(std::string_view filename)
 		{
-			if(!validateFilename(filename)) { throw ArchiveError{"Invalid filenmae"}; }
+			if(!validateFilename(filename)) { throw ArchiveError{"Invalid filename"}; }
 			auto res = m_content.insert(std::pair{filename, DirEntry{}});
 			return FilenameReservation{res.second?&m_content:nullptr, std::move(res.first)};
 		}
