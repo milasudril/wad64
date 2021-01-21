@@ -156,9 +156,8 @@ namespace Wad64
 				reservation.m_value.first->second = entry;
 				m_gaps.pop();
 				m_eof = std::max(m_eof, largest_gap.begin + req_size);
-			//	if(largest_gap.size - req_size > 0)
-			//	{m_gaps.push(Gap{largest_gap.begin + req_size, largest_gap.size - req_size});}
-			//
+				if(largest_gap.size - req_size > 0)
+				{m_gaps.push(Gap{largest_gap.begin + req_size, largest_gap.size - req_size});}
 				return;
 			}
 			auto entry = DirEntry{m_eof, m_eof + req_size};
