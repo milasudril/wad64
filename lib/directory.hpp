@@ -49,6 +49,21 @@ namespace Wad64
 		class FilenameReservation
 		{
 		public:
+			FilenameReservation(FilenameReservation&& other) noexcept:
+			m_valid{other.m_valid},
+			m_storage{std::exchange(other.m_storage, nullptr)},
+			m_value{std::move(other.m_value)}
+			{
+			}
+
+			FilenameReservation& operator=(FilenameReservation&& other) noexcept
+			{
+				m_valid = other.m_valid;
+				m_storage = std::exchange(other.m_storage, nullptr);
+				m_value = other.m_value;
+				return *this;
+			}
+
 			/**
 			 * \brief Indicates whether or not a new directory entry was inserted when this
 			 * FilenameResrvation was created
@@ -61,6 +76,17 @@ namespace Wad64
 			 * the requested file  did not exist, then the reservation will be invalid.
 			 */
 			bool valid() const { return m_valid; }
+
+			void reset()
+			{ m_storage = nullptr; }
+
+			~FilenameReservation()
+			{
+				if(fileInserted())
+				{
+					m_storage->erase(m_value);
+				}
+			}
 
 		private:
 			friend class Directory;
@@ -151,13 +177,15 @@ namespace Wad64
 					auto entry = DirEntry{m_eof, m_eof + req_size};
 					action(entry);
 					reservation.m_value->second = entry;
+					reservation.reset();
 					m_eof += req_size;
 					return;
 				}
 				auto entry = DirEntry{largest_gap.begin, largest_gap.begin + req_size};
 				action(entry);
-				reservation.m_value->second = entry;
 				m_gaps.pop();
+				reservation.m_value->second = entry;
+				reservation.reset();
 				m_eof = std::max(m_eof, largest_gap.begin + req_size);
 				if(largest_gap.size - req_size > 0)
 				{m_gaps.push(Gap{largest_gap.begin + req_size, largest_gap.size - req_size});}
@@ -166,6 +194,7 @@ namespace Wad64
 			auto entry = DirEntry{m_eof, m_eof + req_size};
 			action(entry);
 			reservation.m_value->second = entry;
+			reservation.reset();
 			m_eof += req_size;
 		}
 

@@ -35,7 +35,6 @@ namespace Testcases
 		Wad64::Archive archive{std::ref(buffer)};
 		assert(archive.fileReference().handle() == &buffer);
 		assert(std::size(archive.ls()) == 0);
-		printf("%ld\n", archive.size());
 		assert(archive.size() == static_cast<int64_t>(std::size(buffer.data)));
 	}
 
@@ -214,7 +213,6 @@ namespace Testcases
 		auto const non_inserted_item = archive.insert("Bar");
 		assert(non_inserted_item.valid());
 		assert(!non_inserted_item.fileInserted());
-
 		assert(archive.use("Bar").valid());
 		assert(!archive.use("Bar").fileInserted());
 
@@ -225,6 +223,8 @@ namespace Testcases
 		assert(archive.ls().size() == 5);
 		assert(archive.use("Kalle").valid());
 		assert(!archive.use("Kalle").fileInserted());
+		inserted_item.reset();
+		assert(!inserted_item.fileInserted());
 
 		assert(!archive.remove("Non-existing entry"));
 		assert(archive.ls().size() == 5);
