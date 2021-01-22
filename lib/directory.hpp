@@ -110,7 +110,7 @@ namespace Wad64
 
 		explicit Directory(): m_eof{sizeof(WadInfo)} {}
 
-		explicit Directory(std::span<FileLump> directory, DirEntry reserved_space);
+		explicit Directory(std::span<FileLump> directory);
 
 		/**
 		 * \brief Retrieves a full directory listing

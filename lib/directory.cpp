@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-Wad64::Directory::Directory(std::span<FileLump> entries, DirEntry reserved_space)
+Wad64::Directory::Directory(std::span<FileLump> entries)
 {
 	std::ranges::for_each(entries, []<class T>(T const& item) {
 		using ValidationResult = typename T::ValidationResult;
@@ -21,10 +21,9 @@ Wad64::Directory::Directory(std::span<FileLump> entries, DirEntry reserved_space
 	    });
 
 	std::vector<DirEntry> file_offsets;
-	file_offsets.reserve(std::size(entries) + 1);
+	file_offsets.reserve(std::size(entries));
 	std::ranges::transform(
 	    m_content, std::back_inserter(file_offsets), [](auto const& item) { return item.second; });
-	file_offsets.push_back(reserved_space);
 	std::ranges::sort(file_offsets, [](auto a, auto b) { return a.begin < b.begin; });
 
 	m_eof = file_offsets.back().end;
@@ -99,6 +98,5 @@ Wad64::Directory Wad64::readDirectory(FileReference ref)
 {
 	auto header = readHeader(ref);
 	auto dir_data = readInfoTables(ref, header);
-	DirEntry direntry_dir{header.infotablesofs, header.infotablesofs + header.numlumps*size<Wad64::FileLump>()};
-	return Directory{std::span(dir_data.get(), header.numlumps), direntry_dir};
+	return Directory{std::span(dir_data.get(), header.numlumps)};
 }
