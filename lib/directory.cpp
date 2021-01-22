@@ -88,3 +88,17 @@ bool Wad64::Directory::secureRemove(std::string_view filename, FileReference ref
 	remove(i_dir);
 	return true;
 }
+
+	template<class T>
+	constexpr int64_t size()
+	{
+		return static_cast<int64_t>(sizeof(T));
+	}
+
+Wad64::Directory Wad64::readDirectory(FileReference ref)
+{
+	auto header = readHeader(ref);
+	auto dir_data = readInfoTables(ref, header);
+	DirEntry direntry_dir{header.infotablesofs, header.infotablesofs + header.numlumps*size<Wad64::FileLump>()};
+	return Directory{std::span(dir_data.get(), header.numlumps), direntry_dir};
+}

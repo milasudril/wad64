@@ -1,6 +1,5 @@
 //@	{
 //@	 "targets":[{"name":"archive.hpp","type":"include"}]
-//@	,"dependencies_extra":[{"ref":"archive.o","rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_LIB_ARCHIVE_HPP
@@ -26,6 +25,8 @@ namespace Wad64
 	class Archive
 	{
 	public:
+		explicit Archive(FileReference ref): m_directory{readDirectory(ref)}, m_file_ref{ref}{}
+
 		/**
 		 * \brief Initiates an Archive from `f`
 		*/
@@ -33,8 +34,6 @@ namespace Wad64
 		explicit Archive(std::reference_wrapper<File> f): Archive{FileReference{f}}
 		{
 		}
-
-		explicit Archive(FileReference ref);
 
 		/**
 		 * \brief Retrieves a full directory listing

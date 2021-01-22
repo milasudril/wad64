@@ -210,6 +210,8 @@ namespace Wad64
 
 		void remove(Storage::iterator i_dir);
 	};
+
+	Directory readDirectory(FileReference ref);
 }
 
 #endif
