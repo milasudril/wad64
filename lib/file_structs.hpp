@@ -6,9 +6,12 @@
 #ifndef WAD64_LIB_FILESTRUCTS_HPP
 #define WAD64_LIB_FILESTRUCTS_HPP
 
+#include "./io_policy.hpp"
+
 #include <cstdint>
 #include <array>
 #include <string_view>
+#include <memory>
 
 namespace Wad64
 {
@@ -73,6 +76,10 @@ namespace Wad64
 	bool validateFilename(std::string_view name);
 
 	FileLump::ValidationResult validate(FileLump const& lump);
+
+	WadInfo readHeader(FileReference ref);
+
+	std::unique_ptr<FileLump[]> readInfoTables(FileReference ref, WadInfo info);
 }
 
 #endif

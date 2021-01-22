@@ -3,6 +3,7 @@
 //@	}
 
 #include "./file_structs.hpp"
+#include "./archive_error.hpp"
 
 #include <algorithm>
 #include <span>
@@ -76,4 +77,38 @@ Wad64::FileLump::ValidationResult Wad64::validate(FileLump const& lump)
 	if(!validate_filename(lump.name)) { return ValidationResult::IllegalFilename; }
 
 	return ValidationResult::NoError;
+}
+
+Wad64::WadInfo Wad64::readHeader(FileReference ref)
+{
+	WadInfo info;
+	errno = 0;
+	auto n_read = ref.read(std::span{reinterpret_cast<std::byte*>(&info), sizeof(info)}, 0);
+	if(n_read == 0 || errno == EBADF)
+	{
+		info.identification = Wad64::MagicNumber;
+		info.numlumps = 0;
+		info.infotablesofs = sizeof(info);
+		return info;
+	}
+
+	if(n_read != sizeof(info))
+	{
+		throw ArchiveError{"Invalid Wad64 file"};
+	}
+
+	if(validate(info) != Wad64::WadInfo::ValidationResult::NoError)
+	{ throw ArchiveError{"Invalid Wad64 file"}; }
+
+	return info;
+}
+
+std::unique_ptr<Wad64::FileLump[]> Wad64::readInfoTables(FileReference ref, WadInfo info)
+{
+	auto entries = std::make_unique<FileLump[]>(info.numlumps);
+	auto const dir_range  = std::span{entries.get(), static_cast<size_t>(info.numlumps)};
+	auto const n_read = ref.read(std::as_writable_bytes(dir_range), info.infotablesofs);
+	if(n_read != info.numlumps*sizeof(FileLump))
+	{ throw ArchiveError{"Failed to load infotables. File truncated?"}; }
+	return entries;
 }
