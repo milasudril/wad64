@@ -1,5 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"output_file.test","type":"application", "autorun":1}]
+//@	 "targets":[{"name":"output_file.test","type":"application", "autorun":0}]
 //@	}
 
 #include "./output_file.hpp"

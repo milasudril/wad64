@@ -1,4 +1,4 @@
-//@	{"targets":[{"name":"archive.test","type":"application","autorun":1}]}
+//@	{"targets":[{"name":"archive.test","type":"application","autorun":0}]}
 
 #include "archive.hpp"
 

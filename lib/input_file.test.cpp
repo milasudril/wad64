@@ -1,5 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"input_file.test","type":"application", "autorun":1}]
+//@	 "targets":[{"name":"input_file.test","type":"application", "autorun":0}]
 //@	}
 
 #include "./input_file.hpp"
