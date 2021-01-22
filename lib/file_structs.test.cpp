@@ -2,9 +2,11 @@
 
 #include "./file_structs.hpp"
 
+#include "./membuffer.hpp"
 #include <type_traits>
 #include <algorithm>
 #include <cassert>
+#include <cstring>
 
 static_assert(sizeof(Wad64::WadInfo) == 24);
 static_assert(std::is_trivial_v<Wad64::WadInfo>);
@@ -150,6 +152,88 @@ namespace Testcases
 
 		assert(!Wad64::validateFilename(test));
 	}
+
+	void wad64ReadHeaderEmptyFileEmptyNotAllowed()
+	{
+		Wad64::MemBuffer data;
+		auto src = Wad64::FileReference{std::ref(data)};
+		try
+		{
+			(void)readHeader(src, Wad64::WadInfo::AllowEmpty{false});
+			abort();
+		}
+		catch(...)
+		{}
+	}
+
+	void wad64ReadHeaderEmptyFileEmptyAllowed()
+	{
+		Wad64::MemBuffer data;
+		auto header = readHeader(Wad64::FileReference{std::ref(data)}, Wad64::WadInfo::AllowEmpty{true});
+		assert(header.identification == Wad64::MagicNumber);
+		assert(header.infotablesofs == sizeof(header));
+		assert(header.numlumps == 0);
+	}
+
+	void wad64ReadHeaderShortFile()
+	{
+		Wad64::MemBuffer data;
+		data.data.resize(sizeof(Wad64::WadInfo) - 1);
+
+		Wad64::WadInfo info{};
+		info.identification = Wad64::MagicNumber;
+		info.infotablesofs = sizeof(Wad64::WadInfo);
+		info.numlumps = 0;
+
+		memcpy(data.data.data(), &info, sizeof(Wad64::WadInfo) - 1);
+
+		auto src = Wad64::FileReference{std::ref(data)};
+		try
+		{
+			(void)readHeader(src, Wad64::WadInfo::AllowEmpty{true});
+			abort();
+		}
+		catch(...)
+		{}
+	}
+
+	void wad64ReadHeaderInvalid()
+	{
+		Wad64::MemBuffer data;
+		data.data.resize(sizeof(Wad64::WadInfo));
+
+		Wad64::WadInfo info{};
+		info.identification = Wad64::MagicNumber;
+		info.infotablesofs = sizeof(Wad64::WadInfo) - 1;
+		info.numlumps = 0;
+
+		memcpy(data.data.data(), &info, sizeof(Wad64::WadInfo));
+
+		auto src = Wad64::FileReference{std::ref(data)};
+		try
+		{
+			(void)readHeader(src, Wad64::WadInfo::AllowEmpty{true});
+			abort();
+		}
+		catch(...)
+		{}
+	}
+
+	void wad64ReadHeader()
+	{
+		Wad64::MemBuffer data;
+		data.data.resize(sizeof(Wad64::WadInfo));
+
+		Wad64::WadInfo info{};
+		info.identification = Wad64::MagicNumber;
+		info.infotablesofs = sizeof(Wad64::WadInfo) + 5;
+		info.numlumps = 10;
+		memcpy(data.data.data(), &info, sizeof(Wad64::WadInfo));
+
+		auto header = readHeader(Wad64::FileReference{std::ref(data)}, Wad64::WadInfo::AllowEmpty{true});
+		assert(header == info);
+	}
+
 }
 
 int main()
@@ -167,5 +251,10 @@ int main()
 	Testcases::wad64ValidateFilenameValid();
 	Testcases::wad64ValidateFilenameInvalid();
 	Testcases::wad64ValidateFilenameTooLong();
+	Testcases::wad64ReadHeaderEmptyFileEmptyNotAllowed();
+	Testcases::wad64ReadHeaderEmptyFileEmptyAllowed();
+	Testcases::wad64ReadHeaderShortFile();
+	Testcases::wad64ReadHeaderInvalid();
+	Testcases::wad64ReadHeader();
 	return 0;
 }

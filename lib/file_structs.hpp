@@ -53,6 +53,16 @@ namespace Wad64
 		};
 	};
 
+	inline bool operator==(WadInfo const& a, WadInfo const& b)
+	{
+		return a.identification == b.identification
+			&& a.numlumps == b.numlumps
+			&& a.infotablesofs == b.infotablesofs;
+	}
+
+	inline bool operator!=(WadInfo const& a, WadInfo const& b)
+	{ return !(a == b); }
+
 	WadInfo::ValidationResult validate(WadInfo const& info);
 
 	constexpr size_t NameSize = 256;
