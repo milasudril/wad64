@@ -94,13 +94,23 @@ namespace Wad64
 		};
 	};
 
+	inline bool operator==(FileLump const& a, FileLump const& b)
+	{
+		return a.filepos == b.filepos
+			&& a.size == b.size
+			&& a.name == b.name;
+	}
+
+	inline bool operator!=(FileLump const& a, FileLump const& b)
+	{ return !(a == b); }
+
 	bool validateFilename(std::string_view name);
 
 	FileLump::ValidationResult validate(FileLump const& lump);
 
 	WadInfo readHeader(FileReference ref, WadInfo::AllowEmpty allow_empty = WadInfo::AllowEmpty{true});
 
-	std::unique_ptr<FileLump[]> readInfoTables(FileReference ref, WadInfo info);
+	std::unique_ptr<FileLump[]> readInfoTables(FileReference ref, WadInfo const& info);
 }
 
 #endif

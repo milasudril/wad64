@@ -106,7 +106,7 @@ Wad64::WadInfo Wad64::readHeader(FileReference ref, WadInfo::AllowEmpty allow_em
 	return info;
 }
 
-std::unique_ptr<Wad64::FileLump[]> Wad64::readInfoTables(FileReference ref, WadInfo info)
+std::unique_ptr<Wad64::FileLump[]> Wad64::readInfoTables(FileReference ref, WadInfo const& info)
 {
 	auto entries = std::make_unique<FileLump[]>(info.numlumps);
 	auto const dir_range  = std::span{entries.get(), static_cast<size_t>(info.numlumps)};
