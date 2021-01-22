@@ -79,13 +79,16 @@ Wad64::FileLump::ValidationResult Wad64::validate(FileLump const& lump)
 	return ValidationResult::NoError;
 }
 
-Wad64::WadInfo Wad64::readHeader(FileReference ref)
+Wad64::WadInfo Wad64::readHeader(FileReference ref, WadInfo::AllowEmpty allow_empty)
 {
 	WadInfo info;
 	errno = 0;
 	auto n_read = ref.read(std::span{reinterpret_cast<std::byte*>(&info), sizeof(info)}, 0);
 	if(n_read == 0 || errno == EBADF)
 	{
+		if(!allow_empty)
+		{ throw ArchiveError{"File is empty"};}
+
 		info.identification = Wad64::MagicNumber;
 		info.numlumps = 0;
 		info.infotablesofs = sizeof(info);

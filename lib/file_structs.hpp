@@ -40,6 +40,17 @@ namespace Wad64
 			NegativeSize,
 			BadIdentifier
 		};
+
+		class AllowEmpty
+		{
+		public:
+			constexpr explicit AllowEmpty(bool value):m_value{value}{}
+
+			constexpr operator bool() const { return m_value; }
+
+		private:
+			bool m_value;
+		};
 	};
 
 	WadInfo::ValidationResult validate(WadInfo const& info);
@@ -77,7 +88,7 @@ namespace Wad64
 
 	FileLump::ValidationResult validate(FileLump const& lump);
 
-	WadInfo readHeader(FileReference ref);
+	WadInfo readHeader(FileReference ref, WadInfo::AllowEmpty allow_empty = WadInfo::AllowEmpty{true});
 
 	std::unique_ptr<FileLump[]> readInfoTables(FileReference ref, WadInfo info);
 }
