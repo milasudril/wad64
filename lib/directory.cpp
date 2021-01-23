@@ -93,7 +93,7 @@ void Wad64::Directory::commit(FilenameReservation&& reservation,
                               void* obj,
                               CommitCallback cb)
 {
-	if(m_gaps.size() == 0) { m_gaps.push(Gap{m_eof, std::numeric_limits<int64_t>::max() - m_eof}); }
+	if(std::size(m_gaps) == 0) { m_gaps.push(Gap{m_eof, std::numeric_limits<int64_t>::max() - m_eof}); }
 
 	auto const gap = m_gaps.top();
 	auto committer = [obj,
@@ -122,6 +122,16 @@ void Wad64::Directory::commit(FilenameReservation&& reservation,
 	return;
 }
 
+int64_t Wad64::Directory::findSpace(int64_t req_size) const
+{
+	if(std::size(m_gaps) == 0)
+	{ return m_eof; }
+
+	auto const gap = m_gaps.top();
+
+	return (gap.size < req_size)? m_eof : gap.size;
+}
+
 std::vector<Wad64::Gap> Wad64::Directory::gaps() const
 {
 	std::vector<Gap> ret;
@@ -140,11 +150,11 @@ Wad64::Directory Wad64::readDirectory(FileReference ref, WadInfo const& header)
 	return Directory{std::span(dir_data.get(), header.numlumps)};
 }
 
-
-void Wad64::write(Directory&& dir, FileReference ref)
+Wad64::WadInfo Wad64::write(Directory const& dir, FileReference ref)
 {
 	auto const& entries = dir.ls();
 	auto const n = std::size(entries);
+
 	auto entries_out = std::make_unique<FileLump[]>(n);
 	std::ranges::transform(entries, entries_out.get(), [](auto const& item) {
 		FileLump info{};
@@ -154,11 +164,12 @@ void Wad64::write(Directory&& dir, FileReference ref)
 		return info;
 	});
 
-	dir.commit(dir.reserve(), n, [ref, n, entries = entries_out.get()](auto entry){
-		WadInfo info;
-		info.identification = Wad64::MagicNumber;
-		info.numlumps = n;
-		info.infotablesofs = entry.begin;
-		ref.write(std::as_bytes(std::span{&info, 1}), 0);
-	});
+	WadInfo ret;
+	ret.identification = Wad64::MagicNumber;
+	ret.numlumps = n;
+	ret.infotablesofs = dir.findSpace(n * sizeof(FileLump));
+
+	ref.write(std::as_bytes(std::span{entries_out.get(), n}), ret.infotablesofs);
+
+	return ret;
 }

@@ -134,6 +134,8 @@ namespace Wad64
 
 		std::vector<Gap> gaps() const;
 
+		int64_t findSpace(int64_t req_size) const;
+
 	private:
 		Storage m_content;
 
@@ -151,11 +153,7 @@ namespace Wad64
 
 	Directory readDirectory(FileReference ref, WadInfo const& header);
 
-	/**
-	* \note dir is non-const, because the function will modify reservations and available gaps
-	* in order to find a suitable slot.
-	*/
-	void write(Directory&& dir, FileReference ref);
+	WadInfo write(Directory const& dir, FileReference ref);
 }
 
 #endif
