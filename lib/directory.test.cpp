@@ -135,11 +135,18 @@ namespace Testcases
 				entry_saved = entry;
 			});
 		}
-		assert(std::size(dir.ls()) == 1);
-		auto entry = dir.stat("Foobar");
-		assert(entry.has_value());
-		assert(*entry == entry_saved);
-		assert(dir.eofOffset() == entry_saved.end);
+
+		{
+			assert(std::size(dir.ls()) == 1);
+			auto entry = dir.stat("Foobar");
+			assert(entry.has_value());
+			assert(*entry == entry_saved);
+			assert(dir.eofOffset() == entry_saved.end);
+			auto gaps = dir.gaps();
+			assert(std::size(gaps) == 1);
+			assert(gaps[0].begin == entry_saved.end);
+			assert(gaps[0].size == std::numeric_limits<int64_t>::max() - 13 - sizeof(Wad64::WadInfo));
+		}
 
 		{
 			auto reservation = dir.reserve("Foobar");
@@ -147,12 +154,14 @@ namespace Testcases
 			assert(!reservation.itemInserted());
 		}
 		assert(std::size(dir.ls()) == 1);
+		assert(std::size(dir.gaps()) == 1);
 
 		{
 			auto reservation = dir.use("Foobar");
 			assert(reservation.valid());
 			assert(!reservation.itemInserted());
 		}
+		assert(std::size(dir.gaps()) == 1);
 	}
 
 	void wad64DirectoryReserveAndCommitWithException()
@@ -173,6 +182,10 @@ namespace Testcases
 		assert(std::size(dir.ls()) == 0);
 		auto entry = dir.stat("Foobar");
 		assert(!entry.has_value());
+		auto gaps = dir.gaps();
+		assert(std::size(gaps) == 1);
+		assert(gaps[0].begin == sizeof(Wad64::WadInfo));
+		assert(gaps[0].size == std::numeric_limits<int64_t>::max() - sizeof(Wad64::WadInfo));
 	}
 
 	void wad64DirectoryLoadEntries()
@@ -198,6 +211,10 @@ namespace Testcases
 		});
 
 		assert(dir.eofOffset() == lumps.back().filepos + lumps.back().size);
+
+		// We start directly after header. Also, there is no gap between first and second element
+		// creation of lumps above.
+		assert(std::size(dir.gaps()) == std::size(lumps) - 2);
 	}
 
 	void wad64DirectoryLoadEmptyList()
@@ -205,6 +222,7 @@ namespace Testcases
 		Wad64::Directory dir{std::span{std::data(lumps), 0}};
 		assert(dir.eofOffset() == sizeof(Wad64::WadInfo));
 		assert(std::size(dir.ls()) == 0);
+		assert(std::size(dir.gaps()) == 0);
 	}
 
 	void wad64DirectoryLoadEntriesAndRemoveItem()
@@ -213,13 +231,23 @@ namespace Testcases
 
 		auto const item_count = std::size(dir.ls());
 		auto const eof        = dir.eofOffset();
-		assert(dir.stat(lumps[0].name.data()));
+		auto const gaps_before = dir.gaps();
+		auto const entry = dir.stat(lumps[0].name.data());
+		assert(entry.has_value());
+		assert(std::ranges::none_of(gaps_before, [e = *entry](auto val) {
+			return val.begin == e.begin && e.end - e.begin == val.size;
+		}));
 
 		assert(dir.remove(lumps[0].name.data()));
 
 		assert(!dir.stat(lumps[0].name.data()));
 		assert(std::size(dir.ls()) == item_count - 1);
 		assert(dir.eofOffset() == eof);
+		auto const gaps_after = dir.gaps();
+		assert(std::size(gaps_after) == std::size(gaps_before) + 1);
+		assert(std::ranges::any_of(gaps_after, [e = *entry](auto val) {
+			return val.begin == e.begin && e.end - e.begin == val.size;
+		}));
 	}
 
 	void wad64DirectoryLoadEntriesAndRemoveLastItem()
@@ -236,6 +264,9 @@ namespace Testcases
 		// This is does not consider any padding between last entry and previous one, but `remove`
 		// cannot know the previous item. Thus, it must set eof to filepos of the removed item.
 		assert(dir.eofOffset() == lumps.back().filepos);
+		auto const gaps = dir.gaps();
+		assert(gaps[0].begin == dir.eofOffset());
+		assert(gaps[0].size == std::numeric_limits<int64_t>::max() - dir.eofOffset());
 	}
 
 	void wad64DirectoryLoadEntriesAndSecureRemoveItem()
@@ -335,11 +366,17 @@ namespace Testcases
 		Wad64::Directory dir{lumps};
 		auto const current_eof = dir.eofOffset();
 		auto reservation       = dir.reserve("Foobar");
+		auto const gaps = dir.gaps();
 		assert(reservation.itemInserted());
 		assert(reservation.valid());
 		auto const size_req = 325;
-		dir.commit(std::move(reservation), size_req, [size_req](Wad64::DirEntry dir_entry) {
+		Wad64::Gap old_gap;
+		dir.commit(std::move(reservation), size_req, [&gaps, size_req, &old_gap](Wad64::DirEntry dir_entry) {
+			old_gap = gaps[0];
 			assert(dir_entry.end - dir_entry.begin == size_req);
+			assert(dir_entry.begin == gaps[0].begin);
+			assert(dir_entry.end - dir_entry.begin <= gaps[0].size);
+
 			assert(std::ranges::none_of(lumps, [dir_entry](auto const& item) {
 				auto const i_begin = item.filepos;
 				auto const i_end   = item.filepos + item.size;
@@ -348,6 +385,11 @@ namespace Testcases
 			}));
 		});
 		assert(dir.eofOffset() == current_eof);
+		auto const gaps_new = dir.gaps();
+		assert(std::size(gaps_new) == std::size(gaps));
+		assert(std::ranges::any_of(gaps_new, [old_gap, size_req](auto item){
+			return item.begin == old_gap.begin + size_req && item.size == old_gap.size - size_req;
+		}));
 	}
 
 	void wad64DirectoryLoadEntriesAndCommitOldReservationSuitableGapExists()
@@ -355,9 +397,14 @@ namespace Testcases
 		Wad64::Directory dir{lumps};
 		auto const current_eof = dir.eofOffset();
 		auto reservation       = dir.use(lumps[0].name.data());
+		auto const gaps = dir.gaps();
 		assert(!reservation.itemInserted());
 		assert(reservation.valid());
+		assert(std::ranges::none_of(gaps, [entry = reservation.value()](auto item) {
+			return entry.begin == item.begin && item.size == entry.end - entry.begin;
+		}));
 		auto const size_req = 325;
+		auto entry = reservation.value();
 		dir.commit(std::move(reservation), size_req, [size_req](Wad64::DirEntry dir_entry) {
 			assert(dir_entry.end - dir_entry.begin == size_req);
 			assert(std::ranges::none_of(lumps, [dir_entry](auto const& item) {
@@ -368,6 +415,11 @@ namespace Testcases
 			}));
 		});
 		assert(dir.eofOffset() == current_eof);
+		auto const gaps_new = dir.gaps();
+		assert(std::size(gaps_new) == std::size(gaps) + 1);
+		assert(std::ranges::any_of(gaps_new, [entry](auto item) {
+			return entry.begin == item.begin && item.size == entry.end - entry.begin;
+		}));
 	}
 
 	void wad64DirectoryLoadEntriesAndCommitNewReservationGapWasFilled()
@@ -375,6 +427,7 @@ namespace Testcases
 		Wad64::Directory dir{lumps};
 		auto const current_eof = dir.eofOffset();
 		auto reservation       = dir.reserve("Foobar");
+		auto const gaps_before = dir.gaps();
 		assert(reservation.itemInserted());
 		assert(reservation.valid());
 		auto const size_req = 26143;
@@ -388,6 +441,7 @@ namespace Testcases
 			}));
 		});
 		assert(dir.eofOffset() == current_eof);
+		assert(std::size(dir.gaps()) == std::size(gaps_before) - 1);
 	}
 
 	void wad64DirectoryLoadEntriesAndCommitNewReservationNoGapFound()
@@ -395,6 +449,7 @@ namespace Testcases
 		Wad64::Directory dir{lumps};
 		auto const current_eof = dir.eofOffset();
 		auto reservation       = dir.reserve("Foobar");
+		auto const gaps_before = dir.gaps();
 		assert(reservation.itemInserted());
 		assert(reservation.valid());
 		auto const size_req = 2 * 26143;
@@ -408,6 +463,7 @@ namespace Testcases
 			}));
 		});
 		assert(dir.eofOffset() == current_eof + size_req);
+		assert(std::size(dir.gaps()) == std::size(gaps_before));
 	}
 
 	void wad64DirectoryReadFromFile()

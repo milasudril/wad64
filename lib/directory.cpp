@@ -32,7 +32,6 @@ Wad64::Directory::Directory(std::span<FileLump const> entries): m_eof{sizeof(Wad
 	   != std::end(file_offsets))
 	{ throw ArchiveError{"Overlapping file offsets"}; }
 
-
 	std::ranges::for_each(
 	    file_offsets,
 	    [prev_end = static_cast<int64_t>(sizeof(WadInfo)), &gaps = m_gaps](auto val) mutable {
@@ -45,10 +44,11 @@ Wad64::Directory::Directory(std::span<FileLump const> entries): m_eof{sizeof(Wad
 
 void Wad64::Directory::remove(Storage::iterator i_dir)
 {
-	auto const size = i_dir->second.end == m_eof ? std::numeric_limits<int64_t>::max()
+	auto const eof_old = m_eof;
+	if(i_dir->second.end == eof_old) { m_eof = i_dir->second.begin; }
+	auto const size = i_dir->second.end == eof_old ? std::numeric_limits<int64_t>::max() - m_eof
 	                                             : i_dir->second.end - i_dir->second.begin;
 	m_gaps.push(Gap{i_dir->second.begin, size});
-	if(i_dir->second.end == m_eof) { m_eof = i_dir->second.begin; }
 	m_content.erase(i_dir);
 	return;
 }
@@ -120,6 +120,18 @@ void Wad64::Directory::commit(FilenameReservation&& reservation,
 	if(gap.size - req_size > 0) { m_gaps.push(Gap{gap.begin + req_size, gap.size - req_size}); }
 
 	return;
+}
+
+std::vector<Wad64::Gap> Wad64::Directory::gaps() const
+{
+	std::vector<Gap> ret;
+	ret.reserve(m_gaps.size());
+	std::generate_n(std::back_inserter(ret), m_gaps.size(), [gaps = m_gaps]() mutable {
+		auto ret = gaps.top();
+		gaps.pop();
+		return ret;
+	});
+	return ret;
 }
 
 Wad64::Directory Wad64::readDirectory(FileReference ref, WadInfo::AllowEmpty allow_empty)

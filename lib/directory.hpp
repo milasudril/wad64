@@ -32,6 +32,16 @@ namespace Wad64
 		int64_t size;
 	};
 
+	inline bool operator==(Gap a, Gap b)
+	{
+		return a.begin == b.begin && a.size == b.size;
+	}
+
+	inline bool operator!=(Gap a, Gap b)
+	{
+		return !(a == b);
+	}
+
 
 	class Directory
 	{
@@ -117,6 +127,8 @@ namespace Wad64
 				self(entry);
 			});
 		}
+
+		std::vector<Gap> gaps() const;
 
 	private:
 		Storage m_content;
