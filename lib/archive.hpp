@@ -94,12 +94,6 @@ namespace Wad64
 
 	private:
 		Directory m_directory;
-		struct GapCompare
-		{
-			bool operator()(Gap a, Gap b) const { return a.size > b.size; }
-		};
-		std::priority_queue<Gap, std::vector<Gap>, GapCompare> m_gaps;
-
 		FileReference m_file_ref;
 	};
 }
