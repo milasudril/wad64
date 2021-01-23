@@ -27,7 +27,7 @@ namespace
 
 	constexpr std::array<int64_t, 10> sizes{4716, 4608, 844, 7084, 6, 26, 44764, 135, 42, 44121};
 
-	constexpr std::array<double, 10> paddings{3.6994e-02,
+	constexpr std::array<double, 10> paddings{0.0,
 	                                          9.7230e-01,
 	                                          4.6798e-01,
 	                                          9.3508e-01,
@@ -272,6 +272,32 @@ namespace Testcases
 		}
 		assert(std::size(dir.ls()) == n_entries);
 	}
+
+	void wad64DirectoryLoadEntriesInvalidItem()
+	{
+		auto bad_lumps = lumps;
+		bad_lumps[0].name[4] = '\0';
+		try
+		{
+			Wad64::Directory dir{bad_lumps};
+			abort();
+		}
+		catch(...)
+		{}
+	}
+
+	void wad64DirectoryLoadEntriesOverlappingOffsets()
+	{
+		auto bad_lumps = lumps;
+		bad_lumps[0].size *= 2;
+		try
+		{
+			Wad64::Directory dir{bad_lumps};
+			abort();
+		}
+		catch(...)
+		{}
+	}
 }
 
 int main()
@@ -290,5 +316,7 @@ int main()
 	Testcases::wad64DirectoryLoadEntriesAndSecureRemoveItem();
 	Testcases::wad64DirectoryReserveExistingItem();
 	Testcases::wad64DirectoryUseExistingItem();
+	Testcases::wad64DirectoryLoadEntriesInvalidItem();
+	Testcases::wad64DirectoryLoadEntriesOverlappingOffsets();
 	return 0;
 }
