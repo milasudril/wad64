@@ -212,17 +212,17 @@ namespace Testcases
 
 		auto const non_inserted_item = archive.reserve("Bar");
 		assert(non_inserted_item.valid());
-		assert(!non_inserted_item.fileInserted());
+		assert(!non_inserted_item.itemInserted());
 		assert(archive.use("Bar").valid());
-		assert(!archive.use("Bar").fileInserted());
+		assert(!archive.use("Bar").itemInserted());
 
 		assert(archive.ls().size() == 4);
 		auto inserted_item = archive.reserve("Kalle");
 		assert(inserted_item.valid());
-		assert(inserted_item.fileInserted());
+		assert(inserted_item.itemInserted());
 		assert(archive.ls().size() == 5);
 		assert(archive.use("Kalle").valid());
-		assert(!archive.use("Kalle").fileInserted());
+		assert(!archive.use("Kalle").itemInserted());
 		archive.commit(std::move(inserted_item), Wad64::FdAdapter{-1}, 0);
 
 		assert(!archive.remove("Non-existing entry"));

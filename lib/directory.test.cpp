@@ -67,7 +67,7 @@ namespace Testcases
 			auto entry = dir.stat("Foobar");
 			assert(entry.has_value());
 			assert(reservation.valid());
-			assert(reservation.fileInserted());
+			assert(reservation.itemInserted());
 			assert((*entry == Wad64::DirEntry{0, 0}));
 		}
 
@@ -95,14 +95,14 @@ namespace Testcases
 		{
 			auto reservation = dir.reserve("Foobar");
 			assert(reservation.valid());
-			assert(!reservation.fileInserted());
+			assert(!reservation.itemInserted());
 		}
 		assert(std::size(dir.ls()) == 1);
 
 		{
 			auto reservation = dir.use("Foobar");
 			assert(reservation.valid());
-			assert(!reservation.fileInserted());
+			assert(!reservation.itemInserted());
 		}
 	}
 

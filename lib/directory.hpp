@@ -9,6 +9,7 @@
 #include "./file_structs.hpp"
 #include "./archive_error.hpp"
 #include "./io_policy.hpp"
+#include "./map_insertion.hpp"
 
 #include <map>
 #include <queue>
@@ -42,77 +43,7 @@ namespace Wad64
 		using GapStorage = std::priority_queue<Gap, std::vector<Gap>, GapCompare>;
 
 	public:
-		/**
-		 * \brief Holder for a reference to a directory entry, that should be used to store a file
-		 *
-		 */
-		class FilenameReservation
-		{
-		public:
-			FilenameReservation(): m_valid{false}, m_storage{nullptr} {}
-
-			explicit FilenameReservation(Storage::iterator i): m_valid{true}, m_storage{nullptr}, m_value{i} {}
-
-			explicit FilenameReservation(Storage* storage, Storage::iterator&& val)
-			    : m_valid{true}
-			    , m_storage{storage}
-			    , m_value{std::move(val)}
-			{
-			}
-
-			FilenameReservation(FilenameReservation&& other) noexcept:
-			m_valid{other.m_valid},
-			m_storage{std::exchange(other.m_storage, nullptr)},
-			m_value{std::move(other.m_value)}
-			{
-			}
-
-			FilenameReservation& operator=(FilenameReservation&& other) noexcept
-			{
-				m_valid = other.m_valid;
-				m_storage = std::exchange(other.m_storage, nullptr);
-				m_value = other.m_value;
-				return *this;
-			}
-
-			/**
-			 * \brief Indicates whether or not a new directory entry was inserted when this
-			 * FilenameResrvation was created
-			*/
-			bool fileInserted() const { return m_storage != nullptr; }
-
-			/**
-			 * \brief Indicates whether or not this FilenameReservation is valid. For example,
-			 * if the reservation was retrieved by calling `use` on the Directory, and
-			 * the requested file  did not exist, then the reservation will be invalid.
-			 */
-			bool valid() const { return m_valid; }
-
-
-			~FilenameReservation()
-			{
-				if(fileInserted())
-				{
-					m_storage->erase(m_value);
-				}
-			}
-
-			template<class Callback>
-			void commit(DirEntry entry, Callback&& cb)
-			{
-				cb(entry);
-				m_value->second = entry;
-				reset();
-			}
-
-		private:
-			void reset()
-			{ m_storage = nullptr; }
-
-			bool m_valid;
-			Storage* m_storage;
-			Storage::iterator m_value;
-		};
+		using FilenameReservation = MapInsertion<Storage>;
 
 		explicit Directory(): m_eof{sizeof(WadInfo)} {}
 
