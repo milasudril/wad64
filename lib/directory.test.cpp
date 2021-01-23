@@ -155,6 +155,26 @@ namespace Testcases
 		}
 	}
 
+	void wad64DirectoryReserveAndCommitWithException()
+	{
+		Wad64::Directory dir{};
+		Wad64::DirEntry entry_saved{};
+		{
+			auto reservation = dir.reserve("Foobar");
+			try
+			{
+				dir.commit(std::move(reservation), 13, [&entry_saved](Wad64::DirEntry) {
+					throw "Blah";
+				});
+			}
+			catch(...)
+			{}
+		}
+		assert(std::size(dir.ls()) == 0);
+		auto entry = dir.stat("Foobar");
+		assert(!entry.has_value());
+	}
+
 	void wad64DirectoryLoadEntries()
 	{
 		Wad64::Directory dir{lumps};
@@ -298,6 +318,86 @@ namespace Testcases
 		catch(...)
 		{}
 	}
+
+	void wad64DirectoryLoadEntriesAndCommitNewReservationSuitableGapExists()
+	{
+		Wad64::Directory dir{lumps};
+		auto const current_eof = dir.eofOffset();
+		auto reservation = dir.reserve("Foobar");
+		assert(reservation.itemInserted());
+		assert(reservation.valid());
+		auto const size_req = 325;
+		dir.commit(std::move(reservation), size_req, [size_req](Wad64::DirEntry dir_entry) {
+			assert(dir_entry.end - dir_entry.begin == size_req);
+			assert(std::ranges::none_of(lumps, [dir_entry](auto const& item) {
+				auto const i_begin = item.filepos;
+				auto const i_end = item.filepos + item.size;
+				return (i_begin >= dir_entry.begin && i_begin < dir_entry.end)
+					|| (i_end > dir_entry.begin && i_end <= dir_entry.end);
+			}));
+		});
+		assert(dir.eofOffset() == current_eof);
+	}
+
+	void wad64DirectoryLoadEntriesAndCommitOldReservationSuitableGapExists()
+	{
+		Wad64::Directory dir{lumps};
+		auto const current_eof = dir.eofOffset();
+		auto reservation = dir.use(lumps[0].name.data());
+		assert(!reservation.itemInserted());
+		assert(reservation.valid());
+		auto const size_req = 325;
+		dir.commit(std::move(reservation), size_req, [size_req](Wad64::DirEntry dir_entry) {
+			assert(dir_entry.end - dir_entry.begin == size_req);
+			assert(std::ranges::none_of(lumps, [dir_entry](auto const& item) {
+				auto const i_begin = item.filepos;
+				auto const i_end = item.filepos + item.size;
+				return (i_begin >= dir_entry.begin && i_begin < dir_entry.end)
+					|| (i_end > dir_entry.begin && i_end <= dir_entry.end);
+			}));
+		});
+		assert(dir.eofOffset() == current_eof);
+	}
+
+	void wad64DirectoryLoadEntriesAndCommitNewReservationGapWasFilled()
+	{
+		Wad64::Directory dir{lumps};
+		auto const current_eof = dir.eofOffset();
+		auto reservation = dir.reserve("Foobar");
+		assert(reservation.itemInserted());
+		assert(reservation.valid());
+		auto const size_req = 26143;
+		dir.commit(std::move(reservation), size_req, [size_req](Wad64::DirEntry dir_entry) {
+			assert(dir_entry.end - dir_entry.begin == size_req);
+			assert(std::ranges::none_of(lumps, [dir_entry](auto const& item) {
+				auto const i_begin = item.filepos;
+				auto const i_end = item.filepos + item.size;
+				return (i_begin >= dir_entry.begin && i_begin < dir_entry.end)
+					|| (i_end > dir_entry.begin && i_end <= dir_entry.end);
+			}));
+		});
+		assert(dir.eofOffset() == current_eof);
+	}
+
+	void wad64DirectoryLoadEntriesAndCommitNewReservationNoGapFound()
+	{
+		Wad64::Directory dir{lumps};
+		auto const current_eof = dir.eofOffset();
+		auto reservation = dir.reserve("Foobar");
+		assert(reservation.itemInserted());
+		assert(reservation.valid());
+		auto const size_req = 2*26143;
+		dir.commit(std::move(reservation), size_req, [size_req](Wad64::DirEntry dir_entry) {
+			assert(dir_entry.end - dir_entry.begin == size_req);
+			assert(std::ranges::none_of(lumps, [dir_entry](auto const& item) {
+				auto const i_begin = item.filepos;
+				auto const i_end = item.filepos + item.size;
+				return (i_begin >= dir_entry.begin && i_begin < dir_entry.end)
+					|| (i_end > dir_entry.begin && i_end <= dir_entry.end);
+			}));
+		});
+		assert(dir.eofOffset() == current_eof + size_req);
+	}
 }
 
 int main()
@@ -310,6 +410,7 @@ int main()
 	Testcases::wad64DirectoryReserveInvalidFilename();
 	Testcases::wad64DirectoryReserveDoNotCommit();
 	Testcases::wad64DirectoryReserveAndCommit();
+	Testcases::wad64DirectoryReserveAndCommitWithException();
 	Testcases::wad64DirectoryLoadEntries();
 	Testcases::wad64DirectoryLoadEntriesAndRemoveItem();
 	Testcases::wad64DirectoryLoadEntriesAndRemoveLastItem();
@@ -318,5 +419,9 @@ int main()
 	Testcases::wad64DirectoryUseExistingItem();
 	Testcases::wad64DirectoryLoadEntriesInvalidItem();
 	Testcases::wad64DirectoryLoadEntriesOverlappingOffsets();
+	Testcases::wad64DirectoryLoadEntriesAndCommitNewReservationSuitableGapExists();
+	Testcases::wad64DirectoryLoadEntriesAndCommitOldReservationSuitableGapExists();
+	Testcases::wad64DirectoryLoadEntriesAndCommitNewReservationGapWasFilled();
+	Testcases::wad64DirectoryLoadEntriesAndCommitNewReservationNoGapFound();
 	return 0;
 }

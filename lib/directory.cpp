@@ -37,8 +37,8 @@ Wad64::Directory::Directory(std::span<FileLump const> entries)
 	    file_offsets,
 	    [prev_end = static_cast<int64_t>(sizeof(WadInfo)), &gaps = m_gaps](auto val) mutable {
 		    auto const gap_size = val.begin - prev_end;
-		    auto const gap_end  = val.begin;
-		    if(gap_size != 0) { gaps.push(Gap{gap_end, gap_size}); }
+		    auto const gap_begin  = prev_end;
+		    if(gap_size != 0) { gaps.push(Gap{gap_begin, gap_size}); }
 		    prev_end = val.end;
 	    });
 }
@@ -116,6 +116,7 @@ void Wad64::Directory::commit(FilenameReservation&& reservation,
 	reservation.commit(DirEntry{gap.begin, gap.begin + req_size}, std::move(committer));
 	m_gaps.pop();
 	m_eof = std::max(m_eof, gap.begin + req_size);
+
 	if(gap.size - req_size > 0) { m_gaps.push(Gap{gap.begin + req_size, gap.size - req_size}); }
 
 	return;

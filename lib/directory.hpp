@@ -39,7 +39,7 @@ namespace Wad64
 
 		struct GapCompare
 		{
-			bool operator()(Gap a, Gap b) const { return a.size > b.size; }
+			bool operator()(Gap a, Gap b) const { return a.size < b.size; }
 		};
 		using GapStorage = std::priority_queue<Gap, std::vector<Gap>, GapCompare>;
 
