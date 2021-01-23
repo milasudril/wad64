@@ -88,38 +88,29 @@ bool Wad64::Directory::secureRemove(std::string_view filename, FileReference ref
 	return true;
 }
 
-	template<class T>
-	constexpr int64_t size()
-	{
-		return static_cast<int64_t>(sizeof(T));
-	}
-
 void Wad64::Directory::commit(FilenameReservation&& reservation, int64_t req_size, void* obj, CommitCallback cb)
 {
-	if(m_gaps.size() != 0)
+	if(m_gaps.size() == 0)
+	{ m_gaps.push(Gap{m_eof, std::numeric_limits<int64_t>::max() - m_eof}); }
+
+	auto const gap = m_gaps.top();
+	auto committer = [obj, cb]<class T>(T&& entry) { cb(obj, std::forward<T>(entry)); };
+
+	if(gap.size < req_size)
 	{
-		auto largest_gap = m_gaps.top();
-		if(largest_gap.size < req_size)
-		{
-			reservation.commit(DirEntry{m_eof, m_eof + req_size}, [obj,cb](auto entry) {
-				cb(obj, entry);
-			});
-			m_eof += req_size;
-			return;
-		}
-		reservation.commit(DirEntry{largest_gap.begin, largest_gap.begin + req_size}, [obj,cb](auto entry) {
-			cb(obj, entry);
-		});
-		m_gaps.pop();
-		m_eof = std::max(m_eof, largest_gap.begin + req_size);
-		if(largest_gap.size - req_size > 0)
-		{m_gaps.push(Gap{largest_gap.begin + req_size, largest_gap.size - req_size});}
+		reservation.commit(DirEntry{m_eof, m_eof + req_size}, std::move(committer));
+		m_eof += req_size;
 		return;
 	}
-	reservation.commit(DirEntry{m_eof, m_eof + req_size}, [obj,cb](auto entry) {
-		cb(obj, entry);
-	});
-	m_eof += req_size;
+
+	reservation.commit(DirEntry{gap.begin, gap.begin + req_size}, std::move(committer));
+	m_gaps.pop();
+	m_eof = std::max(m_eof, gap.begin + req_size);
+	if(gap.size - req_size > 0)
+	{ m_gaps.push(Gap{gap.begin + req_size, gap.size - req_size}); }
+
+
+	return;
 }
 
 Wad64::Directory Wad64::readDirectory(FileReference ref)

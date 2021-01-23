@@ -32,6 +32,7 @@ namespace Wad64
 		int64_t size;
 	};
 
+
 	class Directory
 	{
 		using Storage = std::map<std::string, DirEntry, std::less<>>;
@@ -45,7 +46,8 @@ namespace Wad64
 	public:
 		using FilenameReservation = MapInsertion<Storage>;
 
-		explicit Directory(): m_eof{sizeof(WadInfo)} {}
+		explicit Directory(): m_eof{sizeof(WadInfo)}
+		{}
 
 		explicit Directory(std::span<FileLump> directory);
 
