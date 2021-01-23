@@ -173,33 +173,10 @@ namespace Wad64
 		template<class Action>
 		void commit(FilenameReservation&& reservation, int64_t req_size, Action&& action)
 		{
-			if(m_gaps.size() != 0)
-			{
-				auto largest_gap = m_gaps.top();
-				if(largest_gap.size < req_size)
-				{
-					auto entry = DirEntry{m_eof, m_eof + req_size};
-					action(entry);
-					reservation.m_value->second = entry;
-					reservation.reset();
-					m_eof += req_size;
-					return;
-				}
-				auto entry = DirEntry{largest_gap.begin, largest_gap.begin + req_size};
-				action(entry);
-				m_gaps.pop();
-				reservation.m_value->second = entry;
-				reservation.reset();
-				m_eof = std::max(m_eof, largest_gap.begin + req_size);
-				if(largest_gap.size - req_size > 0)
-				{m_gaps.push(Gap{largest_gap.begin + req_size, largest_gap.size - req_size});}
-				return;
-			}
-			auto entry = DirEntry{m_eof, m_eof + req_size};
-			action(entry);
-			reservation.m_value->second = entry;
-			reservation.reset();
-			m_eof += req_size;
+			commit(std::move(reservation), req_size, &action, [](void* obj, DirEntry entry){
+				auto& self = *static_cast<Action*>(obj);
+				self(entry);
+			});
 		}
 
 	private:
@@ -209,6 +186,9 @@ namespace Wad64
 		int64_t m_eof;
 
 		void remove(Storage::iterator i_dir);
+
+		using CommitCallback = void(*)(void*, DirEntry);
+		void commit(FilenameReservation&& reservation, int64_t req_size, void* obj, CommitCallback cb);
 	};
 
 	Directory readDirectory(FileReference ref);
