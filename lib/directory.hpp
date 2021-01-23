@@ -153,7 +153,7 @@ namespace Wad64
 
 	Directory readDirectory(FileReference ref, WadInfo const& header);
 
-	WadInfo write(Directory const& dir, FileReference ref);
+	WadInfo write(FileReference ref, Directory const& dir);
 }
 
 #endif

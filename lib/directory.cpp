@@ -150,7 +150,7 @@ Wad64::Directory Wad64::readDirectory(FileReference ref, WadInfo const& header)
 	return Directory{std::span(dir_data.get(), header.numlumps)};
 }
 
-Wad64::WadInfo Wad64::write(Directory const& dir, FileReference ref)
+Wad64::WadInfo Wad64::write(FileReference ref, Directory const& dir)
 {
 	auto const& entries = dir.ls();
 	auto const n = std::size(entries);

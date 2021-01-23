@@ -33,7 +33,7 @@ namespace Wad64
 
 		~Archive()
 		{
-			write(write(m_directory, m_file_ref), m_file_ref);
+			write(m_file_ref, write(m_file_ref, m_directory));
 		}
 
 		/**
