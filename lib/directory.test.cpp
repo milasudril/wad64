@@ -200,6 +200,13 @@ namespace Testcases
 		assert(dir.eofOffset() == lumps.back().filepos + lumps.back().size);
 	}
 
+	void wad64DirectoryLoadEmptyList()
+	{
+		Wad64::Directory dir{std::span{std::data(lumps), 0}};
+		assert(dir.eofOffset() == sizeof(Wad64::WadInfo));
+		assert(std::size(dir.ls()) == 0);
+	}
+
 	void wad64DirectoryLoadEntriesAndRemoveItem()
 	{
 		Wad64::Directory dir{lumps};
@@ -446,6 +453,7 @@ int main()
 	Testcases::wad64DirectoryReserveAndCommit();
 	Testcases::wad64DirectoryReserveAndCommitWithException();
 	Testcases::wad64DirectoryLoadEntries();
+	Testcases::wad64DirectoryLoadEmptyList();
 	Testcases::wad64DirectoryLoadEntriesAndRemoveItem();
 	Testcases::wad64DirectoryLoadEntriesAndRemoveLastItem();
 	Testcases::wad64DirectoryLoadEntriesAndSecureRemoveItem();
