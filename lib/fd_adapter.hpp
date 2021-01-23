@@ -29,6 +29,8 @@ namespace Wad64
 
 	size_t write(FdAdapter target, FdAdapter src, int64_t src_size, int64_t target_offset);
 
+	size_t size(FdAdapter fd);
+
 	inline void close(FdAdapter fd) { ::close(fd.fd); }
 
 	FdAdapter open(char const* filename, IoMode io_mode, FileCreationMode creation_mode);

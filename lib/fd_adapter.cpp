@@ -4,6 +4,7 @@
 
 #include "./fd_adapter.hpp"
 
+#include <sys/stat.h>
 #include <fcntl.h>
 
 #include <stdexcept>
@@ -78,4 +79,12 @@ size_t Wad64::write(FdAdapter target, FdAdapter src, int64_t src_size, int64_t t
 		remaining -= n_written;
 	}
 	return src_offet;
+}
+
+size_t Wad64::size(FdAdapter fd)
+{
+	struct stat statbuf{};
+
+	fstat(fd.fd, &statbuf);
+	return statbuf.st_size;
 }
