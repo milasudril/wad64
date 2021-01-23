@@ -49,6 +49,17 @@ namespace Wad64
 		class FilenameReservation
 		{
 		public:
+			FilenameReservation(): m_valid{false}, m_storage{nullptr} {}
+
+			explicit FilenameReservation(Storage::iterator i): m_valid{true}, m_storage{nullptr}, m_value{i} {}
+
+			explicit FilenameReservation(Storage* storage, Storage::iterator&& val)
+			    : m_valid{true}
+			    , m_storage{storage}
+			    , m_value{std::move(val)}
+			{
+			}
+
 			FilenameReservation(FilenameReservation&& other) noexcept:
 			m_valid{other.m_valid},
 			m_storage{std::exchange(other.m_storage, nullptr)},
@@ -86,20 +97,15 @@ namespace Wad64
 				}
 			}
 
-		private:
-			friend class Directory;
-
-			FilenameReservation(): m_valid{false}, m_storage{nullptr} {}
-
-			explicit FilenameReservation(Storage::iterator i): m_valid{true}, m_storage{nullptr}, m_value{i} {}
-
-			explicit FilenameReservation(Storage* storage, Storage::iterator&& val)
-			    : m_valid{true}
-			    , m_storage{storage}
-			    , m_value{std::move(val)}
+			template<class Callback>
+			void commit(DirEntry entry, Callback&& cb)
 			{
+				cb(entry);
+				m_value->second = entry;
+				reset();
 			}
 
+		private:
 			void reset()
 			{ m_storage = nullptr; }
 

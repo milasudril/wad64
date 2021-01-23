@@ -101,27 +101,24 @@ void Wad64::Directory::commit(FilenameReservation&& reservation, int64_t req_siz
 		auto largest_gap = m_gaps.top();
 		if(largest_gap.size < req_size)
 		{
-			auto entry = DirEntry{m_eof, m_eof + req_size};
-			cb(obj, entry);
-			reservation.m_value->second = entry;
-			reservation.reset();
+			reservation.commit(DirEntry{m_eof, m_eof + req_size}, [obj,cb](auto entry) {
+				cb(obj, entry);
+			});
 			m_eof += req_size;
 			return;
 		}
-		auto entry = DirEntry{largest_gap.begin, largest_gap.begin + req_size};
-		cb(obj, entry);
+		reservation.commit(DirEntry{largest_gap.begin, largest_gap.begin + req_size}, [obj,cb](auto entry) {
+			cb(obj, entry);
+		});
 		m_gaps.pop();
-		reservation.m_value->second = entry;
-		reservation.reset();
 		m_eof = std::max(m_eof, largest_gap.begin + req_size);
 		if(largest_gap.size - req_size > 0)
 		{m_gaps.push(Gap{largest_gap.begin + req_size, largest_gap.size - req_size});}
 		return;
 	}
-	auto entry = DirEntry{m_eof, m_eof + req_size};
-	cb(obj, entry);
-	reservation.m_value->second = entry;
-	reservation.reset();
+	reservation.commit(DirEntry{m_eof, m_eof + req_size}, [obj,cb](auto entry) {
+		cb(obj, entry);
+	});
 	m_eof += req_size;
 }
 
