@@ -26,7 +26,7 @@ namespace Wad64
 	{
 	public:
 		explicit Archive(FileReference ref)
-		    : m_directory{readDirectory(ref, WadInfo::AllowEmpty{true})}
+		    : m_directory{readDirectory(ref, readHeader(ref, WadInfo::AllowEmpty{true}))}
 		    , m_file_ref{ref}
 		{
 		}

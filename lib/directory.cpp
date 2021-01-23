@@ -134,9 +134,8 @@ std::vector<Wad64::Gap> Wad64::Directory::gaps() const
 	return ret;
 }
 
-Wad64::Directory Wad64::readDirectory(FileReference ref, WadInfo::AllowEmpty allow_empty)
+Wad64::Directory Wad64::readDirectory(FileReference ref, WadInfo const& header)
 {
-	auto header   = readHeader(ref, allow_empty);
 	auto dir_data = readInfoTables(ref, header);
 	return Directory{std::span(dir_data.get(), header.numlumps)};
 }

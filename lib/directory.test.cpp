@@ -481,8 +481,7 @@ namespace Testcases
 		memcpy(std::data(buffer.data), &info, sizeof(Wad64::WadInfo));
 		memcpy(std::data(buffer.data) + sizeof(Wad64::WadInfo), std::data(lumps), sizeof(lumps));
 
-		auto const dir =
-		    readDirectory(Wad64::FileReference{std::ref(buffer)}, Wad64::WadInfo::AllowEmpty{true});
+		auto const dir = readDirectory(Wad64::FileReference{std::ref(buffer)}, info);
 		auto lumps_by_name = lumps;
 		std::ranges::sort(lumps_by_name, [](auto const& a, auto const& b) {
 			return strcmp(a.name.data(), b.name.data()) < 0;
