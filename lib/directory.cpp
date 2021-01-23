@@ -110,7 +110,6 @@ void Wad64::Directory::commit(FilenameReservation&& reservation,
 	m_eof = std::max(m_eof, gap.begin + req_size);
 	if(gap.size - req_size > 0) { m_gaps.push(Gap{gap.begin + req_size, gap.size - req_size}); }
 
-
 	return;
 }
 

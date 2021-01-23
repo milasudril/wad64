@@ -12,32 +12,31 @@
 
 namespace
 {
-	constexpr std::array<std::string_view, 10> names
-	{
-		"footer-technology-christopher-lee",
-		"sidebar_space_phnom-penh",
-		"generate-travel-2021",
-		"radio_san-jose_palau_56287",
-		"rosanne-cash-gender-left",
-		"suriname_phylicia-rashad_politics_suite",
-		"travel_jerusalem_lie_xl_21",
-		"security_small_2021_sierra-leone_ethel-merman_thanks",
-		"bob-uecker_nigeria_ethics_8603917",
-		"campaign_judith-jamison_castries_kenya",
+	constexpr std::array<std::string_view, 10> names{
+	    "footer-technology-christopher-lee",
+	    "sidebar_space_phnom-penh",
+	    "generate-travel-2021",
+	    "radio_san-jose_palau_56287",
+	    "rosanne-cash-gender-left",
+	    "suriname_phylicia-rashad_politics_suite",
+	    "travel_jerusalem_lie_xl_21",
+	    "security_small_2021_sierra-leone_ethel-merman_thanks",
+	    "bob-uecker_nigeria_ethics_8603917",
+	    "campaign_judith-jamison_castries_kenya",
 	};
 
 	constexpr std::array<int64_t, 10> sizes{4716, 4608, 844, 7084, 6, 26, 44764, 135, 42, 44121};
 
 	constexpr std::array<double, 10> paddings{3.6994e-02,
-		9.7230e-01,
-		4.6798e-01,
-		9.3508e-01,
-		8.1966e-01,
-		7.2736e-01,
-		5.8402e-01,
-		8.1571e-01,
-		7.3374e-01,
-		6.4228e-01};
+	                                          9.7230e-01,
+	                                          4.6798e-01,
+	                                          9.3508e-01,
+	                                          8.1966e-01,
+	                                          7.2736e-01,
+	                                          5.8402e-01,
+	                                          8.1571e-01,
+	                                          7.3374e-01,
+	                                          6.4228e-01};
 
 	constexpr auto gen_lumps()
 	{
@@ -46,9 +45,9 @@ namespace
 		for(size_t k = 0; k < names.size(); ++k)
 		{
 			std::ranges::copy(names[k], std::begin(lumps[k].name));
-			lumps[k].size = sizes[k];
+			lumps[k].size    = sizes[k];
 			lumps[k].filepos = total;
-			total += static_cast<int64_t>(static_cast<double>(lumps[k].size)*(1.0 + paddings[k]));
+			total += static_cast<int64_t>(static_cast<double>(lumps[k].size) * (1.0 + paddings[k]));
 		}
 		return lumps;
 	}
@@ -166,9 +165,8 @@ namespace Testcases
 		});
 
 		assert(std::ranges::equal(dir.ls(), lumps_by_name, [](auto const& a, auto const& b) {
-			return strcmp(a.first.c_str(), b.name.data()) == 0
-			&& a.second.begin == b.filepos
-			&& a.second.end == b.filepos + b.size;
+			return strcmp(a.first.c_str(), b.name.data()) == 0 && a.second.begin == b.filepos
+			       && a.second.end == b.filepos + b.size;
 		}));
 
 		std::ranges::for_each(lumps, [&dir](auto const& a) {
@@ -187,7 +185,7 @@ namespace Testcases
 		Wad64::Directory dir{lumps};
 
 		auto const item_count = std::size(dir.ls());
-		auto const eof = dir.eofOffset();
+		auto const eof        = dir.eofOffset();
 		assert(dir.stat(lumps[0].name.data()));
 
 		assert(dir.remove(lumps[0].name.data()));
@@ -213,6 +211,33 @@ namespace Testcases
 		assert(dir.eofOffset() == lumps.back().filepos);
 	}
 
+	void wad64DirectoryLoadEntriesAndSecureRemoveItem()
+	{
+		Wad64::Directory dir{lumps};
+		Wad64::MemBuffer buffer;
+		std::generate_n(std::back_inserter(buffer.data),
+		                lumps[0].size + sizeof(Wad64::WadInfo),
+		                [k = 0]() mutable {
+			                ++k;
+			                return static_cast<std::byte>(k);
+		                });
+
+		auto const item_count = std::size(dir.ls());
+		auto const eof        = dir.eofOffset();
+		assert(dir.stat(lumps[0].name.data()));
+		auto const old_data = buffer.data;
+
+		assert(dir.secureRemove(lumps[0].name.data(), Wad64::FileReference{std::ref(buffer)}));
+
+		assert(!dir.stat(lumps[0].name.data()));
+		assert(std::size(dir.ls()) == item_count - 1);
+		assert(dir.eofOffset() == eof);
+		assert(std::size(buffer.data) == std::size(old_data));
+		assert(std::equal(std::data(buffer.data),
+		                  std::data(buffer.data) + sizeof(Wad64::WadInfo),
+		                  std::data(old_data)));
+		assert(!std::ranges::equal(buffer.data, old_data));
+	}
 }
 
 int main()
@@ -228,5 +253,6 @@ int main()
 	Testcases::wad64DirectoryLoadEntries();
 	Testcases::wad64DirectoryLoadEntriesAndRemoveItem();
 	Testcases::wad64DirectoryLoadEntriesAndRemoveLastItem();
+	Testcases::wad64DirectoryLoadEntriesAndSecureRemoveItem();
 	return 0;
 }
