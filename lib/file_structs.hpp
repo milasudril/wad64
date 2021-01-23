@@ -106,6 +106,11 @@ namespace Wad64
 	WadInfo readHeader(FileReference ref, WadInfo::AllowEmpty allow_empty);
 
 	std::unique_ptr<FileLump[]> readInfoTables(FileReference ref, WadInfo const& info);
+
+	inline void write(WadInfo const& info, FileReference ref)
+	{
+		ref.write(std::as_bytes(std::span{&info, 1}), 0);
+	}
 }
 
 #endif

@@ -31,6 +31,11 @@ namespace Wad64
 		{
 		}
 
+		~Archive()
+		{
+			write(write(m_directory, m_file_ref), m_file_ref);
+		}
+
 		/**
 		 * \brief Initiates an Archive from `f`
 		*/
