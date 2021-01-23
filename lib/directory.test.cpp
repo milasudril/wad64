@@ -238,6 +238,40 @@ namespace Testcases
 		                  std::data(old_data)));
 		assert(!std::ranges::equal(buffer.data, old_data));
 	}
+
+	void wad64DirectoryReserveExistingItem()
+	{
+		Wad64::Directory dir{lumps};
+		assert(dir.stat(lumps[0].name.data()));
+
+		auto const n_entries = std::size(dir.ls());
+		{
+			auto reservation = dir.reserve(lumps[0].name.data());
+
+			assert(std::size(dir.ls()) == n_entries);
+			assert(!reservation.itemInserted());
+			assert(reservation.valid());
+			assert((reservation.value() == Wad64::DirEntry{lumps[0].filepos, lumps[0].filepos + lumps[0].size}));
+		}
+		assert(std::size(dir.ls()) == n_entries);
+	}
+
+	void wad64DirectoryUseExistingItem()
+	{
+		Wad64::Directory dir{lumps};
+		assert(dir.stat(lumps[0].name.data()));
+
+		auto const n_entries = std::size(dir.ls());
+		{
+			auto reservation = dir.use(lumps[0].name.data());
+
+			assert(std::size(dir.ls()) == n_entries);
+			assert(!reservation.itemInserted());
+			assert(reservation.valid());
+			assert((reservation.value() == Wad64::DirEntry{lumps[0].filepos, lumps[0].filepos + lumps[0].size}));
+		}
+		assert(std::size(dir.ls()) == n_entries);
+	}
 }
 
 int main()
@@ -254,5 +288,7 @@ int main()
 	Testcases::wad64DirectoryLoadEntriesAndRemoveItem();
 	Testcases::wad64DirectoryLoadEntriesAndRemoveLastItem();
 	Testcases::wad64DirectoryLoadEntriesAndSecureRemoveItem();
+	Testcases::wad64DirectoryReserveExistingItem();
+	Testcases::wad64DirectoryUseExistingItem();
 	return 0;
 }
