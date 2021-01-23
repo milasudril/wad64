@@ -1,5 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"directory.test","type":"application", "autorun":1}]
+//@	 "targets":[{"name":"directory.test","type":"application", "autorun":0}]
 //@	}
 
 #include "./directory.hpp"
