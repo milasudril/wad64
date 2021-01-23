@@ -5,11 +5,15 @@
 #ifndef WAD64_LIB_MAP_INSERTION_HPP
 #define WAD64_LIB_MAP_INSERTION_HPP
 
+#include <utility>
+#include <cassert>
+
 namespace Wad64
 {
 	/**
-	* \brief Holder for a reference to an inserted item. On destruction, the item is removed, unless
-	* commit has been called.
+	* \brief Holder for a reference to an inserted item. If associated with the container, the item
+	* will be removed on destruction, unless the insertion has been commited with the `commit`
+	* member function template.
 	*/
 	template<class MapType>
 	class MapInsertion
@@ -17,7 +21,7 @@ namespace Wad64
 	public:
 		MapInsertion(): m_valid{false}, m_storage{nullptr} {}
 
-		explicit MapInsertion(MapType::iterator i): m_valid{true}, m_storage{nullptr}, m_value{i} {}
+		explicit MapInsertion(MapType::iterator&& i): m_valid{true}, m_storage{nullptr}, m_value{std::move(i)} {}
 
 		explicit MapInsertion(MapType* storage, typename MapType::iterator&& val)
 			: m_valid{true}
@@ -56,6 +60,7 @@ namespace Wad64
 		template<class Callback>
 		void commit(typename MapType::mapped_type&& entry, Callback&& cb)
 		{
+			assert(valid());
 			cb(entry);
 			m_value->second = std::move(entry);
 			reset();

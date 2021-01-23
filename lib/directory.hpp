@@ -101,8 +101,8 @@ namespace Wad64
 		 */
 		FilenameReservation use(std::string_view filename)
 		{
-			auto const i = m_content.find(filename);
-			return i != std::end(m_content) ? FilenameReservation{i} : FilenameReservation{};
+			auto i = m_content.find(filename);
+			return i != std::end(m_content) ? FilenameReservation{std::move(i)} : FilenameReservation{};
 		}
 
 		int64_t eofOffset() const { return m_eof; }
