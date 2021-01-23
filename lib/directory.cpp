@@ -139,3 +139,26 @@ Wad64::Directory Wad64::readDirectory(FileReference ref, WadInfo const& header)
 	auto dir_data = readInfoTables(ref, header);
 	return Directory{std::span(dir_data.get(), header.numlumps)};
 }
+
+
+void Wad64::write(Directory&& dir, FileReference ref)
+{
+	auto const& entries = dir.ls();
+	auto const n = std::size(entries);
+	auto entries_out = std::make_unique<FileLump[]>(n);
+	std::ranges::transform(entries, entries_out.get(), [](auto const& item) {
+		FileLump info{};
+		info.filepos = item.second.begin;
+		info.size = item.second.end - item.second.begin;
+		std::ranges::copy(item.first, std::data(info.name));
+		return info;
+	});
+
+	dir.commit(dir.reserve(), n, [ref, n, entries = entries_out.get()](auto entry){
+		WadInfo info;
+		info.identification = Wad64::MagicNumber;
+		info.numlumps = n;
+		info.infotablesofs = entry.begin;
+		ref.write(std::as_bytes(std::span{&info, 1}), 0);
+	});
+}

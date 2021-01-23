@@ -101,6 +101,16 @@ namespace Wad64
 		}
 
 		/**
+		 * \brief Creates an anonymous reservation
+		 * \todo Generate a unique name
+		*/
+		FilenameReservation reserve()
+		{
+			auto res = m_content.insert(std::pair{"", DirEntry{}});
+			return FilenameReservation{res.second ? &m_content : nullptr, std::move(res.first)};
+		}
+
+		/**
 		 * \breif Marks `filename` for use. If there is no corresponding directory entry, then the
 		 * returned FilenameReservation will be invalid.
 		 */
@@ -140,6 +150,12 @@ namespace Wad64
 	};
 
 	Directory readDirectory(FileReference ref, WadInfo const& header);
+
+	/**
+	* \note dir is non-const, because the function will modify reservations and available gaps
+	* in order to find a suitable slot.
+	*/
+	void write(Directory&& dir, FileReference ref);
 }
 
 #endif
