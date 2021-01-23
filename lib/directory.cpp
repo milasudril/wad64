@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-Wad64::Directory::Directory(std::span<FileLump const> entries)
+Wad64::Directory::Directory(std::span<FileLump const> entries):m_eof{sizeof(Wad64::WadInfo)}
 {
 	std::ranges::for_each(entries, []<class T>(T const& item) {
 		using ValidationResult = typename T::ValidationResult;
@@ -26,7 +26,8 @@ Wad64::Directory::Directory(std::span<FileLump const> entries)
 	    m_content, std::back_inserter(file_offsets), [](auto const& item) { return item.second; });
 	std::ranges::sort(file_offsets, [](auto a, auto b) { return a.begin < b.begin; });
 
-	m_eof = file_offsets.back().end;
+	if(std::size(file_offsets) != 0)
+	{ m_eof = file_offsets.back().end; }
 
 	if(std::ranges::adjacent_find(file_offsets, [](auto a, auto b) { return b.begin < a.end; })
 	   != std::end(file_offsets))

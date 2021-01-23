@@ -48,7 +48,7 @@ namespace Wad64
 
 		~OutputFile()
 		{
-			m_archive.get().commit(std::move(m_reservation), m_tmp_file.get(), size());
+			m_archive.get().commit(std::move(m_reservation), m_tmp_file.get());
 		}
 
 	private:

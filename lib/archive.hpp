@@ -82,15 +82,13 @@ namespace Wad64
 		 */
 		decltype(auto) use(std::string_view filename) { return m_directory.use(filename); }
 
-		void commit(Directory::FilenameReservation&& reservation, FdAdapter src, int64_t size)
+		void commit(Directory::FilenameReservation&& reservation, FdAdapter src)
 		{
 			m_directory.commit(
-			    std::move(reservation), size, [target = m_file_ref, src](DirEntry entry) mutable {
+			    std::move(reservation), size(src), [target = m_file_ref, src](DirEntry entry) mutable {
 				    target.write(src, entry.end - entry.begin, entry.begin);
 			    });
 		}
-
-		int64_t size() const { return m_directory.eofOffset(); }
 
 	private:
 		Directory m_directory;
