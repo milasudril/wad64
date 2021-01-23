@@ -398,6 +398,40 @@ namespace Testcases
 		});
 		assert(dir.eofOffset() == current_eof + size_req);
 	}
+
+	void wad64DirectoryReadFromFile()
+	{
+		Wad64::WadInfo info;
+		info.numlumps = std::size(lumps);
+		info.identification = Wad64::MagicNumber;
+		info.infotablesofs = sizeof(Wad64::WadInfo);
+
+		Wad64::MemBuffer buffer;
+		buffer.data.resize(sizeof(info) + sizeof(lumps));
+		memcpy(std::data(buffer.data), &info, sizeof(Wad64::WadInfo));
+		memcpy(std::data(buffer.data) + sizeof(Wad64::WadInfo), std::data(lumps), sizeof(lumps));
+
+		auto const dir = readDirectory(Wad64::FileReference{std::ref(buffer)});
+		auto lumps_by_name = lumps;
+		std::ranges::sort(lumps_by_name, [](auto const& a, auto const& b) {
+			return strcmp(a.name.data(), b.name.data()) < 0;
+		});
+
+		assert(std::ranges::equal(dir.ls(), lumps_by_name, [](auto const& a, auto const& b) {
+			return strcmp(a.first.c_str(), b.name.data()) == 0 && a.second.begin == b.filepos
+			       && a.second.end == b.filepos + b.size;
+		}));
+
+		std::ranges::for_each(lumps, [&dir](auto const& a) {
+			auto item = dir.stat(a.name.data());
+			assert(item.has_value());
+
+			assert(item->begin == a.filepos);
+			assert(item->end == a.filepos + a.size);
+		});
+
+		assert(dir.eofOffset() == lumps.back().filepos + lumps.back().size);
+	}
 }
 
 int main()
@@ -423,5 +457,6 @@ int main()
 	Testcases::wad64DirectoryLoadEntriesAndCommitOldReservationSuitableGapExists();
 	Testcases::wad64DirectoryLoadEntriesAndCommitNewReservationGapWasFilled();
 	Testcases::wad64DirectoryLoadEntriesAndCommitNewReservationNoGapFound();
+	Testcases::wad64DirectoryReadFromFile();
 	return 0;
 }
