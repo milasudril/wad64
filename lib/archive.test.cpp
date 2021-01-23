@@ -6,18 +6,24 @@
 #include "./file_structs.hpp"
 
 #include <cassert>
-#include <algorithm>
-#include <random>
+#include <cstring>
 
 namespace Testcases
 {
 	void wad64ArchiveLoadEmpty()
 	{
 		Wad64::MemBuffer buff;
-		Wad64::Archive archive{std::ref(buff)};
-
-		assert(archive.fileReference().handle() == &buff);
-		assert(std::size(archive.ls()) == 0);
+		{
+			Wad64::Archive archive{std::ref(buff)};
+			assert(archive.fileReference().handle() == &buff);
+			assert(std::size(archive.ls()) == 0);
+		}
+		assert(std::size(buff.data) == sizeof(Wad64::WadInfo));
+		Wad64::WadInfo info;
+		memcpy(&info, std::data(buff.data), sizeof(Wad64::WadInfo));
+		assert(info.identification == Wad64::MagicNumber);
+		assert(info.numlumps == 0);
+		assert(info.infotablesofs == sizeof(Wad64::WadInfo));
 	}
 }
 
