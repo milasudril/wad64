@@ -54,7 +54,8 @@ namespace Testcases
 			abort();
 		}
 		catch(...)
-		{}
+		{
+		}
 	}
 
 	void wad64DirectoryReserveDoNotCommit()

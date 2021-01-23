@@ -82,23 +82,19 @@ Wad64::FileLump::ValidationResult Wad64::validate(FileLump const& lump)
 Wad64::WadInfo Wad64::readHeader(FileReference ref, WadInfo::AllowEmpty allow_empty)
 {
 	WadInfo info;
-	errno = 0;
+	errno       = 0;
 	auto n_read = ref.read(std::span{reinterpret_cast<std::byte*>(&info), sizeof(info)}, 0);
 	if(n_read == 0 || errno == EBADF)
 	{
-		if(!allow_empty)
-		{ throw ArchiveError{"File is empty"};}
+		if(!allow_empty) { throw ArchiveError{"File is empty"}; }
 
 		info.identification = Wad64::MagicNumber;
-		info.numlumps = 0;
-		info.infotablesofs = sizeof(info);
+		info.numlumps       = 0;
+		info.infotablesofs  = sizeof(info);
 		return info;
 	}
 
-	if(n_read != sizeof(info))
-	{
-		throw ArchiveError{"Invalid Wad64 file"};
-	}
+	if(n_read != sizeof(info)) { throw ArchiveError{"Invalid Wad64 file"}; }
 
 	if(validate(info) != Wad64::WadInfo::ValidationResult::NoError)
 	{ throw ArchiveError{"Invalid Wad64 file"}; }
@@ -108,10 +104,10 @@ Wad64::WadInfo Wad64::readHeader(FileReference ref, WadInfo::AllowEmpty allow_em
 
 std::unique_ptr<Wad64::FileLump[]> Wad64::readInfoTables(FileReference ref, WadInfo const& info)
 {
-	auto entries = std::make_unique<FileLump[]>(info.numlumps);
-	auto const dir_range  = std::span{entries.get(), static_cast<size_t>(info.numlumps)};
-	auto const n_read = ref.read(std::as_writable_bytes(dir_range), info.infotablesofs);
-	if(n_read != info.numlumps*sizeof(FileLump))
+	auto entries         = std::make_unique<FileLump[]>(info.numlumps);
+	auto const dir_range = std::span{entries.get(), static_cast<size_t>(info.numlumps)};
+	auto const n_read    = ref.read(std::as_writable_bytes(dir_range), info.infotablesofs);
+	if(n_read != info.numlumps * sizeof(FileLump))
 	{ throw ArchiveError{"Failed to load infotables. File truncated?"}; }
 	return entries;
 }

@@ -44,7 +44,7 @@ namespace Wad64
 		class AllowEmpty
 		{
 		public:
-			constexpr explicit AllowEmpty(bool value):m_value{value}{}
+			constexpr explicit AllowEmpty(bool value): m_value{value} {}
 
 			constexpr operator bool() const { return m_value; }
 
@@ -55,13 +55,11 @@ namespace Wad64
 
 	inline bool operator==(WadInfo const& a, WadInfo const& b)
 	{
-		return a.identification == b.identification
-			&& a.numlumps == b.numlumps
-			&& a.infotablesofs == b.infotablesofs;
+		return a.identification == b.identification && a.numlumps == b.numlumps
+		       && a.infotablesofs == b.infotablesofs;
 	}
 
-	inline bool operator!=(WadInfo const& a, WadInfo const& b)
-	{ return !(a == b); }
+	inline bool operator!=(WadInfo const& a, WadInfo const& b) { return !(a == b); }
 
 	WadInfo::ValidationResult validate(WadInfo const& info);
 
@@ -96,19 +94,17 @@ namespace Wad64
 
 	inline bool operator==(FileLump const& a, FileLump const& b)
 	{
-		return a.filepos == b.filepos
-			&& a.size == b.size
-			&& a.name == b.name;
+		return a.filepos == b.filepos && a.size == b.size && a.name == b.name;
 	}
 
-	inline bool operator!=(FileLump const& a, FileLump const& b)
-	{ return !(a == b); }
+	inline bool operator!=(FileLump const& a, FileLump const& b) { return !(a == b); }
 
 	bool validateFilename(std::string_view name);
 
 	FileLump::ValidationResult validate(FileLump const& lump);
 
-	WadInfo readHeader(FileReference ref, WadInfo::AllowEmpty allow_empty = WadInfo::AllowEmpty{true});
+	WadInfo readHeader(FileReference ref,
+	                   WadInfo::AllowEmpty allow_empty = WadInfo::AllowEmpty{true});
 
 	std::unique_ptr<FileLump[]> readInfoTables(FileReference ref, WadInfo const& info);
 }

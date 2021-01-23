@@ -46,8 +46,7 @@ namespace Wad64
 	public:
 		using FilenameReservation = MapInsertion<Storage>;
 
-		explicit Directory(): m_eof{sizeof(WadInfo)}
-		{}
+		explicit Directory(): m_eof{sizeof(WadInfo)} {}
 
 		explicit Directory(std::span<FileLump> directory);
 
@@ -94,7 +93,7 @@ namespace Wad64
 		{
 			if(!validateFilename(filename)) { throw ArchiveError{"Invalid filename"}; }
 			auto res = m_content.insert(std::pair{filename, DirEntry{}});
-			return FilenameReservation{res.second?&m_content:nullptr, std::move(res.first)};
+			return FilenameReservation{res.second ? &m_content : nullptr, std::move(res.first)};
 		}
 
 		/**
@@ -104,7 +103,8 @@ namespace Wad64
 		FilenameReservation use(std::string_view filename)
 		{
 			auto i = m_content.find(filename);
-			return i != std::end(m_content) ? FilenameReservation{std::move(i)} : FilenameReservation{};
+			return i != std::end(m_content) ? FilenameReservation{std::move(i)}
+			                                : FilenameReservation{};
 		}
 
 		int64_t eofOffset() const { return m_eof; }
@@ -112,7 +112,7 @@ namespace Wad64
 		template<class Action>
 		void commit(FilenameReservation&& reservation, int64_t req_size, Action&& action)
 		{
-			commit(std::move(reservation), req_size, &action, [](void* obj, DirEntry entry){
+			commit(std::move(reservation), req_size, &action, [](void* obj, DirEntry entry) {
 				auto& self = *static_cast<Action*>(obj);
 				self(entry);
 			});
@@ -126,8 +126,11 @@ namespace Wad64
 
 		void remove(Storage::iterator i_dir);
 
-		using CommitCallback = void(*)(void*, DirEntry);
-		void commit(FilenameReservation&& reservation, int64_t req_size, void* obj, CommitCallback cb);
+		using CommitCallback = void (*)(void*, DirEntry);
+		void commit(FilenameReservation&& reservation,
+		            int64_t req_size,
+		            void* obj,
+		            CommitCallback cb);
 	};
 
 	Directory readDirectory(FileReference ref);

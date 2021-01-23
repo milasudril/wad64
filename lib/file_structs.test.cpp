@@ -163,13 +163,15 @@ namespace Testcases
 			abort();
 		}
 		catch(...)
-		{}
+		{
+		}
 	}
 
 	void wad64ReadHeaderEmptyFileEmptyAllowed()
 	{
 		Wad64::MemBuffer data;
-		auto header = readHeader(Wad64::FileReference{std::ref(data)}, Wad64::WadInfo::AllowEmpty{true});
+		auto header =
+		    readHeader(Wad64::FileReference{std::ref(data)}, Wad64::WadInfo::AllowEmpty{true});
 		assert(header.identification == Wad64::MagicNumber);
 		assert(header.infotablesofs == sizeof(header));
 		assert(header.numlumps == 0);
@@ -182,8 +184,8 @@ namespace Testcases
 
 		Wad64::WadInfo info{};
 		info.identification = Wad64::MagicNumber;
-		info.infotablesofs = sizeof(Wad64::WadInfo);
-		info.numlumps = 0;
+		info.infotablesofs  = sizeof(Wad64::WadInfo);
+		info.numlumps       = 0;
 
 		memcpy(data.data.data(), &info, sizeof(Wad64::WadInfo) - 1);
 
@@ -194,7 +196,8 @@ namespace Testcases
 			abort();
 		}
 		catch(...)
-		{}
+		{
+		}
 	}
 
 	void wad64ReadHeaderInvalid()
@@ -204,8 +207,8 @@ namespace Testcases
 
 		Wad64::WadInfo info{};
 		info.identification = Wad64::MagicNumber;
-		info.infotablesofs = sizeof(Wad64::WadInfo) - 1;
-		info.numlumps = 0;
+		info.infotablesofs  = sizeof(Wad64::WadInfo) - 1;
+		info.numlumps       = 0;
 
 		memcpy(data.data.data(), &info, sizeof(Wad64::WadInfo));
 
@@ -216,7 +219,8 @@ namespace Testcases
 			abort();
 		}
 		catch(...)
-		{}
+		{
+		}
 	}
 
 	void wad64ReadHeader()
@@ -226,11 +230,12 @@ namespace Testcases
 
 		Wad64::WadInfo info{};
 		info.identification = Wad64::MagicNumber;
-		info.infotablesofs = sizeof(Wad64::WadInfo) + 5;
-		info.numlumps = 10;
+		info.infotablesofs  = sizeof(Wad64::WadInfo) + 5;
+		info.numlumps       = 10;
 		memcpy(data.data.data(), &info, sizeof(Wad64::WadInfo));
 
-		auto header = readHeader(Wad64::FileReference{std::ref(data)}, Wad64::WadInfo::AllowEmpty{true});
+		auto header =
+		    readHeader(Wad64::FileReference{std::ref(data)}, Wad64::WadInfo::AllowEmpty{true});
 		assert(header == info);
 	}
 
@@ -240,25 +245,26 @@ namespace Testcases
 		data.data.resize(sizeof(Wad64::WadInfo));
 		data.data.resize(5 * sizeof(Wad64::FileLump) - 1);
 
-		std::array<Wad64::FileLump, 5> lumps{{
-			{5*sizeof(Wad64::FileLump) + 0, 5, std::array<char, Wad64::NameSize>{'A'}},
-			{5*sizeof(Wad64::FileLump) + 6, 4, std::array<char, Wad64::NameSize>{'B'}},
-			{5*sizeof(Wad64::FileLump) + 10, 32, std::array<char, Wad64::NameSize>{'C'}},
-			{5*sizeof(Wad64::FileLump) + 42, 55, std::array<char, Wad64::NameSize>{'D'}},
-			{5*sizeof(Wad64::FileLump) + 97, 50, std::array<char, Wad64::NameSize>{'E'}}
-		}};
+		std::array<Wad64::FileLump, 5> lumps{
+		    {{5 * sizeof(Wad64::FileLump) + 0, 5, std::array<char, Wad64::NameSize>{'A'}},
+		     {5 * sizeof(Wad64::FileLump) + 6, 4, std::array<char, Wad64::NameSize>{'B'}},
+		     {5 * sizeof(Wad64::FileLump) + 10, 32, std::array<char, Wad64::NameSize>{'C'}},
+		     {5 * sizeof(Wad64::FileLump) + 42, 55, std::array<char, Wad64::NameSize>{'D'}},
+		     {5 * sizeof(Wad64::FileLump) + 97, 50, std::array<char, Wad64::NameSize>{'E'}}}};
 
 		memcpy(data.data.data(), lumps.data(), data.data.size());
 		auto src = Wad64::FileReference{std::ref(data)};
 		Wad64::WadInfo info{};
 		info.infotablesofs = 0;
-		info.numlumps = 5;
+		info.numlumps      = 5;
 		try
 		{
 			(void)readInfoTables(src, info);
 			abort();
-		} catch(...)
-		{}
+		}
+		catch(...)
+		{
+		}
 	}
 
 
@@ -268,19 +274,18 @@ namespace Testcases
 		data.data.resize(sizeof(Wad64::WadInfo));
 		data.data.resize(5 * sizeof(Wad64::FileLump));
 
-		std::array<Wad64::FileLump, 5> lumps{{
-			{5*sizeof(Wad64::FileLump) + 0, 5, std::array<char, Wad64::NameSize>{'A'}},
-			{5*sizeof(Wad64::FileLump) + 6, 4, std::array<char, Wad64::NameSize>{'B'}},
-			{5*sizeof(Wad64::FileLump) + 10, 32, std::array<char, Wad64::NameSize>{'C'}},
-			{5*sizeof(Wad64::FileLump) + 42, 55, std::array<char, Wad64::NameSize>{'D'}},
-			{5*sizeof(Wad64::FileLump) + 97, 50, std::array<char, Wad64::NameSize>{'E'}}
-		}};
+		std::array<Wad64::FileLump, 5> lumps{
+		    {{5 * sizeof(Wad64::FileLump) + 0, 5, std::array<char, Wad64::NameSize>{'A'}},
+		     {5 * sizeof(Wad64::FileLump) + 6, 4, std::array<char, Wad64::NameSize>{'B'}},
+		     {5 * sizeof(Wad64::FileLump) + 10, 32, std::array<char, Wad64::NameSize>{'C'}},
+		     {5 * sizeof(Wad64::FileLump) + 42, 55, std::array<char, Wad64::NameSize>{'D'}},
+		     {5 * sizeof(Wad64::FileLump) + 97, 50, std::array<char, Wad64::NameSize>{'E'}}}};
 
 		memcpy(data.data.data(), lumps.data(), data.data.size());
 		auto src = Wad64::FileReference{std::ref(data)};
 		Wad64::WadInfo info{};
 		info.infotablesofs = 0;
-		info.numlumps = 5;
+		info.numlumps      = 5;
 
 		auto result = readInfoTables(src, info);
 		assert(std::equal(std::begin(lumps), std::end(lumps), result.get()));

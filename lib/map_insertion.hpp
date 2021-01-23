@@ -2,8 +2,8 @@
 //@	 "targets":[{"name":"map_insertion.hpp","type":"include"}]
 //@	}
 
-#ifndef WAD64_LIB_MAP_INSERTION_HPP
-#define WAD64_LIB_MAP_INSERTION_HPP
+#ifndef WAD64_LIB_MAPINSERTION_HPP
+#define WAD64_LIB_MAPINSERTION_HPP
 
 #include <utility>
 #include <cassert>
@@ -21,27 +21,32 @@ namespace Wad64
 	public:
 		MapInsertion(): m_valid{false}, m_storage{nullptr} {}
 
-		explicit MapInsertion(MapType::iterator&& i): m_valid{true}, m_storage{nullptr}, m_value{std::move(i)} {}
-
-		explicit MapInsertion(MapType* storage, typename MapType::iterator&& val)
-			: m_valid{true}
-			, m_storage{storage}
-			, m_value{std::move(val)}
+		explicit MapInsertion(MapType::iterator&& i)
+		    : m_valid{true}
+		    , m_storage{nullptr}
+		    , m_value{std::move(i)}
 		{
 		}
 
-		MapInsertion(MapInsertion&& other) noexcept:
-		m_valid{other.m_valid},
-		m_storage{std::exchange(other.m_storage, nullptr)},
-		m_value{std::move(other.m_value)}
+		explicit MapInsertion(MapType* storage, typename MapType::iterator&& val)
+		    : m_valid{true}
+		    , m_storage{storage}
+		    , m_value{std::move(val)}
+		{
+		}
+
+		MapInsertion(MapInsertion&& other) noexcept
+		    : m_valid{other.m_valid}
+		    , m_storage{std::exchange(other.m_storage, nullptr)}
+		    , m_value{std::move(other.m_value)}
 		{
 		}
 
 		MapInsertion& operator=(MapInsertion&& other) noexcept
 		{
-			m_valid = other.m_valid;
+			m_valid   = other.m_valid;
 			m_storage = std::exchange(other.m_storage, nullptr);
-			m_value = other.m_value;
+			m_value   = other.m_value;
 			return *this;
 		}
 
@@ -51,10 +56,7 @@ namespace Wad64
 
 		~MapInsertion()
 		{
-			if(itemInserted())
-			{
-				m_storage->erase(m_value);
-			}
+			if(itemInserted()) { m_storage->erase(m_value); }
 		}
 
 		template<class Callback>
@@ -67,8 +69,7 @@ namespace Wad64
 		}
 
 	private:
-		void reset()
-		{ m_storage = nullptr; }
+		void reset() { m_storage = nullptr; }
 
 		bool m_valid;
 		MapType* m_storage;

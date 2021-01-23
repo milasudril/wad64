@@ -10,7 +10,7 @@
 
 namespace
 {
-	using Map = std::map<std::string, int>;
+	using Map       = std::map<std::string, int>;
 	using Insertion = Wad64::MapInsertion<Map>;
 }
 
@@ -26,7 +26,7 @@ namespace Testcases
 	void wad64MapInsertionConstructWithoutContainer()
 	{
 		Map foo;
- 		auto i = foo.insert(std::pair{"Bar", 123});
+		auto i = foo.insert(std::pair{"Bar", 123});
 		{
 			Insertion ins{std::move(i.first)};
 			assert(ins.valid());
@@ -38,7 +38,7 @@ namespace Testcases
 	void wad64MapInsertionConstructWithContainer()
 	{
 		Map foo;
- 		auto i = foo.insert(std::pair{"Bar", 123});
+		auto i = foo.insert(std::pair{"Bar", 123});
 		{
 			Insertion ins{&foo, std::move(i.first)};
 			assert(ins.valid());
@@ -50,14 +50,12 @@ namespace Testcases
 	void wad64MapInsertionConstructWithContainerAndCommit()
 	{
 		Map foo;
- 		auto i = foo.insert(std::pair{"Bar", 0});
+		auto i = foo.insert(std::pair{"Bar", 0});
 		{
 			Insertion ins{&foo, std::move(i.first)};
 			assert(ins.valid());
 			assert(ins.itemInserted());
-			ins.commit(123, [](int val) {
-				assert(val == 123);
-			});
+			ins.commit(123, [](int val) { assert(val == 123); });
 			assert(!ins.itemInserted());
 		}
 		assert(foo.contains("Bar"));
@@ -67,7 +65,7 @@ namespace Testcases
 	void wad64MapInsertionConstructWithContainerAndCommitCallbackThrows()
 	{
 		Map foo;
- 		auto i = foo.insert(std::pair{"Bar", 0});
+		auto i = foo.insert(std::pair{"Bar", 0});
 		{
 			Insertion ins{&foo, std::move(i.first)};
 			assert(ins.valid());
@@ -88,7 +86,7 @@ namespace Testcases
 	void wad64MapInsertionConstructWithContainerMove()
 	{
 		Map foo;
- 		auto i = foo.insert(std::pair{"Bar", 123});
+		auto i = foo.insert(std::pair{"Bar", 123});
 
 		Insertion ins{&foo, std::move(i.first)};
 		assert(ins.valid());

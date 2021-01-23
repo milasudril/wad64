@@ -25,7 +25,7 @@ namespace Wad64
 	class Archive
 	{
 	public:
-		explicit Archive(FileReference ref): m_directory{readDirectory(ref)}, m_file_ref{ref}{}
+		explicit Archive(FileReference ref): m_directory{readDirectory(ref)}, m_file_ref{ref} {}
 
 		/**
 		 * \brief Initiates an Archive from `f`
@@ -44,10 +44,7 @@ namespace Wad64
 		 * \brief Checks whether or not `filename` exists in the archive, and if so, returns
 		 * information about where the file is located
 		*/
-		decltype(auto) stat(std::string_view filename) const
-		{
-			return m_directory.stat(filename);
-		}
+		decltype(auto) stat(std::string_view filename) const { return m_directory.stat(filename); }
 
 		/**
 		 * \brief Removes `filename` from the directory and frees the space occupied by the file. If
@@ -59,11 +56,12 @@ namespace Wad64
 		 *
 		 * \note Any references to the corresponding directory entries
 		 */
-		bool remove(std::string_view filename)
-		{ return m_directory.remove(filename); }
+		bool remove(std::string_view filename) { return m_directory.remove(filename); }
 
 		bool secureRemove(std::string_view filename)
-		{ return m_directory.secureRemove(filename, m_file_ref); }
+		{
+			return m_directory.secureRemove(filename, m_file_ref);
+		}
 
 		/**
 		 * \brief Retrieves the FileReference used for I/O
@@ -82,16 +80,14 @@ namespace Wad64
 		 * \breif Marks `filename` for use. If there is no corresponding directory entry, then the
 		 * returned FilenameReservation will be invalid.
 		 */
-		decltype(auto) use(std::string_view filename)
-		{
-			return m_directory.use(filename);
-		}
+		decltype(auto) use(std::string_view filename) { return m_directory.use(filename); }
 
 		void commit(Directory::FilenameReservation&& reservation, FdAdapter src, int64_t size)
 		{
-			m_directory.commit(std::move(reservation), size, [target = m_file_ref, src](DirEntry entry) mutable {
-				target.write(src, entry.end - entry.begin, entry.begin);
-			});
+			m_directory.commit(
+			    std::move(reservation), size, [target = m_file_ref, src](DirEntry entry) mutable {
+				    target.write(src, entry.end - entry.begin, entry.begin);
+			    });
 		}
 
 		int64_t size() const { return m_directory.eofOffset(); }
