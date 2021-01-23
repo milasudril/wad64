@@ -25,7 +25,11 @@ namespace Wad64
 	class Archive
 	{
 	public:
-		explicit Archive(FileReference ref): m_directory{readDirectory(ref)}, m_file_ref{ref} {}
+		explicit Archive(FileReference ref)
+		    : m_directory{readDirectory(ref, WadInfo::AllowEmpty{true})}
+		    , m_file_ref{ref}
+		{
+		}
 
 		/**
 		 * \brief Initiates an Archive from `f`
@@ -84,10 +88,11 @@ namespace Wad64
 
 		void commit(Directory::FilenameReservation&& reservation, FdAdapter src)
 		{
-			m_directory.commit(
-			    std::move(reservation), size(src), [target = m_file_ref, src](DirEntry entry) mutable {
-				    target.write(src, entry.end - entry.begin, entry.begin);
-			    });
+			m_directory.commit(std::move(reservation),
+			                   size(src),
+			                   [target = m_file_ref, src](DirEntry entry) mutable {
+				                   target.write(src, entry.end - entry.begin, entry.begin);
+			                   });
 		}
 
 	private:

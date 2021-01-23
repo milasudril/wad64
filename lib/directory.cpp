@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-Wad64::Directory::Directory(std::span<FileLump const> entries):m_eof{sizeof(Wad64::WadInfo)}
+Wad64::Directory::Directory(std::span<FileLump const> entries): m_eof{sizeof(Wad64::WadInfo)}
 {
 	std::ranges::for_each(entries, []<class T>(T const& item) {
 		using ValidationResult = typename T::ValidationResult;
@@ -26,8 +26,7 @@ Wad64::Directory::Directory(std::span<FileLump const> entries):m_eof{sizeof(Wad6
 	    m_content, std::back_inserter(file_offsets), [](auto const& item) { return item.second; });
 	std::ranges::sort(file_offsets, [](auto a, auto b) { return a.begin < b.begin; });
 
-	if(std::size(file_offsets) != 0)
-	{ m_eof = file_offsets.back().end; }
+	if(std::size(file_offsets) != 0) { m_eof = file_offsets.back().end; }
 
 	if(std::ranges::adjacent_find(file_offsets, [](auto a, auto b) { return b.begin < a.end; })
 	   != std::end(file_offsets))
@@ -37,8 +36,8 @@ Wad64::Directory::Directory(std::span<FileLump const> entries):m_eof{sizeof(Wad6
 	std::ranges::for_each(
 	    file_offsets,
 	    [prev_end = static_cast<int64_t>(sizeof(WadInfo)), &gaps = m_gaps](auto val) mutable {
-		    auto const gap_size = val.begin - prev_end;
-		    auto const gap_begin  = prev_end;
+		    auto const gap_size  = val.begin - prev_end;
+		    auto const gap_begin = prev_end;
 		    if(gap_size != 0) { gaps.push(Gap{gap_begin, gap_size}); }
 		    prev_end = val.end;
 	    });
@@ -123,9 +122,9 @@ void Wad64::Directory::commit(FilenameReservation&& reservation,
 	return;
 }
 
-Wad64::Directory Wad64::readDirectory(FileReference ref)
+Wad64::Directory Wad64::readDirectory(FileReference ref, WadInfo::AllowEmpty allow_empty)
 {
-	auto header   = readHeader(ref);
+	auto header   = readHeader(ref, allow_empty);
 	auto dir_data = readInfoTables(ref, header);
 	return Directory{std::span(dir_data.get(), header.numlumps)};
 }

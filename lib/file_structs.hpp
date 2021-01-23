@@ -103,8 +103,7 @@ namespace Wad64
 
 	FileLump::ValidationResult validate(FileLump const& lump);
 
-	WadInfo readHeader(FileReference ref,
-	                   WadInfo::AllowEmpty allow_empty = WadInfo::AllowEmpty{true});
+	WadInfo readHeader(FileReference ref, WadInfo::AllowEmpty allow_empty);
 
 	std::unique_ptr<FileLump[]> readInfoTables(FileReference ref, WadInfo const& info);
 }

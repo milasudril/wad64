@@ -46,10 +46,7 @@ namespace Wad64
 
 		int64_t size() const { return m_range.end; }
 
-		~OutputFile()
-		{
-			m_archive.get().commit(std::move(m_reservation), m_tmp_file.get());
-		}
+		~OutputFile() { m_archive.get().commit(std::move(m_reservation), m_tmp_file.get()); }
 
 	private:
 		FdOwner m_tmp_file;

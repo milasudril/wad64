@@ -133,7 +133,7 @@ namespace Wad64
 		            CommitCallback cb);
 	};
 
-	Directory readDirectory(FileReference ref);
+	Directory readDirectory(FileReference ref, WadInfo::AllowEmpty allow_empty);
 }
 
 #endif

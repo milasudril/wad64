@@ -83,7 +83,9 @@ size_t Wad64::write(FdAdapter target, FdAdapter src, int64_t src_size, int64_t t
 
 size_t Wad64::size(FdAdapter fd)
 {
-	struct stat statbuf{};
+	struct stat statbuf
+	{
+	};
 
 	fstat(fd.fd, &statbuf);
 	return statbuf.st_size;

@@ -163,12 +163,12 @@ namespace Testcases
 			auto reservation = dir.reserve("Foobar");
 			try
 			{
-				dir.commit(std::move(reservation), 13, [&entry_saved](Wad64::DirEntry) {
-					throw "Blah";
-				});
+				dir.commit(
+				    std::move(reservation), 13, [&entry_saved](Wad64::DirEntry) { throw "Blah"; });
 			}
 			catch(...)
-			{}
+			{
+			}
 		}
 		assert(std::size(dir.ls()) == 0);
 		auto entry = dir.stat("Foobar");
@@ -278,7 +278,8 @@ namespace Testcases
 			assert(std::size(dir.ls()) == n_entries);
 			assert(!reservation.itemInserted());
 			assert(reservation.valid());
-			assert((reservation.value() == Wad64::DirEntry{lumps[0].filepos, lumps[0].filepos + lumps[0].size}));
+			assert((reservation.value()
+			        == Wad64::DirEntry{lumps[0].filepos, lumps[0].filepos + lumps[0].size}));
 		}
 		assert(std::size(dir.ls()) == n_entries);
 	}
@@ -295,14 +296,15 @@ namespace Testcases
 			assert(std::size(dir.ls()) == n_entries);
 			assert(!reservation.itemInserted());
 			assert(reservation.valid());
-			assert((reservation.value() == Wad64::DirEntry{lumps[0].filepos, lumps[0].filepos + lumps[0].size}));
+			assert((reservation.value()
+			        == Wad64::DirEntry{lumps[0].filepos, lumps[0].filepos + lumps[0].size}));
 		}
 		assert(std::size(dir.ls()) == n_entries);
 	}
 
 	void wad64DirectoryLoadEntriesInvalidItem()
 	{
-		auto bad_lumps = lumps;
+		auto bad_lumps       = lumps;
 		bad_lumps[0].name[4] = '\0';
 		try
 		{
@@ -310,7 +312,8 @@ namespace Testcases
 			abort();
 		}
 		catch(...)
-		{}
+		{
+		}
 	}
 
 	void wad64DirectoryLoadEntriesOverlappingOffsets()
@@ -323,14 +326,15 @@ namespace Testcases
 			abort();
 		}
 		catch(...)
-		{}
+		{
+		}
 	}
 
 	void wad64DirectoryLoadEntriesAndCommitNewReservationSuitableGapExists()
 	{
 		Wad64::Directory dir{lumps};
 		auto const current_eof = dir.eofOffset();
-		auto reservation = dir.reserve("Foobar");
+		auto reservation       = dir.reserve("Foobar");
 		assert(reservation.itemInserted());
 		assert(reservation.valid());
 		auto const size_req = 325;
@@ -338,9 +342,9 @@ namespace Testcases
 			assert(dir_entry.end - dir_entry.begin == size_req);
 			assert(std::ranges::none_of(lumps, [dir_entry](auto const& item) {
 				auto const i_begin = item.filepos;
-				auto const i_end = item.filepos + item.size;
+				auto const i_end   = item.filepos + item.size;
 				return (i_begin >= dir_entry.begin && i_begin < dir_entry.end)
-					|| (i_end > dir_entry.begin && i_end <= dir_entry.end);
+				       || (i_end > dir_entry.begin && i_end <= dir_entry.end);
 			}));
 		});
 		assert(dir.eofOffset() == current_eof);
@@ -350,7 +354,7 @@ namespace Testcases
 	{
 		Wad64::Directory dir{lumps};
 		auto const current_eof = dir.eofOffset();
-		auto reservation = dir.use(lumps[0].name.data());
+		auto reservation       = dir.use(lumps[0].name.data());
 		assert(!reservation.itemInserted());
 		assert(reservation.valid());
 		auto const size_req = 325;
@@ -358,9 +362,9 @@ namespace Testcases
 			assert(dir_entry.end - dir_entry.begin == size_req);
 			assert(std::ranges::none_of(lumps, [dir_entry](auto const& item) {
 				auto const i_begin = item.filepos;
-				auto const i_end = item.filepos + item.size;
+				auto const i_end   = item.filepos + item.size;
 				return (i_begin >= dir_entry.begin && i_begin < dir_entry.end)
-					|| (i_end > dir_entry.begin && i_end <= dir_entry.end);
+				       || (i_end > dir_entry.begin && i_end <= dir_entry.end);
 			}));
 		});
 		assert(dir.eofOffset() == current_eof);
@@ -370,7 +374,7 @@ namespace Testcases
 	{
 		Wad64::Directory dir{lumps};
 		auto const current_eof = dir.eofOffset();
-		auto reservation = dir.reserve("Foobar");
+		auto reservation       = dir.reserve("Foobar");
 		assert(reservation.itemInserted());
 		assert(reservation.valid());
 		auto const size_req = 26143;
@@ -378,9 +382,9 @@ namespace Testcases
 			assert(dir_entry.end - dir_entry.begin == size_req);
 			assert(std::ranges::none_of(lumps, [dir_entry](auto const& item) {
 				auto const i_begin = item.filepos;
-				auto const i_end = item.filepos + item.size;
+				auto const i_end   = item.filepos + item.size;
 				return (i_begin >= dir_entry.begin && i_begin < dir_entry.end)
-					|| (i_end > dir_entry.begin && i_end <= dir_entry.end);
+				       || (i_end > dir_entry.begin && i_end <= dir_entry.end);
 			}));
 		});
 		assert(dir.eofOffset() == current_eof);
@@ -390,17 +394,17 @@ namespace Testcases
 	{
 		Wad64::Directory dir{lumps};
 		auto const current_eof = dir.eofOffset();
-		auto reservation = dir.reserve("Foobar");
+		auto reservation       = dir.reserve("Foobar");
 		assert(reservation.itemInserted());
 		assert(reservation.valid());
-		auto const size_req = 2*26143;
+		auto const size_req = 2 * 26143;
 		dir.commit(std::move(reservation), size_req, [size_req](Wad64::DirEntry dir_entry) {
 			assert(dir_entry.end - dir_entry.begin == size_req);
 			assert(std::ranges::none_of(lumps, [dir_entry](auto const& item) {
 				auto const i_begin = item.filepos;
-				auto const i_end = item.filepos + item.size;
+				auto const i_end   = item.filepos + item.size;
 				return (i_begin >= dir_entry.begin && i_begin < dir_entry.end)
-					|| (i_end > dir_entry.begin && i_end <= dir_entry.end);
+				       || (i_end > dir_entry.begin && i_end <= dir_entry.end);
 			}));
 		});
 		assert(dir.eofOffset() == current_eof + size_req);
@@ -409,16 +413,17 @@ namespace Testcases
 	void wad64DirectoryReadFromFile()
 	{
 		Wad64::WadInfo info;
-		info.numlumps = std::size(lumps);
+		info.numlumps       = std::size(lumps);
 		info.identification = Wad64::MagicNumber;
-		info.infotablesofs = sizeof(Wad64::WadInfo);
+		info.infotablesofs  = sizeof(Wad64::WadInfo);
 
 		Wad64::MemBuffer buffer;
 		buffer.data.resize(sizeof(info) + sizeof(lumps));
 		memcpy(std::data(buffer.data), &info, sizeof(Wad64::WadInfo));
 		memcpy(std::data(buffer.data) + sizeof(Wad64::WadInfo), std::data(lumps), sizeof(lumps));
 
-		auto const dir = readDirectory(Wad64::FileReference{std::ref(buffer)});
+		auto const dir =
+		    readDirectory(Wad64::FileReference{std::ref(buffer)}, Wad64::WadInfo::AllowEmpty{true});
 		auto lumps_by_name = lumps;
 		std::ranges::sort(lumps_by_name, [](auto const& a, auto const& b) {
 			return strcmp(a.name.data(), b.name.data()) < 0;
