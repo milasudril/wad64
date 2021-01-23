@@ -8,6 +8,7 @@
 
 #include <cassert>
 #include <algorithm>
+#include <cstring>
 
 namespace
 {
@@ -158,6 +159,58 @@ namespace Testcases
 	void wad64DirectoryLoadEntries()
 	{
 		Wad64::Directory dir{lumps};
+
+		auto lumps_by_name = lumps;
+		std::ranges::sort(lumps_by_name, [](auto const& a, auto const& b) {
+			return strcmp(a.name.data(), b.name.data()) < 0;
+		});
+
+		assert(std::ranges::equal(dir.ls(), lumps_by_name, [](auto const& a, auto const& b) {
+			return strcmp(a.first.c_str(), b.name.data()) == 0
+			&& a.second.begin == b.filepos
+			&& a.second.end == b.filepos + b.size;
+		}));
+
+		std::ranges::for_each(lumps, [&dir](auto const& a) {
+			auto item = dir.stat(a.name.data());
+			assert(item.has_value());
+
+			assert(item->begin == a.filepos);
+			assert(item->end == a.filepos + a.size);
+		});
+
+		assert(dir.eofOffset() == lumps.back().filepos + lumps.back().size);
+	}
+
+	void wad64DirectoryLoadEntriesAndRemoveItem()
+	{
+		Wad64::Directory dir{lumps};
+
+		auto const item_count = std::size(dir.ls());
+		auto const eof = dir.eofOffset();
+		assert(dir.stat(lumps[0].name.data()));
+
+		assert(dir.remove(lumps[0].name.data()));
+
+		assert(!dir.stat(lumps[0].name.data()));
+		assert(std::size(dir.ls()) == item_count - 1);
+		assert(dir.eofOffset() == eof);
+	}
+
+	void wad64DirectoryLoadEntriesAndRemoveLastItem()
+	{
+		Wad64::Directory dir{lumps};
+
+		auto const item_count = std::size(dir.ls());
+		assert(dir.stat(lumps.back().name.data()));
+
+		assert(dir.remove(lumps.back().name.data()));
+
+		assert(!dir.stat(lumps.back().name.data()));
+		assert(std::size(dir.ls()) == item_count - 1);
+		// This is does not consider any padding between last entry and previous one, but `remove`
+		// cannot know the previous item. Thus, it must set eof to filepos of the removed item.
+		assert(dir.eofOffset() == lumps.back().filepos);
 	}
 
 }
@@ -173,5 +226,7 @@ int main()
 	Testcases::wad64DirectoryReserveDoNotCommit();
 	Testcases::wad64DirectoryReserveAndCommit();
 	Testcases::wad64DirectoryLoadEntries();
+	Testcases::wad64DirectoryLoadEntriesAndRemoveItem();
+	Testcases::wad64DirectoryLoadEntriesAndRemoveLastItem();
 	return 0;
 }
