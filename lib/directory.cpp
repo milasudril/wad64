@@ -11,7 +11,7 @@ Wad64::Directory::Directory(std::span<FileLump const> entries)
 	std::ranges::for_each(entries, []<class T>(T const& item) {
 		using ValidationResult = typename T::ValidationResult;
 		if(validate(item) != ValidationResult::NoError)
-		{ throw ArchiveError{"Invalid WAD64 archive"}; }
+		{ throw ArchiveError{"Invalid WAD64 archive. Directory contains invalid items."}; }
 	});
 
 	std::ranges::transform(

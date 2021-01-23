@@ -5,7 +5,55 @@
 #include "./directory.hpp"
 
 #include "./membuffer.hpp"
+
 #include <cassert>
+#include <algorithm>
+
+namespace
+{
+	constexpr std::array<std::string_view, 10> names
+	{
+		"footer-technology-christopher-lee",
+		"sidebar_space_phnom-penh",
+		"generate-travel-2021",
+		"radio_san-jose_palau_56287",
+		"rosanne-cash-gender-left",
+		"suriname_phylicia-rashad_politics_suite",
+		"travel_jerusalem_lie_xl_21",
+		"security_small_2021_sierra-leone_ethel-merman_thanks",
+		"bob-uecker_nigeria_ethics_8603917",
+		"campaign_judith-jamison_castries_kenya",
+	};
+
+	constexpr std::array<int64_t, 10> sizes{4716, 4608, 844, 7084, 6, 26, 44764, 135, 42, 44121};
+
+	constexpr std::array<double, 10> paddings{3.6994e-02,
+		9.7230e-01,
+		4.6798e-01,
+		9.3508e-01,
+		8.1966e-01,
+		7.2736e-01,
+		5.8402e-01,
+		8.1571e-01,
+		7.3374e-01,
+		6.4228e-01};
+
+	constexpr auto gen_lumps()
+	{
+		std::array<Wad64::FileLump, names.size()> lumps{};
+		int64_t total = sizeof(Wad64::WadInfo);
+		for(size_t k = 0; k < names.size(); ++k)
+		{
+			std::ranges::copy(names[k], std::begin(lumps[k].name));
+			lumps[k].size = sizes[k];
+			lumps[k].filepos = total;
+			total += static_cast<int64_t>(static_cast<double>(lumps[k].size)*(1.0 + paddings[k]));
+		}
+		return lumps;
+	}
+
+	constexpr auto lumps = gen_lumps();
+}
 
 namespace Testcases
 {
@@ -107,6 +155,11 @@ namespace Testcases
 		}
 	}
 
+	void wad64DirectoryLoadEntries()
+	{
+		Wad64::Directory dir{lumps};
+	}
+
 }
 
 int main()
@@ -119,5 +172,6 @@ int main()
 	Testcases::wad64DirectoryReserveInvalidFilename();
 	Testcases::wad64DirectoryReserveDoNotCommit();
 	Testcases::wad64DirectoryReserveAndCommit();
+	Testcases::wad64DirectoryLoadEntries();
 	return 0;
 }
