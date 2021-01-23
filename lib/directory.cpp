@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-Wad64::Directory::Directory(std::span<FileLump> entries)
+Wad64::Directory::Directory(std::span<FileLump const> entries)
 {
 	std::ranges::for_each(entries, []<class T>(T const& item) {
 		using ValidationResult = typename T::ValidationResult;

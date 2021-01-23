@@ -48,7 +48,7 @@ namespace Wad64
 
 		explicit Directory(): m_eof{sizeof(WadInfo)} {}
 
-		explicit Directory(std::span<FileLump> directory);
+		explicit Directory(std::span<FileLump const> directory);
 
 		/**
 		 * \brief Retrieves a full directory listing
