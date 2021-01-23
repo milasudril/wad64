@@ -96,7 +96,15 @@ void Wad64::Directory::commit(FilenameReservation&& reservation,
 	if(m_gaps.size() == 0) { m_gaps.push(Gap{m_eof, std::numeric_limits<int64_t>::max() - m_eof}); }
 
 	auto const gap = m_gaps.top();
-	auto committer = [obj, cb]<class T>(T&& entry) { cb(obj, std::forward<T>(entry)); };
+	auto committer = [obj,
+	                  cb,
+	                  item_inserted = reservation.itemInserted(),
+	                  old_entry     = reservation.value(),
+	                  &gaps         = m_gaps]<class T>(T&& entry) {
+		cb(obj, std::forward<T>(entry));
+		auto size = old_entry.end - old_entry.begin;
+		if(!item_inserted && size != 0) { gaps.push(Gap{old_entry.begin, size}); }
+	};
 
 	if(gap.size < req_size)
 	{

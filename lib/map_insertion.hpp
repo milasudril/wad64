@@ -54,6 +54,8 @@ namespace Wad64
 
 		bool valid() const { return m_valid; }
 
+		auto const& value() const { return m_value->second; }
+
 		~MapInsertion()
 		{
 			if(itemInserted()) { m_storage->erase(m_value); }
