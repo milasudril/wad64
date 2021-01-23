@@ -32,15 +32,9 @@ namespace Wad64
 		int64_t size;
 	};
 
-	inline bool operator==(Gap a, Gap b)
-	{
-		return a.begin == b.begin && a.size == b.size;
-	}
+	inline bool operator==(Gap a, Gap b) { return a.begin == b.begin && a.size == b.size; }
 
-	inline bool operator!=(Gap a, Gap b)
-	{
-		return !(a == b);
-	}
+	inline bool operator!=(Gap a, Gap b) { return !(a == b); }
 
 
 	class Directory

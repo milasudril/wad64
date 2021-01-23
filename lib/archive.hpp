@@ -48,7 +48,10 @@ namespace Wad64
 		 * \brief Checks whether or not `filename` exists in the archive, and if so, returns
 		 * information about where the file is located
 		*/
-		std::optional<DirEntry> stat(std::string_view filename) const { return m_directory.stat(filename); }
+		std::optional<DirEntry> stat(std::string_view filename) const
+		{
+			return m_directory.stat(filename);
+		}
 
 		/**
 		 * \brief Removes `filename` from the directory and frees the space occupied by the file. If
@@ -84,7 +87,10 @@ namespace Wad64
 		 * \breif Marks `filename` for use. If there is no corresponding directory entry, then the
 		 * returned FilenameReservation will be invalid.
 		 */
-		Directory::FilenameReservation use(std::string_view filename) { return m_directory.use(filename); }
+		Directory::FilenameReservation use(std::string_view filename)
+		{
+			return m_directory.use(filename);
+		}
 
 		void commit(Directory::FilenameReservation&& reservation, FdAdapter src)
 		{
