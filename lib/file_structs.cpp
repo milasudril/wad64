@@ -83,7 +83,7 @@ Wad64::WadInfo Wad64::readHeader(FileReference ref, WadInfo::AllowEmpty allow_em
 {
 	WadInfo info;
 	errno       = 0;
-	auto n_read = ref.read(std::span{reinterpret_cast<std::byte*>(&info), sizeof(info)}, 0);
+	auto n_read = ref.read(std::as_writable_bytes(std::span{&info, 1}), 0);
 	if(n_read == 0 || errno == EBADF)
 	{
 		if(!allow_empty) { throw ArchiveError{"File is empty"}; }
