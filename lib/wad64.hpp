@@ -36,6 +36,9 @@ namespace Wad64
 	void insert(Archive& archive, FileCreationMode mode, std::string_view name);
 
 	void insert(Archive& archive, FileCreationMode mode, std::span<std::string_view> names, BeginsWith name);
+
+	auto const& ls(ArchiveView const& archive)
+	{ return archive.ls(); }
 }
 
 #endif
