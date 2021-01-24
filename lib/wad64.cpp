@@ -10,6 +10,8 @@
 
 #include <sys/stat.h>
 
+#include <algorithm>
+
 namespace
 {
 	void mkdirs(std::string_view name)
@@ -40,6 +42,10 @@ void Wad64::extract(ArchiveView const& archive, std::string_view name,  FileCrea
 	InputFile file{archive, name};
 	auto buffer = std::make_unique<std::array<std::byte, 0x10000>>();
 	FdOwner output_file{std::string{name}.c_str(), IoMode::AllowWrite(), mode};
+
+	// TODO:
+	// read(file, output_file.get(), 0);
+
 	auto bytes_left = static_cast<size_t>(file.size());
 	int64_t write_offset = 0;
 	while(bytes_left != 0)
@@ -49,4 +55,14 @@ void Wad64::extract(ArchiveView const& archive, std::string_view name,  FileCrea
 		bytes_left -= n;
 		write_offset += n;
 	}
+}
+
+void Wad64::extract(ArchiveView const& archive, BeginsWith name, FileCreationMode mode)
+{
+	std::ranges::for_each(archive.ls(), [&archive, name, mode](auto const& item) {
+		if(name == item.first)
+		{
+			extract(archive, name, mode);
+		}
+	});
 }
