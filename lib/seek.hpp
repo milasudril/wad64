@@ -3,8 +3,8 @@
 //@	,"dependencies_extra":[{"ref":"seek.o","rel":"implementation"}]
 //@	}
 
-#ifndef TEXPAINTER_WAD64_LIB_SEEK_HPP
-#define TEXPAINTER_WAD64_LIB_SEEK_HPP
+#ifndef WAD64_LIB_SEEK_HPP
+#define WAD64_LIB_SEEK_HPP
 
 #include <cstdint>
 

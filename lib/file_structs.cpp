@@ -34,9 +34,38 @@ namespace
 {
 	bool validate_filename(std::span<char const> name)
 	{
-		// TODO: Implement proper validation (name should be utf-8)
+		if(std::size(name) == 0) { return false; }
 
-		auto i = std::ranges::find_if(name, [](auto val) { return val >= 0 && val < ' '; });
+		if(name[0] == '/' || name[0] == '\\' || name[0] == '-') { return false; }
+
+		auto ptr       = std::begin(name);
+		auto ptr_saved = ptr;
+		while(ptr != std::end(name))
+		{
+			auto ch_in = *ptr;
+			auto check = [ptr, ptr_saved]() {
+				auto sv = std::string_view{ptr_saved, ptr};
+				return sv == "." || sv == ".." || sv == "";
+			};
+			++ptr;
+			switch(ch_in)
+			{
+				case '/':
+					if(check()) { return false; }
+					ptr_saved = ptr;
+					break;
+				case '\\':
+					if(check()) { return false; }
+					ptr_saved = ptr;
+					break;
+			}
+		}
+
+		// TODO: Implement proper validation (name should be utf-8)
+		auto i = std::ranges::find_if(name, [](auto val) {
+			return (val >= 0 && val < ' ') || val == '"' || val == '*' || val == ':' || val == '<'
+			       || val == '>' || val == '?' || val == '|';
+		});
 
 		if(i != std::end(name)) { return false; }
 		return true;

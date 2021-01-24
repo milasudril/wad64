@@ -2,8 +2,8 @@
 //@	 "targets":[{"name":"input_file.hpp","type":"include"}]
 //@	}
 
-#ifndef TEXPAINTER_WAD64_LIB_INPUTFILE_HPP
-#define TEXPAINTER_WAD64_LIB_INPUTFILE_HPP
+#ifndef WAD64_LIB_INPUTFILE_HPP
+#define WAD64_LIB_INPUTFILE_HPP
 
 #include "./archive.hpp"
 #include "./archive_error.hpp"
@@ -25,7 +25,8 @@ namespace Wad64
 			m_read_offset = m_range.begin;
 		}
 
-		explicit InputFile(std::reference_wrapper<ReadonlyArchive const> archive, std::string_view filename)
+		explicit InputFile(std::reference_wrapper<ReadonlyArchive const> archive,
+		                   std::string_view filename)
 		    : m_file_ref{archive.get().fileReference()}
 		{
 			auto info = archive.get().stat(filename);

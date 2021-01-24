@@ -2,8 +2,8 @@
 //@	 "targets":[{"name":"map_insertion.hpp","type":"include"}]
 //@	}
 
-#ifndef TEXPAINTER_WAD64_LIB_MAPINSERTION_HPP
-#define TEXPAINTER_WAD64_LIB_MAPINSERTION_HPP
+#ifndef WAD64_LIB_MAPINSERTION_HPP
+#define WAD64_LIB_MAPINSERTION_HPP
 
 #include <utility>
 #include <cassert>

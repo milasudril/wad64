@@ -2,8 +2,8 @@
 //@	"targets":[{"name":"fd_owner.hpp","type":"include"}]
 //@	}
 
-#ifndef TEXPAINTER_WAD64_LIB_FDOWNER_HPP
-#define TEXPAINTER_WAD64_LIB_FDOWNER_HPP
+#ifndef WAD64_LIB_FDOWNER_HPP
+#define WAD64_LIB_FDOWNER_HPP
 
 #include "./fd_adapter.hpp"
 
@@ -62,9 +62,7 @@ namespace Wad64
 		return write(fd.get(), buffer, offset);
 	}
 
-	inline size_t write(FdOwner const& target,
-	                    FdAdapter src,
-	                    int64_t target_offset)
+	inline size_t write(FdOwner const& target, FdAdapter src, int64_t target_offset)
 	{
 		return write(target.get(), src, target_offset);
 	}

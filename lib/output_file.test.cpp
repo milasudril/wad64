@@ -125,13 +125,13 @@ namespace Testcases
 
 	void wad64OoutputFileWrite()
 	{
-		auto data = generateData();
+		auto data           = generateData();
 		auto const data_old = data.data;
 		{
 			Wad64::Archive archive{std::ref(data)};
 			{
 				Wad64::OutputFile output{
-					std::ref(archive), "New file", Wad64::FileCreationMode::AllowCreation()};
+				    std::ref(archive), "New file", Wad64::FileCreationMode::AllowCreation()};
 
 				assert(output.size() == 0);
 				assert(output.tell() == 0);

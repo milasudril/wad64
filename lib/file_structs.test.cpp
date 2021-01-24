@@ -153,6 +153,39 @@ namespace Testcases
 		assert(!Wad64::validateFilename(test));
 	}
 
+	void wad64ValidateFilenameEmpty() { assert(!Wad64::validateFilename("")); }
+
+	void wad64ValidateFilenameIsAbsolute()
+	{
+		assert(!Wad64::validateFilename("/foobar/blah/kaka"));
+		assert(!Wad64::validateFilename("\\foobar/blah/kaka"));
+	}
+
+	void wad64ValidateFilenameBeginsWithDash()
+	{
+		assert(!Wad64::validateFilename("-this filename is not good"));
+	}
+
+	void wad64ValidateFilenameOneCharacter() { assert(Wad64::validateFilename("a")); }
+
+	void wad64ValidateFilenameWin32PathWithDriveLetter()
+	{
+		assert(!Wad64::validateFilename("A:\\this is not allowed"));
+		assert(!Wad64::validateFilename("b:\\this is not allowed"));
+		assert(!Wad64::validateFilename("c:/this is not allowed"));
+	}
+
+	void wad64ValidateFilenamePathWithOperatorsAndMultipleConsecutiveDirSeparators()
+	{
+		assert(Wad64::validateFilename("foo/bar/kaka"));
+		assert(!Wad64::validateFilename("foo/./bar/kaka"));
+		assert(!Wad64::validateFilename("foo/../bar/kaka"));
+		assert(!Wad64::validateFilename("foo//bar/kaka"));
+		assert(Wad64::validateFilename("foo\\bar\\kaka"));
+		assert(!Wad64::validateFilename("foo\\\\bar\\kaka"));
+	}
+
+
 	void wad64ReadHeaderEmptyFileEmptyNotAllowed()
 	{
 		Wad64::MemBuffer data;
@@ -291,12 +324,11 @@ namespace Testcases
 
 	void wad64ReadInfoOverlapBetweenTableAndEntries()
 	{
-		std::array<Wad64::FileLump, 5> lumps{
-		    {{0, 5, std::array<char, Wad64::NameSize>{'A'}},
-		     {6, 4, std::array<char, Wad64::NameSize>{'B'}},
-		     {10, 32, std::array<char, Wad64::NameSize>{'C'}},
-		     {42, 55, std::array<char, Wad64::NameSize>{'D'}},
-		     {97, 50, std::array<char, Wad64::NameSize>{'E'}}}};
+		std::array<Wad64::FileLump, 5> lumps{{{0, 5, std::array<char, Wad64::NameSize>{'A'}},
+		                                      {6, 4, std::array<char, Wad64::NameSize>{'B'}},
+		                                      {10, 32, std::array<char, Wad64::NameSize>{'C'}},
+		                                      {42, 55, std::array<char, Wad64::NameSize>{'D'}},
+		                                      {97, 50, std::array<char, Wad64::NameSize>{'E'}}}};
 
 		Wad64::MemBuffer data;
 		data.data.resize(sizeof(lumps));
@@ -333,6 +365,12 @@ int main()
 	Testcases::wad64ValidateFileLumpNoError();
 	Testcases::wad64ValidateFilenameValid();
 	Testcases::wad64ValidateFilenameInvalid();
+	Testcases::wad64ValidateFilenameEmpty();
+	Testcases::wad64ValidateFilenameIsAbsolute();
+	Testcases::wad64ValidateFilenameBeginsWithDash();
+	Testcases::wad64ValidateFilenameOneCharacter();
+	Testcases::wad64ValidateFilenameWin32PathWithDriveLetter();
+	Testcases::wad64ValidateFilenamePathWithOperatorsAndMultipleConsecutiveDirSeparators();
 	Testcases::wad64ValidateFilenameTooLong();
 
 	Testcases::wad64ReadHeaderEmptyFileEmptyNotAllowed();

@@ -10,7 +10,9 @@ namespace Testcases
 {
 	void wad64ReadonlyArchiveCreateFromReadonlyFile()
 	{
-		Wad64::FdOwner src{"testdata/file_with_data.wad64", Wad64::IoMode::AllowRead(), Wad64::FileCreationMode::AllowOverwrite()};
+		Wad64::FdOwner src{"testdata/file_with_data.wad64",
+		                   Wad64::IoMode::AllowRead(),
+		                   Wad64::FileCreationMode::AllowOverwrite()};
 		Wad64::ReadonlyArchive archive{Wad64::FileReference{std::ref(src)}};
 	}
 }

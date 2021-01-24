@@ -2,8 +2,8 @@
 //@	 "targets":[{"name":"readonly_archive.hpp","type":"include"}]
 //@	}
 
-#ifndef TEXPAINTER_WAD64_LIB_READONLYARCHIVE_HPP
-#define TEXPAINTER_WAD64_LIB_READONLYARCHIVE_HPP
+#ifndef WAD64_LIB_READONLYARCHIVE_HPP
+#define WAD64_LIB_READONLYARCHIVE_HPP
 
 #include "./io_policy.hpp"
 #include "./fd_adapter.hpp"

@@ -3,8 +3,8 @@
 //@	,"dependencies_extra":[{"ref":"archive.o", "rel":"implementation"}]
 //@	}
 
-#ifndef TEXPAINTER_WAD64_LIB_ARCHIVE_HPP
-#define TEXPAINTER_WAD64_LIB_ARCHIVE_HPP
+#ifndef WAD64_LIB_ARCHIVE_HPP
+#define WAD64_LIB_ARCHIVE_HPP
 
 #include "./io_policy.hpp"
 #include "./fd_adapter.hpp"

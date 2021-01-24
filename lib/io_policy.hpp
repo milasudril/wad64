@@ -1,7 +1,7 @@
 //@	{"targets":[{"name":"io_policy.hpp","type":"include"}]}
 
-#ifndef TEXPAINTER_WAD64_LIB_IOPOLICY_HPP
-#define TEXPAINTER_WAD64_LIB_IOPOLICY_HPP
+#ifndef WAD64_LIB_IOPOLICY_HPP
+#define WAD64_LIB_IOPOLICY_HPP
 
 #include "./fd_adapter.hpp"
 
@@ -74,10 +74,7 @@ namespace Wad64
 			return m_write(m_ref, buffer, offset);
 		}
 
-		size_t write(FdAdapter src, int64_t offset)
-		{
-			return m_write_from_fd(m_ref, src, offset);
-		}
+		size_t write(FdAdapter src, int64_t offset) { return m_write_from_fd(m_ref, src, offset); }
 
 		void* handle() const { return m_ref; }
 

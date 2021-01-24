@@ -139,7 +139,9 @@ namespace Testcases
 				auto reservation = archive.reserve("Foobar");
 				assert(reservation.valid());
 				assert(reservation.itemInserted());
-				Wad64::FdOwner src{__FILE__, Wad64::IoMode::AllowRead(), Wad64::FileCreationMode::AllowOverwrite()};
+				Wad64::FdOwner src{__FILE__,
+				                   Wad64::IoMode::AllowRead(),
+				                   Wad64::FileCreationMode::AllowOverwrite()};
 				archive.commit(std::move(reservation), Wad64::FdAdapter{src.get()});
 			}
 
@@ -147,19 +149,22 @@ namespace Testcases
 			assert(item.has_value());
 			assert(item->begin == 116432);  // Offset of largest possible gap
 			auto const lump_size = static_cast<size_t>(item->end - item->begin);
-			Wad64::FdOwner src{__FILE__, Wad64::IoMode::AllowRead(), Wad64::FileCreationMode::AllowOverwrite()};
+			Wad64::FdOwner src{
+			    __FILE__, Wad64::IoMode::AllowRead(), Wad64::FileCreationMode::AllowOverwrite()};
 			assert(lump_size == size(src.get()));
 			std::vector<std::byte> buffer;
 			buffer.resize(lump_size);
 			assert(read(src.get(), buffer, 0) == lump_size);
-			assert(std::ranges::equal(buffer, std::span{std::data(buff.data) + item->begin, lump_size}));
+			assert(std::ranges::equal(buffer,
+			                          std::span{std::data(buff.data) + item->begin, lump_size}));
 		}
 
 		auto info_new =
 		    readHeader(Wad64::FileReference{std::ref(buff)}, Wad64::WadInfo::AllowEmpty{false});
 		assert(info_new.identification == info.identification);
 		assert(info_new.numlumps == info.numlumps + 1);
-		assert(info_new.infotablesofs == 217578);  // Offset of largest possible gap (after writing new file)
+		assert(info_new.infotablesofs
+		       == 217578);  // Offset of largest possible gap (after writing new file)
 	}
 }
 

@@ -2,8 +2,8 @@
 //@	 "targets":[{"name":"file_creation_mode.hpp","type":"include"}]
 //@	}
 
-#ifndef TEXPAINTER_WAD64_LIB_FILECREATIONMODE_HPP
-#define TEXPAINTER_WAD64_LIB_FILECREATIONMODE_HPP
+#ifndef WAD64_LIB_FILECREATIONMODE_HPP
+#define WAD64_LIB_FILECREATIONMODE_HPP
 
 #include <fcntl.h>
 
