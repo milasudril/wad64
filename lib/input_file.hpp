@@ -53,7 +53,6 @@ namespace Wad64
 		int64_t size() const
 		{
 			return Wad64::size(m_range);
-			;
 		}
 
 	private:
@@ -69,6 +68,16 @@ namespace Wad64
 		int64_t m_read_offset;
 		ValidSeekRange m_range;
 	};
+
+	inline auto read(InputFile& f, std::span<std::byte> buffer)
+	{
+		return f.read(buffer);
+	}
+
+	inline auto read(InputFile const& f, std::span<std::byte> buffer, int64_t offset)
+	{
+		return f.read(buffer, offset);
+	}
 }
 
 #endif

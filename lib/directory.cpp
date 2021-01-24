@@ -64,7 +64,7 @@ bool Wad64::Directory::remove(std::string_view filename)
 
 namespace
 {
-	constexpr std::array<std::byte, 4096> Zeros{};
+	constexpr std::array<std::byte, 0x10000> Zeros{};
 
 	void clearRange(Wad64::DirEntry e, Wad64::FileReference ref)
 	{
