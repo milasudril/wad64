@@ -1,5 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"input_file.test","type":"application", "autorun":0}]
+//@	 "targets":[{"name":"input_file.test","type":"application", "autorun":1}]
 //@	}
 
 #include "./input_file.hpp"
@@ -86,7 +86,7 @@ namespace Testcases
 			std::ranges::fill(buffer, 'A');
 			auto orig = buffer;
 			auto const n1 =
-			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 32}, -5);
+			    file.read(std::as_writable_bytes(std::span{std::data(buffer), 32}), -5);
 			assert(n1 == 0);
 			assert(buffer == orig);
 		}
@@ -96,7 +96,7 @@ namespace Testcases
 			std::ranges::fill(buffer, 'B');
 			auto orig     = buffer;
 			auto const n1 = file.read(
-			    std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 32}, file.size());
+			    std::as_writable_bytes(std::span{std::data(buffer), 32}), file.size());
 			assert(n1 == 0);
 			assert(buffer == orig);
 		}
@@ -118,7 +118,7 @@ namespace Testcases
 			auto expected = buffer;
 			std::ranges::copy(std::string_view{"lo, Wor"}, std::begin(expected));
 			auto const n1 =
-			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 7}, 3);
+			    file.read(std::as_writable_bytes(std::span{std::data(buffer), 7}), 3);
 			assert(n1 == 7);
 			assert(buffer == expected);
 		}
@@ -129,7 +129,7 @@ namespace Testcases
 			auto expected = buffer;
 			std::ranges::copy(std::string_view{"Hello"}, std::begin(expected));
 			auto const n1 =
-			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 5}, 0);
+			    file.read(std::as_writable_bytes(std::span{std::data(buffer), 5}), 0);
 			assert(n1 == 5);
 			assert(buffer == expected);
 		}
@@ -148,7 +148,7 @@ namespace Testcases
 			std::ranges::copy(std::string_view{"Hello"}, std::begin(expected));
 
 			auto const n1 =
-			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 5});
+			    file.read(std::as_writable_bytes(std::span{std::data(buffer), 5}));
 			assert(n1 == 5);
 			assert(buffer == expected);
 			assert(file.tell() == 5);
@@ -160,7 +160,7 @@ namespace Testcases
 			std::ranges::copy(std::string_view{", World"}, std::begin(expected));
 
 			auto const n1 =
-			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 7});
+			    file.read(std::as_writable_bytes(std::span{std::data(buffer), 7}));
 			assert(n1 == 7);
 			assert(buffer == expected);
 			assert(file.tell() == 12);
@@ -184,7 +184,7 @@ namespace Testcases
 			std::ranges::copy(std::string_view{", World"}, std::begin(expected));
 
 			auto const n1 =
-			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 7});
+			    file.read(std::as_writable_bytes(std::span{std::data(buffer), 7}));
 			assert(n1 == 7);
 			assert(buffer == expected);
 			assert(file.tell() == 12);
@@ -208,7 +208,7 @@ namespace Testcases
 			auto orig = buffer;
 
 			auto const n1 =
-			    file.read(std::span{reinterpret_cast<std::byte*>(std::data(buffer)), 1});
+			    file.read(std::as_writable_bytes(std::span{std::data(buffer), 1}));
 			assert(n1 == 0);
 			assert(buffer == orig);
 			assert(file.tell() == res);
