@@ -134,7 +134,14 @@ namespace Wad64
 
 		std::vector<Gap> gaps() const;
 
-		int64_t findSpace(int64_t req_size) const;
+		template<class Action>
+		void commitDirentries(Action&& action)
+		{
+			commitDirentries(&action, [](void* obj, DirEntry entry) {
+				auto& self = *static_cast<Action*>(obj);
+				self(entry);
+			});
+		}
 
 	private:
 		Storage m_content;
@@ -145,15 +152,16 @@ namespace Wad64
 		void remove(Storage::iterator i_dir);
 
 		using CommitCallback = void (*)(void*, DirEntry);
+
 		void commit(FilenameReservation&& reservation,
 		            int64_t req_size,
 		            void* obj,
 		            CommitCallback cb);
+
+		void commitDirentries(void* obj, CommitCallback cb);
 	};
 
 	Directory readDirectory(FileReference ref, WadInfo const& header);
-
-	WadInfo write(FileReference ref, Directory const& dir);
 }
 
 #endif

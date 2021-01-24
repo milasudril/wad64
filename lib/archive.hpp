@@ -1,5 +1,6 @@
 //@	{
 //@	 "targets":[{"name":"archive.hpp","type":"include"}]
+//@	,"dependencies_extra":[{"ref":"archive.o", "rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_LIB_ARCHIVE_HPP
@@ -10,12 +11,6 @@
 #include "./archive_error.hpp"
 #include "./file_structs.hpp"
 #include "./directory.hpp"
-
-#include <map>
-#include <string>
-#include <optional>
-#include <ranges>
-#include <queue>
 
 namespace Wad64
 {
@@ -31,11 +26,6 @@ namespace Wad64
 		{
 		}
 
-		~Archive()
-		{
-			write(m_file_ref, write(m_file_ref, m_directory));
-		}
-
 		/**
 		 * \brief Initiates an Archive from `f`
 		*/
@@ -43,6 +33,8 @@ namespace Wad64
 		explicit Archive(std::reference_wrapper<File> f): Archive{FileReference{f}}
 		{
 		}
+
+		~Archive();
 
 		/**
 		 * \brief Retrieves a full directory listing

@@ -118,18 +118,29 @@ void Wad64::Directory::commit(FilenameReservation&& reservation,
 	m_eof = std::max(m_eof, gap.begin + req_size);
 
 	if(gap.size - req_size > 0) { m_gaps.push(Gap{gap.begin + req_size, gap.size - req_size}); }
-
-	return;
 }
 
-int64_t Wad64::Directory::findSpace(int64_t req_size) const
+void Wad64::Directory::commitDirentries(void* obj, CommitCallback cb)
 {
-	if(std::size(m_gaps) == 0)
-	{ return m_eof; }
+	// NOTE: The multiplication below should not wrap around. If it does, we are probably out of
+	//       memory
+	auto const req_size = static_cast<int64_t>(sizeof(FileLump) * std::size(m_content));
+
+	if(std::size(m_gaps) == 0) { m_gaps.push(Gap{m_eof, std::numeric_limits<int64_t>::max() - m_eof}); }
 
 	auto const gap = m_gaps.top();
+	if(gap.size < req_size)
+	{
+		cb(obj, DirEntry{m_eof, req_size});
+		m_eof += req_size;
+		return;
+	}
 
-	return (gap.size < req_size)? m_eof : gap.size;
+	cb(obj, DirEntry{gap.begin, gap.begin + req_size});
+	m_gaps.pop();
+	m_eof = std::max(m_eof, gap.begin + req_size);
+
+	if(gap.size - req_size > 0) { m_gaps.push(Gap{gap.begin + req_size, gap.size - req_size}); }
 }
 
 std::vector<Wad64::Gap> Wad64::Directory::gaps() const
@@ -148,28 +159,4 @@ Wad64::Directory Wad64::readDirectory(FileReference ref, WadInfo const& header)
 {
 	auto dir_data = readInfoTables(ref, header);
 	return Directory{std::span(dir_data.get(), header.numlumps)};
-}
-
-Wad64::WadInfo Wad64::write(FileReference ref, Directory const& dir)
-{
-	auto const& entries = dir.ls();
-	auto const n = std::size(entries);
-
-	auto entries_out = std::make_unique<FileLump[]>(n);
-	std::ranges::transform(entries, entries_out.get(), [](auto const& item) {
-		FileLump info{};
-		info.filepos = item.second.begin;
-		info.size = item.second.end - item.second.begin;
-		std::ranges::copy(item.first, std::data(info.name));
-		return info;
-	});
-
-	WadInfo ret;
-	ret.identification = Wad64::MagicNumber;
-	ret.numlumps = n;
-	ret.infotablesofs = dir.findSpace(n * sizeof(FileLump));
-
-	ref.write(std::as_bytes(std::span{entries_out.get(), n}), ret.infotablesofs);
-
-	return ret;
 }
