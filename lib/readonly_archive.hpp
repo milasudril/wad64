@@ -52,6 +52,8 @@ namespace Wad64
 		*/
 		FileReference fileReference() const { return m_file_ref; }
 
+		Directory const& directory() const { return m_directory; }
+
 	private:
 		Directory m_directory;
 		FileReference m_file_ref;

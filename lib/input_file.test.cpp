@@ -6,6 +6,7 @@
 
 #include "./membuffer.hpp"
 #include "./file_structs.hpp"
+#include "./archive.hpp"
 
 #include <cassert>
 #include <random>

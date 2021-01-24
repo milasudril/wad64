@@ -98,6 +98,8 @@ namespace Wad64
 			                   });
 		}
 
+		Directory const& directory() const { return m_directory; }
+
 	private:
 		Directory m_directory;
 		FileReference m_file_ref;

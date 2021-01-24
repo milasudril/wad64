@@ -5,31 +5,22 @@
 #ifndef WAD64_LIB_INPUTFILE_HPP
 #define WAD64_LIB_INPUTFILE_HPP
 
-#include "./archive.hpp"
 #include "./archive_error.hpp"
-#include "./readonly_archive.hpp"
 #include "./seek.hpp"
+#include "./io_policy.hpp"
+#include "./archive_view.hpp"
+
+#include <span>
 
 namespace Wad64
 {
 	class InputFile
 	{
 	public:
-		explicit InputFile(std::reference_wrapper<Archive const> archive, std::string_view filename)
-		    : m_file_ref{archive.get().fileReference()}
+		explicit InputFile(ArchiveView const& archive, std::string_view filename)
+		    : m_file_ref{archive.fileReference()}
 		{
-			auto info = archive.get().stat(filename);
-			if(!info.has_value()) { throw ArchiveError{"File does not exist"}; }
-
-			m_range       = ValidSeekRange{info->begin, info->end};
-			m_read_offset = m_range.begin;
-		}
-
-		explicit InputFile(std::reference_wrapper<ReadonlyArchive const> archive,
-		                   std::string_view filename)
-		    : m_file_ref{archive.get().fileReference()}
-		{
-			auto info = archive.get().stat(filename);
+			auto info = archive.stat(filename);
 			if(!info.has_value()) { throw ArchiveError{"File does not exist"}; }
 
 			m_range       = ValidSeekRange{info->begin, info->end};
