@@ -87,3 +87,11 @@ void Wad64::insert(Archive& archive, FileCreationMode mode, std::string_view nam
 		read_offset += n;
 	}
 }
+
+void Wad64::insert(Archive& archive, FileCreationMode mode, std::span<std::string_view> names, BeginsWith name)
+{
+	std::ranges::for_each(names, [&archive, mode, name](auto const& item) {
+		if(item == name)
+		{ insert(archive, mode, item); }
+	});
+}

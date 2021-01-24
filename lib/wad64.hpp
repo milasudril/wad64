@@ -34,6 +34,8 @@ namespace Wad64
 	void extract(ArchiveView const& archive, BeginsWith name, FileCreationMode mode);
 
 	void insert(Archive& archive, FileCreationMode mode, std::string_view name);
+
+	void insert(Archive& archive, FileCreationMode mode, std::span<std::string_view> names, BeginsWith name);
 }
 
 #endif
