@@ -73,8 +73,8 @@ namespace Testcases
 		Wad64::MemBuffer buff;
 		Wad64::WadInfo info;
 		info.identification = Wad64::MagicNumber;
-		info.numlumps = std::size(lumps);
-		info.infotablesofs = sizeof(Wad64::WadInfo) + 20;
+		info.numlumps       = std::size(lumps);
+		info.infotablesofs  = sizeof(Wad64::WadInfo) + 1243905;
 
 		write(buff, std::as_bytes(std::span{&info, 1}), 0);
 		write(buff, std::as_bytes(std::span{lumps}), info.infotablesofs);
@@ -100,10 +100,11 @@ namespace Testcases
 				return strcmp(a.name.data(), b.name.data()) < 0;
 			});
 
-			assert(std::ranges::equal(archive.ls(), lumps_by_name, [](auto const& a, auto const& b) {
-				return strcmp(a.first.c_str(), b.name.data()) == 0 && a.second.begin == b.filepos
-					&& a.second.end == b.filepos + b.size;
-			}));
+			assert(
+			    std::ranges::equal(archive.ls(), lumps_by_name, [](auto const& a, auto const& b) {
+				    return strcmp(a.first.c_str(), b.name.data()) == 0
+				           && a.second.begin == b.filepos && a.second.end == b.filepos + b.size;
+			    }));
 
 			std::ranges::for_each(lumps, [&archive](auto const& a) {
 				auto item = archive.stat(a.name.data());
@@ -114,11 +115,11 @@ namespace Testcases
 			});
 		}
 
-		auto info_new = readHeader(Wad64::FileReference{std::ref(buff)},
-									Wad64::WadInfo::AllowEmpty{false});
+		auto info_new =
+		    readHeader(Wad64::FileReference{std::ref(buff)}, Wad64::WadInfo::AllowEmpty{false});
 		assert(info_new.identification == info.identification);
 		assert(info_new.numlumps == info.numlumps);
-		assert(info_new.infotablesofs == 116432); // Offset of largest possible gap
+		assert(info_new.infotablesofs == 116432);  // Offset of largest possible gap
 	}
 }
 

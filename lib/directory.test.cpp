@@ -41,7 +41,7 @@ namespace
 	constexpr auto gen_lumps()
 	{
 		std::array<Wad64::FileLump, names.size()> lumps{};
-		int64_t total = sizeof(Wad64::WadInfo);
+		int64_t total = sizeof(Wad64::WadInfo) + sizeof(Wad64::FileLump) * std::size(names);
 		for(size_t k = 0; k < names.size(); ++k)
 		{
 			std::ranges::copy(names[k], std::begin(lumps[k].name));
@@ -213,9 +213,9 @@ namespace Testcases
 
 		assert(dir.eofOffset() == lumps.back().filepos + lumps.back().size);
 
-		// We start directly after header. Also, there is no gap between first and second element
+		// There is no gap between first and second element
 		// creation of lumps above.
-		assert(std::size(dir.gaps()) == std::size(lumps) - 2);
+		assert(std::size(dir.gaps()) == std::size(lumps) - 1);
 	}
 
 	void wad64DirectoryLoadEmptyList()
@@ -275,7 +275,7 @@ namespace Testcases
 		Wad64::Directory dir{lumps};
 		Wad64::MemBuffer buffer;
 		std::generate_n(std::back_inserter(buffer.data),
-		                lumps[0].size + sizeof(Wad64::WadInfo),
+		                lumps[0].size + sizeof(Wad64::WadInfo) + sizeof(lumps),
 		                [k = 0]() mutable {
 			                ++k;
 			                return static_cast<std::byte>(k);

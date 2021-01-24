@@ -109,5 +109,16 @@ std::unique_ptr<Wad64::FileLump[]> Wad64::readInfoTables(FileReference ref, WadI
 	auto const n_read    = ref.read(std::as_writable_bytes(dir_range), info.infotablesofs);
 	if(n_read != info.numlumps * sizeof(FileLump))
 	{ throw ArchiveError{"Failed to load infotables. File truncated?"}; }
+
+	if(std::ranges::any_of(
+	       dir_range,
+	       [begin = info.infotablesofs,
+	        end   = info.infotablesofs + static_cast<int64_t>(n_read)](auto const& item) {
+		       auto item_end = item.filepos + item.size;
+		       return (begin >= item.filepos && begin < item_end)
+		              || (end > item.filepos && end <= item_end);
+	       }))
+	{ throw ArchiveError{"Overlap between infotables and a file lump"}; }
+
 	return entries;
 }
