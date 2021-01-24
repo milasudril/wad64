@@ -1,5 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"output_file.test","type":"application", "autorun":0}]
+//@	 "targets":[{"name":"output_file.test","type":"application", "autorun":1}]
 //@	}
 
 #include "./output_file.hpp"
@@ -9,6 +9,7 @@
 #include <cassert>
 #include <algorithm>
 #include <random>
+#include <cstring>
 
 namespace
 {
@@ -125,74 +126,33 @@ namespace Testcases
 	void wad64OoutputFileWrite()
 	{
 		auto data = generateData();
-		constexpr std::string_view text_short{"This is a test"};
-		Wad64::Archive archive{std::ref(data)};
-
+		auto const data_old = data.data;
 		{
-			Wad64::OutputFile output{
-			    std::ref(archive), "New file", Wad64::FileCreationMode::AllowCreation()};
+			Wad64::Archive archive{std::ref(data)};
+			{
+				Wad64::OutputFile output{
+					std::ref(archive), "New file", Wad64::FileCreationMode::AllowCreation()};
 
-			assert(output.size() == 0);
-			assert(output.tell() == 0);
+				assert(output.size() == 0);
+				assert(output.tell() == 0);
 
-			auto const n_written = output.write(std::as_bytes(std::span{text_short}));
-			assert(n_written == std::size(text_short));
-			assert(output.size() == static_cast<int64_t>(std::size(text_short)));
+				constexpr std::string_view text_a{"This is a test"};
+				auto const n_written = output.write(std::as_bytes(std::span{text_a}));
+				assert(n_written == std::size(text_a));
+				assert(output.size() == static_cast<int64_t>(std::size(text_a)));
+				assert(output.tell() == output.size());
+
+				output.seek(-4, Wad64::SeekMode::Cur);
+				assert(output.tell() == output.size() - 4);
+				constexpr std::string_view text_b{"foobar"};
+				output.write(std::as_bytes(std::span{text_b}));
+				assert(output.size() == static_cast<int64_t>(std::size(text_a)) - 4 + 6);
+				assert(data_old == data.data);
+			}
+			assert(data.data != data_old);
+			auto item = archive.stat("New file");
+			assert(item->end - item->begin == strlen("This is a foobar"));
 		}
-
-		auto item = archive.stat("New file");
-		assert(item.has_value());
-		assert(item->end - item->begin == static_cast<int64_t>(std::size(text_short)));
-		assert(
-		    std::ranges::equal(std::span{std::data(data.data) + item->begin, std::size(text_short)},
-		                       std::as_bytes(std::span{text_short})));
-
-		archive.secureRemove("New file");
-		assert(!std::ranges::equal(
-		    std::span{std::data(data.data) + item->begin, std::size(text_short)},
-		    std::as_bytes(std::span{text_short})));
-
-		constexpr std::string_view text_long{"This is a longer test"};
-		{
-			Wad64::OutputFile output{
-			    std::ref(archive), "New file", Wad64::FileCreationMode::AllowCreation()};
-
-			output.write(std::as_bytes(std::span{text_long}));
-		}
-		auto item_new = archive.stat("New file");
-		assert(item_new->end - item_new->begin == static_cast<int64_t>(std::size(text_long)));
-		assert(item_new->begin == item->begin);
-		assert(std::ranges::equal(
-		    std::span{std::data(data.data) + item_new->begin, std::size(text_long)},
-		    std::as_bytes(std::span{text_long})));
-
-		{
-			Wad64::OutputFile output{
-			    std::ref(archive), "New file 2", Wad64::FileCreationMode::AllowCreation()};
-			output.write(std::as_bytes(std::span{text_short}));
-		}
-		auto item_new_2 = archive.stat("New file 2");
-		assert(item_new_2->end - item_new_2->begin == static_cast<int64_t>(std::size(text_short)));
-		assert(item_new_2->begin == item_new->end);
-		assert(std::ranges::equal(
-		    std::span{std::data(data.data) + item_new_2->begin, std::size(text_short)},
-		    std::as_bytes(std::span{text_short})));
-
-		archive.remove("New file");
-
-		constexpr std::string_view shorter_text{"Shorter test"};
-		{
-			Wad64::OutputFile output{
-			    std::ref(archive), "New file", Wad64::FileCreationMode::AllowCreation()};
-			output.write(std::as_bytes(std::span{shorter_text}));
-		}
-		auto item_new_3 = archive.stat("New file");
-		assert(item_new_3->end - item_new_3->begin
-		       == static_cast<int64_t>(std::size(shorter_text)));
-		assert(item_new_3->begin == item->begin);
-		assert(std::ranges::equal(
-		    std::span{std::data(data.data) + item_new_3->begin, std::size(shorter_text)},
-		    std::as_bytes(std::span{shorter_text})));
 	}
 }
 
