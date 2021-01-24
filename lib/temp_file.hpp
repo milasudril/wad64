@@ -2,8 +2,8 @@
 //@	 "targets":[{"name":"temp_file.hpp","type":"include"}]
 //@	}
 
-#ifndef WAD64_LIB_TEMPFILE_HPP
-#define WAD64_LIB_TEMPFILE_HPP
+#ifndef TEXPAINTER_WAD64_LIB_TEMPFILE_HPP
+#define TEXPAINTER_WAD64_LIB_TEMPFILE_HPP
 
 #include "./archive_error.hpp"
 #include "./fd_adapter.hpp"

@@ -3,8 +3,8 @@
 //@	,"dependencies_extra":[{"ref":"directory.o", "rel":"implementation"}]
 //@	}
 
-#ifndef WAD64_LIB_DIRECTORY_HPP
-#define WAD64_LIB_DIRECTORY_HPP
+#ifndef TEXPAINTER_WAD64_LIB_DIRECTORY_HPP
+#define TEXPAINTER_WAD64_LIB_DIRECTORY_HPP
 
 #include "./file_structs.hpp"
 #include "./archive_error.hpp"

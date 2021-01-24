@@ -2,8 +2,8 @@
 //@	 "targets":[{"name":"archive_error.hpp","type":"include"}]
 //@	}
 
-#ifndef WAD64_LIB_ARCHIVEERROR_HPP
-#define WAD64_LIB_ARCHIVEERROR_HPP
+#ifndef TEXPAINTER_WAD64_LIB_ARCHIVEERROR_HPP
+#define TEXPAINTER_WAD64_LIB_ARCHIVEERROR_HPP
 
 #include <stdexcept>
 

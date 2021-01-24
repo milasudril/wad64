@@ -1,7 +1,7 @@
 //@	{"targets":[{"name":"io_policy.hpp","type":"include"}]}
 
-#ifndef WAD64_LIB_IOPOLICY_HPP
-#define WAD64_LIB_IOPOLICY_HPP
+#ifndef TEXPAINTER_WAD64_LIB_IOPOLICY_HPP
+#define TEXPAINTER_WAD64_LIB_IOPOLICY_HPP
 
 #include "./fd_adapter.hpp"
 

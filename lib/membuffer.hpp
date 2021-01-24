@@ -1,7 +1,7 @@
 //@	{"targets":[{"name":"membuffer.hpp","type":"include"}]}
 
-#ifndef WAD64_LIB_MEMBUFFER_HPP
-#define WAD64_LIB_MEMBUFFER_HPP
+#ifndef TEXPAINTER_WAD64_LIB_MEMBUFFER_HPP
+#define TEXPAINTER_WAD64_LIB_MEMBUFFER_HPP
 
 #include "./fd_adapter.hpp"
 

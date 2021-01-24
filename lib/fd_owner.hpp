@@ -2,8 +2,8 @@
 //@	"targets":[{"name":"fd_owner.hpp","type":"include"}]
 //@	}
 
-#ifndef WAD64_LIB_FDOWNER_HPP
-#define WAD64_LIB_FDOWNER_HPP
+#ifndef TEXPAINTER_WAD64_LIB_FDOWNER_HPP
+#define TEXPAINTER_WAD64_LIB_FDOWNER_HPP
 
 #include "./fd_adapter.hpp"
 

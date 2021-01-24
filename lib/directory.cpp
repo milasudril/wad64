@@ -93,7 +93,8 @@ void Wad64::Directory::commit(FilenameReservation&& reservation,
                               void* obj,
                               CommitCallback cb)
 {
-	if(std::size(m_gaps) == 0) { m_gaps.push(Gap{m_eof, std::numeric_limits<int64_t>::max() - m_eof}); }
+	if(std::size(m_gaps) == 0)
+	{ m_gaps.push(Gap{m_eof, std::numeric_limits<int64_t>::max() - m_eof}); }
 
 	auto const gap = m_gaps.top();
 	auto committer = [obj,
@@ -126,7 +127,8 @@ void Wad64::Directory::commitDirentries(void* obj, CommitCallback cb)
 	//       memory
 	auto const req_size = static_cast<int64_t>(sizeof(FileLump) * std::size(m_content));
 
-	if(std::size(m_gaps) == 0) { m_gaps.push(Gap{m_eof, std::numeric_limits<int64_t>::max() - m_eof}); }
+	if(std::size(m_gaps) == 0)
+	{ m_gaps.push(Gap{m_eof, std::numeric_limits<int64_t>::max() - m_eof}); }
 
 	auto const gap = m_gaps.top();
 	if(gap.size < req_size)

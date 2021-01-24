@@ -3,8 +3,8 @@
 //@	,"dependencies_extra":[{"ref":"fd_adapter.o","rel":"implementation"}]
 //@	}
 
-#ifndef WAD64_LIB_FDADAPTER_HPP
-#define WAD64_LIB_FDADAPTER_HPP
+#ifndef TEXPAINTER_WAD64_LIB_FDADAPTER_HPP
+#define TEXPAINTER_WAD64_LIB_FDADAPTER_HPP
 
 #include "./io_mode.hpp"
 #include "./file_creation_mode.hpp"
