@@ -33,12 +33,13 @@ namespace Wad64
 		return std::size(buffer);
 	}
 
-	inline size_t write(MemBuffer& f, FdAdapter src, int64_t size, int64_t offset)
+	inline size_t write(MemBuffer& f, FdAdapter src, int64_t offset)
 	{
-		auto const n = size + offset;
-		if(static_cast<int64_t>(std::size(f.data)) < n) { f.data.resize(n); }
+		auto const s = size(src);
+		auto const n = size(src) + offset;
+		if(std::size(f.data) < n) { f.data.resize(n); }
 
-		return read(src, std::span{std::data(f.data) + offset, static_cast<size_t>(size)}, 0);
+		return read(src, std::span{std::data(f.data) + offset, s}, 0);
 	}
 }
 

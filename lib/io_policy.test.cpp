@@ -15,7 +15,7 @@ namespace
 
 	size_t write(File&, std::span<std::byte const> buffer, int64_t) { return std::size(buffer); }
 
-	size_t write(File&, Wad64::FdAdapter, int64_t, int64_t) { return 0; }
+	size_t write(File&, Wad64::FdAdapter, int64_t) { return 0; }
 }
 
 namespace Testcases

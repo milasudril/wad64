@@ -64,10 +64,10 @@ Wad64::FdAdapter Wad64::open(char const* filename, IoMode io_mode, FileCreationM
 	return FdAdapter{::open(filename, flags, S_IRUSR | S_IWUSR)};
 }
 
-size_t Wad64::write(FdAdapter target, FdAdapter src, int64_t src_size, int64_t target_offset)
+size_t Wad64::write(FdAdapter target, FdAdapter src, int64_t target_offset)
 {
 	loff_t src_offet = 0;
-	auto remaining   = src_size;
+	auto remaining   = size(src);
 	while(remaining != 0)
 	{
 		auto const n_written =

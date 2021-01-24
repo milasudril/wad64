@@ -94,7 +94,7 @@ namespace Wad64
 			m_directory.commit(std::move(reservation),
 			                   size(src),
 			                   [target = m_file_ref, src](DirEntry entry) mutable {
-				                   target.write(src, entry.end - entry.begin, entry.begin);
+				                   target.write(src, entry.begin);
 			                   });
 		}
 

@@ -270,7 +270,6 @@ namespace Testcases
 	void wad64ReadInfoTables()
 	{
 		Wad64::MemBuffer data;
-		data.data.resize(sizeof(Wad64::WadInfo));
 		data.data.resize(5 * sizeof(Wad64::FileLump));
 
 		std::array<Wad64::FileLump, 5> lumps{
@@ -293,22 +292,20 @@ namespace Testcases
 	void wad64ReadInfoOverlapBetweenTableAndEntries()
 	{
 		std::array<Wad64::FileLump, 5> lumps{
-		    {{5 * sizeof(Wad64::FileLump) + 0, 5, std::array<char, Wad64::NameSize>{'A'}},
-		     {5 * sizeof(Wad64::FileLump) + 6, 4, std::array<char, Wad64::NameSize>{'B'}},
-		     {5 * sizeof(Wad64::FileLump) + 10, 32, std::array<char, Wad64::NameSize>{'C'}},
-		     {5 * sizeof(Wad64::FileLump) + 42, 55, std::array<char, Wad64::NameSize>{'D'}},
-		     {5 * sizeof(Wad64::FileLump) + 97, 50, std::array<char, Wad64::NameSize>{'E'}}}};
+		    {{0, 5, std::array<char, Wad64::NameSize>{'A'}},
+		     {6, 4, std::array<char, Wad64::NameSize>{'B'}},
+		     {10, 32, std::array<char, Wad64::NameSize>{'C'}},
+		     {42, 55, std::array<char, Wad64::NameSize>{'D'}},
+		     {97, 50, std::array<char, Wad64::NameSize>{'E'}}}};
 
 		Wad64::MemBuffer data;
-		data.data.resize(sizeof(Wad64::WadInfo));
-		data.data.resize(5 * sizeof(Wad64::FileLump) + lumps[0].filepos);
+		data.data.resize(sizeof(lumps));
 
-
-		memcpy(data.data.data(), lumps.data(), data.data.size());
+		memcpy(data.data.data(), lumps.data(), std::size(data.data));
 		auto src = Wad64::FileReference{std::ref(data)};
 		Wad64::WadInfo info{};
 		info.infotablesofs = lumps[0].filepos;
-		info.numlumps      = 5;
+		info.numlumps      = std::size(lumps);
 
 		try
 		{

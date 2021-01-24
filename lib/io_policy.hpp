@@ -26,7 +26,7 @@ namespace Wad64
 		->std::same_as<std::size_t>;
 
 		{
-			write(a, std::declval<FdAdapter>(), std::declval<int64_t>(), std::declval<int64_t>())
+			write(a, std::declval<FdAdapter>(), std::declval<int64_t>())
 		}
 		->std::same_as<size_t>;
 	};
@@ -36,19 +36,19 @@ namespace Wad64
 		template<RandomAccessFile File>
 		auto read(void* handle, std::span<std::byte> buffer, int64_t offset)
 		{
-			return read(*reinterpret_cast<File*>(handle), buffer, offset);
+			return read(*static_cast<File*>(handle), buffer, offset);
 		}
 
 		template<RandomAccessFile File>
 		auto write(void* handle, std::span<std::byte const> buffer, int64_t offset)
 		{
-			return write(*reinterpret_cast<File*>(handle), buffer, offset);
+			return write(*static_cast<File*>(handle), buffer, offset);
 		}
 
 		template<RandomAccessFile File>
-		size_t write_from_fd(void* handle, FdAdapter fd, int64_t size, int64_t offset)
+		size_t write_from_fd(void* handle, FdAdapter fd, int64_t offset)
 		{
-			return write(*reinterpret_cast<File*>(handle), fd, size, offset);
+			return write(*static_cast<File*>(handle), fd, offset);
 		}
 	}
 
@@ -74,9 +74,9 @@ namespace Wad64
 			return m_write(m_ref, buffer, offset);
 		}
 
-		size_t write(FdAdapter src, int64_t size, int64_t offset)
+		size_t write(FdAdapter src, int64_t offset)
 		{
-			return m_write_from_fd(m_ref, src, size, offset);
+			return m_write_from_fd(m_ref, src, offset);
 		}
 
 		void* handle() const { return m_ref; }
@@ -85,7 +85,7 @@ namespace Wad64
 		void* m_ref;
 		size_t (*m_read)(void*, std::span<std::byte>, int64_t offset);
 		size_t (*m_write)(void*, std::span<std::byte const>, int64_t offset);
-		size_t (*m_write_from_fd)(void*, FdAdapter, int64_t, int64_t);
+		size_t (*m_write_from_fd)(void*, FdAdapter, int64_t);
 	};
 }
 

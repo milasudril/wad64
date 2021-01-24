@@ -27,7 +27,7 @@ namespace Wad64
 
 	size_t write(FdAdapter fd, std::span<std::byte const> buffer, int64_t offset);
 
-	size_t write(FdAdapter target, FdAdapter src, int64_t src_size, int64_t target_offset);
+	size_t write(FdAdapter target, FdAdapter src, int64_t target_offset);
 
 	size_t size(FdAdapter fd);
 

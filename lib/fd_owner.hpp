@@ -30,9 +30,9 @@ namespace Wad64
 			if(m_fd.fd == -1) { throw std::runtime_error{"Failed to create temporary file"}; }
 		}
 
-		FdOwner(FdOwner&& other): m_fd{std::exchange(other.m_fd, FdAdapter{-1})} {}
+		FdOwner(FdOwner&& other) noexcept: m_fd{std::exchange(other.m_fd, FdAdapter{-1})} {}
 
-		FdOwner& operator=(FdOwner&& other)
+		FdOwner& operator=(FdOwner&& other) noexcept
 		{
 			std::swap(m_fd, other.m_fd);
 			other.m_fd.fd = -1;
@@ -64,10 +64,9 @@ namespace Wad64
 
 	inline size_t write(FdOwner const& target,
 	                    FdAdapter src,
-	                    int64_t src_size,
 	                    int64_t target_offset)
 	{
-		return write(target.get(), src, src_size, target_offset);
+		return write(target.get(), src, target_offset);
 	}
 }
 #endif
