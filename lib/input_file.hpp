@@ -7,6 +7,7 @@
 
 #include "./archive.hpp"
 #include "./archive_error.hpp"
+#include "./readonly_archive.hpp"
 #include "./seek.hpp"
 
 namespace Wad64
@@ -15,6 +16,16 @@ namespace Wad64
 	{
 	public:
 		explicit InputFile(std::reference_wrapper<Archive const> archive, std::string_view filename)
+		    : m_file_ref{archive.get().fileReference()}
+		{
+			auto info = archive.get().stat(filename);
+			if(!info.has_value()) { throw ArchiveError{"File does not exist"}; }
+
+			m_range       = ValidSeekRange{info->begin, info->end};
+			m_read_offset = m_range.begin;
+		}
+
+		explicit InputFile(std::reference_wrapper<ReadonlyArchive const> archive, std::string_view filename)
 		    : m_file_ref{archive.get().fileReference()}
 		{
 			auto info = archive.get().stat(filename);
