@@ -55,5 +55,15 @@ namespace Wad64
 		std::reference_wrapper<Archive> m_archive;
 		Directory::FilenameReservation m_reservation;
 	};
+
+	inline auto write(OutputFile& f, std::span<std::byte const> buffer)
+	{
+		return f.write(buffer);
+	}
+
+	inline auto write(OutputFile& f, std::span<std::byte const> buffer, int64_t offset)
+	{
+		return f.write(buffer, offset);
+	}
 }
 #endif

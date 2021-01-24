@@ -7,6 +7,7 @@
 #include "./input_file.hpp"
 #include "./io_mode.hpp"
 #include "./fd_owner.hpp"
+#include "./output_file.hpp"
 
 #include <sys/stat.h>
 
@@ -39,19 +40,19 @@ namespace
 void Wad64::extract(ArchiveView const& archive, std::string_view name,  FileCreationMode mode)
 {
 	mkdirs(name);
-	InputFile file{archive, name};
+	InputFile file_in{archive, name};
 	auto buffer = std::make_unique<std::array<std::byte, 0x10000>>();
-	FdOwner output_file{std::string{name}.c_str(), IoMode::AllowWrite(), mode};
+	FdOwner file_out{std::string{name}.c_str(), IoMode::AllowWrite(), mode};
 
-	// TODO:
-	// read(file, output_file.get(), 0);
+	// TODO: This would allow for in-kernel data transfer
+	// read(file_in, file_out.get(), 0);
 
-	auto bytes_left = static_cast<size_t>(file.size());
+	auto bytes_left = static_cast<size_t>(file_in.size());
 	int64_t write_offset = 0;
 	while(bytes_left != 0)
 	{
-		auto const n = read(file, std::span{buffer->data(), std::min(buffer->size(), bytes_left)});
-		write(output_file, std::span{buffer->data(), n}, write_offset);
+		auto const n = read(file_in, std::span{buffer->data(), std::min(buffer->size(), bytes_left)});
+		write(file_out, std::span{buffer->data(), n}, write_offset);
 		bytes_left -= n;
 		write_offset += n;
 	}
@@ -65,4 +66,24 @@ void Wad64::extract(ArchiveView const& archive, BeginsWith name, FileCreationMod
 			extract(archive, name, mode);
 		}
 	});
+}
+
+void Wad64::insert(Archive& archive, FileCreationMode mode, std::string_view name)
+{
+	FdOwner file_in{std::string{name}.c_str(), IoMode::AllowRead(), FileCreationMode::AllowOverwrite()};
+	OutputFile file_out{archive, name, mode};
+
+	// TODO: This would allow for in-kernel data transfer
+	// write(output_file, file_in.get(), 0);
+
+	auto buffer = std::make_unique<std::array<std::byte, 0x10000>>();
+	auto bytes_left = static_cast<size_t>(size(file_in));
+	int64_t read_offset = 0;
+	while(bytes_left != 0)
+	{
+		auto const n = read(file_in, std::span{buffer->data(), std::min(buffer->size(), bytes_left)}, read_offset);
+		write(file_out, std::span{buffer->data(), n});
+		bytes_left -= n;
+		read_offset += n;
+	}
 }
