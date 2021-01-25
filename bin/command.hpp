@@ -9,6 +9,7 @@ namespace Wad64Cli
 	{
 	public:
 		virtual void operator()() const = 0;
+		virtual ~Command() = default;
 	};
 };
 

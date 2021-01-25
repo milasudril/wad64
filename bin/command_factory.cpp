@@ -4,6 +4,8 @@
 
 #include "./command_factory.hpp"
 
+#include "./ls.hpp"
+
 #include <map>
 #include <cstdio>
 
@@ -81,10 +83,10 @@ rm
 #if 0
 			if(command_name == "insert")
 			{ return Insert::help; }
-
+#endif
 			if(command_name == "ls")
-			{ return Ls::help; }
-
+			{ return Wad64Cli::Ls::help; }
+#if 0
 			if(command_name == "update")
 			{ return Update::help; }
 
@@ -110,7 +112,8 @@ std::unique_ptr<Wad64Cli::Command> Wad64Cli::makeCommand(int argc, char const* c
 
 
 	std::map<std::string_view, CommandFactory> commands
-	{{"help", CommandHelp::create}};
+	{{"help", CommandHelp::create},
+	 {"ls", Ls::create}};
 
 	auto i = commands.find(command_name);
 	if(i == std::end(commands))
