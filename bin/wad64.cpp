@@ -1,7 +1,8 @@
 //@	{"targets":[{"name":"wad64", "type":"application"}]}
 
-#include "lib/wad64.hpp"
+#include "./command_factory.hpp"
 
+#if 0
 namespace
 {
 	class Command
@@ -110,16 +111,16 @@ rm
 		return std::make_unique<BadCommand>();
 	}
 }
+#endif
 
 int main(int argc, char** argv)
 {
 	try
 	{
-		(*makeCommand(argc, argv))();
+		(*Wad64Cli::makeCommand(argc, argv))();
 	}
 	catch(std::exception const& e)
 	{
-		fprintf(stderr, "wad64: %s\n", e.what());
 		return -1;
 	}
 }
