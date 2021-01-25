@@ -11,7 +11,7 @@ Wad64Cli::ArchivePath Wad64Cli::ArchivePath::parse(std::string_view sv)
 		throw std::runtime_error{"No archive file given"};
 	}
 
-	auto const i = std::ranges::find(sv, '/');
+	auto const i = std::ranges::find(sv, ':');
 	if(i == std::begin(sv))
 	{
 		throw std::runtime_error{"No archive file given"};
