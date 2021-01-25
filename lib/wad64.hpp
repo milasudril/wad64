@@ -18,7 +18,7 @@ namespace Wad64
 	};
 
 	inline bool operator==(BeginsWith a, std::string_view other)
-	{ return a.starts_with(other); }
+	{ return other.starts_with(a); }
 
 	inline bool operator!=(BeginsWith a, std::string_view other)
 	{ return !(a == other); }

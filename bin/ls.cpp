@@ -15,6 +15,9 @@ void Wad64Cli::Ls::operator()() const
 	Wad64::ReadonlyArchive archive{std::ref(fd)};
 
 	std::ranges::for_each(archive.ls(), [prefix = Wad64::BeginsWith{m_path.entryPrefix().c_str()}](auto const& item){
-		printf("%s\n", item.first.c_str());
+		if(item.first == prefix)
+		{
+			printf("%s\n", item.first.c_str());
+		}
 	});
 }
