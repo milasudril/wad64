@@ -5,6 +5,7 @@
 #include "./command_factory.hpp"
 
 #include "./ls.hpp"
+#include "./insert.hpp"
 
 #include <map>
 #include <cstdio>
@@ -68,6 +69,7 @@ Shows help about <command>
 
 help
 insert
+export
 ls
 update
 rm
@@ -83,6 +85,9 @@ rm
 #if 0
 			if(command_name == "insert")
 			{ return Insert::help; }
+
+			if(command_name == "export")
+			{ return Export::help; }
 #endif
 			if(command_name == "ls")
 			{ return Wad64Cli::Ls::help; }
@@ -103,6 +108,12 @@ rm
 
 std::unique_ptr<Wad64Cli::Command> Wad64Cli::makeCommand(int argc, char const* const* argv)
 {
+	std::map<std::string_view, CommandFactory> commands
+	{{"help", CommandHelp::create},
+	 {"ls", Ls::create},
+	 {"insert", Insert::create}
+	};
+
 	if(argc <= 1)
 	{ return std::make_unique<AppHelp>(); }
 
@@ -111,9 +122,6 @@ std::unique_ptr<Wad64Cli::Command> Wad64Cli::makeCommand(int argc, char const* c
 	{ return std::make_unique<AppHelp>(); }
 
 
-	std::map<std::string_view, CommandFactory> commands
-	{{"help", CommandHelp::create},
-	 {"ls", Ls::create}};
 
 	auto i = commands.find(command_name);
 	if(i == std::end(commands))

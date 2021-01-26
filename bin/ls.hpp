@@ -16,7 +16,7 @@ namespace Wad64Cli
 	class Ls:public Command
 	{
 	public:
-		explicit Ls(ArchivePath&& path):m_path{path}{}
+		explicit Ls(ArchivePath&& path):m_path{std::move(path)}{}
 
 		static std::unique_ptr<Command> create(int argc, char const* const* argv)
 		{

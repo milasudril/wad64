@@ -1,6 +1,6 @@
 //@	{
 //@	 "targets":[{"name":"wad64.hpp","type":"include"}]
-//@	,"depdendencies_extra":[{"ref":"wad64.o","rel":"implementation"}]
+//@	,"dependencies_extra":[{"ref":"wad64.o","rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_LIB_WAD64_HPP
