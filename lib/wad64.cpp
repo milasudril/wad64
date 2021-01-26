@@ -68,9 +68,9 @@ void Wad64::extract(ArchiveView const& archive, BeginsWith name, FileCreationMod
 	});
 }
 
-void Wad64::insert(Archive& archive, FileCreationMode mode, std::string_view name)
+void Wad64::insert(Archive& archive, FileCreationMode mode, std::string_view name, char const* src_name)
 {
-	FdOwner file_in{std::string{name}.c_str(), IoMode::AllowRead(), FileCreationMode::AllowOverwrite()};
+	FdOwner file_in{src_name, IoMode::AllowRead(), FileCreationMode::AllowOverwrite()};
 	OutputFile file_out{archive, name, mode};
 
 	// TODO: This would allow for in-kernel data transfer
@@ -88,10 +88,12 @@ void Wad64::insert(Archive& archive, FileCreationMode mode, std::string_view nam
 	}
 }
 
-void Wad64::insert(Archive& archive, FileCreationMode mode, std::span<std::string_view> names, BeginsWith name)
+void Wad64::insert(Archive& archive, FileCreationMode mode,
+				   std::span<std::pair<char const*, std::string_view>> names,
+				   BeginsWith name)
 {
 	std::ranges::for_each(names, [&archive, mode, name](auto const& item) {
-		if(item == name)
-		{ insert(archive, mode, item); }
+		if(item.first == name)
+		{ insert(archive, mode, item.second, item.first); }
 	});
 }

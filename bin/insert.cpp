@@ -38,8 +38,7 @@ void Wad64Cli::Insert::operator()() const
 	Wad64::Archive archive{std::ref(file)};
 
 
-	std::vector<std::string_view> names{m_dest.entryPrefix()};
-	printf("%s", m_dest.entryPrefix().c_str());
+	std::vector<std::pair<char const*, std::string_view>> names{{m_src.c_str(), m_dest.entryPrefix()}};
 
 	insert(archive, m_mode, names, Wad64::BeginsWith{m_src.c_str()});
 }
