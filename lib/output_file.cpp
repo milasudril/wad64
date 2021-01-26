@@ -19,4 +19,12 @@ Wad64::OutputFile::OutputFile(std::reference_wrapper<Archive> archive,
 
 	if(!mode.overwriteAllowed() && !m_reservation.itemInserted() && mode.creationAllowed())
 	{ throw ArchiveError{"Tried to overwrite an existing entry"}; }
+
+	if(mode.overwriteAllowed() && !mode.truncateExistingFile())
+	{
+		// FIXME: If overwrite is allowed and not truncating existing file, copy content to m_tmp_file
+		//        and set m_range to correct length.
+		fprintf(stderr, "FIXME: Unimplemented file creation mode %08x\n", mode.bits());
+		abort();
+	}
 }

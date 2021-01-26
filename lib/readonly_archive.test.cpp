@@ -12,7 +12,7 @@ namespace Testcases
 	{
 		Wad64::FdOwner src{"testdata/file_with_data.wad64",
 		                   Wad64::IoMode::AllowRead(),
-		                   Wad64::FileCreationMode::AllowOverwrite()};
+		                   Wad64::FileCreationMode::DontCare()};
 		Wad64::ReadonlyArchive archive{Wad64::FileReference{std::ref(src)}};
 	}
 }

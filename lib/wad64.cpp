@@ -70,7 +70,7 @@ void Wad64::extract(ArchiveView const& archive, BeginsWith name, FileCreationMod
 
 void Wad64::insert(Archive& archive, FileCreationMode mode, std::string_view name, char const* src_name)
 {
-	FdOwner file_in{src_name, IoMode::AllowRead(), FileCreationMode::AllowOverwrite()};
+	FdOwner file_in{src_name, IoMode::AllowRead(), FileCreationMode::DontCare()};
 	OutputFile file_out{archive, name, mode};
 
 	// TODO: This would allow for in-kernel data transfer

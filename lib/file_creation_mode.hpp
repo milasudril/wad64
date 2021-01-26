@@ -12,9 +12,17 @@ namespace Wad64
 	class FileCreationMode
 	{
 	public:
-		static constexpr FileCreationMode AllowOverwrite()
+		static constexpr FileCreationMode DontCare()
+		{ return FileCreationMode{0}; }
+
+		static constexpr FileCreationMode AllowOverwriteWithoutTruncation()
 		{
 			return FileCreationMode{AllowOverwriteFlag};
+		}
+
+		static constexpr FileCreationMode AllowOverwriteWithTruncation()
+		{
+			return FileCreationMode{AllowOverwriteFlag | TruncateFlag};
 		}
 
 		static constexpr FileCreationMode AllowCreation()
@@ -22,7 +30,13 @@ namespace Wad64
 			return FileCreationMode{AllowCreationFlag};
 		}
 
-		constexpr FileCreationMode& allowOverwrite()
+		constexpr FileCreationMode& allowOverwriteWithTruncation()
+		{
+			m_flags |= AllowOverwriteFlag | TruncateFlag;
+			return *this;
+		}
+
+		constexpr FileCreationMode& allowOverwriteWithoutTruncation()
 		{
 			m_flags |= AllowOverwriteFlag;
 			return *this;
@@ -38,21 +52,26 @@ namespace Wad64
 
 		constexpr bool creationAllowed() const { return m_flags & AllowCreationFlag; }
 
+		constexpr bool truncateExistingFile() const { return m_flags & TruncateFlag; }
+
+		constexpr auto bits() const { return m_flags; }
+
 	private:
 		constexpr explicit FileCreationMode(unsigned int flags): m_flags{flags} {}
 
-		static constexpr unsigned int AllowOverwriteFlag = 0x1;
-		static constexpr unsigned int AllowCreationFlag  = 0x2;
+		static constexpr unsigned int AllowOverwriteFlag   = 0x1;
+		static constexpr unsigned int AllowCreationFlag    = 0x2;
+		static constexpr unsigned int TruncateFlag = 0x4;
 		unsigned int m_flags;
 	};
 
 	constexpr int fdFlags(FileCreationMode mode)
 	{
 		if(mode.creationAllowed())
-		{ return O_CREAT | (mode.overwriteAllowed() ? O_TRUNC : O_EXCL); }
+		{ return O_CREAT | (mode.overwriteAllowed() ? (mode.truncateExistingFile() ? O_TRUNC : 0) : O_EXCL); }
 		else
 		{
-			return O_TRUNC;
+			return mode.truncateExistingFile() ? O_TRUNC : 0;
 		}
 	}
 }

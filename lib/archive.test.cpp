@@ -141,7 +141,7 @@ namespace Testcases
 				assert(reservation.itemInserted());
 				Wad64::FdOwner src{__FILE__,
 				                   Wad64::IoMode::AllowRead(),
-				                   Wad64::FileCreationMode::AllowOverwrite()};
+				                   Wad64::FileCreationMode::DontCare()};
 				archive.commit(std::move(reservation), Wad64::FdAdapter{src.get()});
 			}
 
@@ -150,7 +150,7 @@ namespace Testcases
 			assert(item->begin == 116432);  // Offset of largest possible gap
 			auto const lump_size = static_cast<size_t>(item->end - item->begin);
 			Wad64::FdOwner src{
-			    __FILE__, Wad64::IoMode::AllowRead(), Wad64::FileCreationMode::AllowOverwrite()};
+			    __FILE__, Wad64::IoMode::AllowRead(), Wad64::FileCreationMode::DontCare()};
 			assert(lump_size == size(src.get()));
 			std::vector<std::byte> buffer;
 			buffer.resize(lump_size);

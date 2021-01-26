@@ -10,18 +10,20 @@
 
 namespace Testcases
 {
-	void wad64FileCreationModeAllowOverwrite()
+	void wad64FileCreationModeAllowOverwriteWithoutTruncation()
 	{
-		auto mode = Wad64::FileCreationMode::AllowOverwrite();
+		auto mode = Wad64::FileCreationMode::AllowOverwriteWithoutTruncation();
 		assert(mode.overwriteAllowed());
 		assert(!mode.creationAllowed());
+		assert(!mode.truncateExistingFile());
 	}
 
-	void wad64FileCreationModeAllowOverwriteEnableCreation()
+	void wad64FileCreationModeAllowOverwriteWithoutTruncationEnableCreation()
 	{
-		auto mode = Wad64::FileCreationMode::AllowOverwrite().allowCreation();
+		auto mode = Wad64::FileCreationMode::AllowOverwriteWithoutTruncation().allowCreation();
 		assert(mode.overwriteAllowed());
 		assert(mode.creationAllowed());
+		assert(!mode.truncateExistingFile());
 	}
 
 	void wad64FileCreationModeAllowCreation()
@@ -31,11 +33,12 @@ namespace Testcases
 		assert(mode.creationAllowed());
 	}
 
-	void wad64FileCreationModeAllowCreationEnableOverwrite()
+	void wad64FileCreationModeAllowCreationEnableOverwriteWithoutTruncation()
 	{
-		auto mode = Wad64::FileCreationMode::AllowCreation().allowOverwrite();
+		auto mode = Wad64::FileCreationMode::AllowCreation().allowOverwriteWithoutTruncation();
 		assert(mode.overwriteAllowed());
 		assert(mode.creationAllowed());
+		assert(!mode.truncateExistingFile());
 	}
 
 
@@ -49,27 +52,28 @@ namespace Testcases
 
 	void wad64FileCreationModeToFdFlagsCreationAllowedOverwriteAllowed()
 	{
-		auto mode  = Wad64::FileCreationMode::AllowCreation().allowOverwrite();
+		auto mode  = Wad64::FileCreationMode::AllowCreation().allowOverwriteWithoutTruncation();
 		auto flags = fdFlags(mode);
 		assert(flags & O_CREAT);
 		assert(!(flags & O_EXCL));
-		assert(flags & O_TRUNC);
 	}
 
 	void wad64FileCreationModeToFdFlagsCreationNotAllowed()
 	{
-		auto mode  = Wad64::FileCreationMode::AllowOverwrite();
+		auto mode  = Wad64::FileCreationMode::AllowOverwriteWithoutTruncation();
 		auto flags = fdFlags(mode);
-		assert(flags == O_TRUNC);
+		assert(flags == 0);
 	}
+
+	// TODO: Add new tc with truncation
 }
 
 int main()
 {
-	Testcases::wad64FileCreationModeAllowOverwrite();
-	Testcases::wad64FileCreationModeAllowOverwriteEnableCreation();
+	Testcases::wad64FileCreationModeAllowOverwriteWithoutTruncation();
+	Testcases::wad64FileCreationModeAllowOverwriteWithoutTruncationEnableCreation();
 	Testcases::wad64FileCreationModeAllowCreation();
-	Testcases::wad64FileCreationModeAllowCreationEnableOverwrite();
+	Testcases::wad64FileCreationModeAllowCreationEnableOverwriteWithoutTruncation();
 
 	Testcases::wad64FileCreationModeToFdFlagsCreationAllowedOverwriteNotAllowed();
 	Testcases::wad64FileCreationModeToFdFlagsCreationAllowedOverwriteAllowed();

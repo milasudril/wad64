@@ -12,7 +12,7 @@ namespace
 		{ return Wad64::FileCreationMode::AllowCreation(); }
 
 		if(str == "over")
-		{ return Wad64::FileCreationMode::AllowCreation().allowOverwrite(); }
+		{ return Wad64::FileCreationMode::AllowCreation().allowOverwriteWithTruncation(); }
 
 		throw std::runtime_error{"Constraint must be either into or over"};
 	}
@@ -34,7 +34,7 @@ void Wad64Cli::Insert::operator()() const
 {
 	Wad64::FdOwner file{m_dest.archive().c_str(),
 		Wad64::IoMode::AllowRead().allowWrite(),
-		Wad64::FileCreationMode::AllowOverwrite().allowCreation()};
+		Wad64::FileCreationMode::AllowOverwriteWithoutTruncation().allowCreation()};
 	Wad64::Archive archive{std::ref(file)};
 
 

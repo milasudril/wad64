@@ -22,7 +22,7 @@ namespace
 	{
 		auto fd = open(filename,
 		               Wad64::IoMode::AllowWrite(),
-		               Wad64::FileCreationMode::AllowOverwrite().allowCreation());
+		               Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
 		assert(fd.fd != -1);
 		write(fd, std::as_bytes(std::span{content}), 0);
 		close(fd);
@@ -59,7 +59,7 @@ namespace Testcases
 		(void)unlink(filename.c_str());
 		auto fd = open(filename.c_str(),
 		               Wad64::IoMode::AllowRead(),
-		               Wad64::FileCreationMode::AllowOverwrite());
+		               Wad64::FileCreationMode::AllowOverwriteWithTruncation());
 		assert(fd.fd == -1);
 	}
 
@@ -86,7 +86,7 @@ namespace Testcases
 		(void)unlink(filename.c_str());
 		auto fd = open(filename.c_str(),
 		               Wad64::IoMode::AllowRead(),
-		               Wad64::FileCreationMode::AllowOverwrite().allowCreation());
+		               Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
 		assert(fd.fd == -1);
 	}
 
@@ -100,7 +100,7 @@ namespace Testcases
 		(void)unlink(filename.c_str());
 		auto fd = open(filename.c_str(),
 		               Wad64::IoMode::AllowWrite(),
-		               Wad64::FileCreationMode::AllowOverwrite());
+		               Wad64::FileCreationMode::AllowOverwriteWithTruncation());
 		assert(fd.fd == -1);
 	}
 
@@ -128,7 +128,7 @@ namespace Testcases
 
 		auto fd = open(filename.c_str(),
 		               Wad64::IoMode::AllowWrite(),
-		               Wad64::FileCreationMode::AllowCreation().allowOverwrite());
+		               Wad64::FileCreationMode::AllowCreation().allowOverwriteWithoutTruncation());
 		(void)unlink(filename.c_str());
 		assert(fd.fd != -1);
 		close(fd);
@@ -145,7 +145,7 @@ namespace Testcases
 
 		auto fd = open(filename.c_str(),
 		               Wad64::IoMode::AllowRead(),
-		               Wad64::FileCreationMode::AllowOverwrite());
+		               Wad64::FileCreationMode::AllowOverwriteWithTruncation());
 		(void)unlink(filename.c_str());
 		assert(fd.fd != -1);
 		close(fd.fd);
@@ -177,7 +177,7 @@ namespace Testcases
 
 		auto fd = open(filename.c_str(),
 		               Wad64::IoMode::AllowRead(),
-		               Wad64::FileCreationMode::AllowOverwrite().allowCreation());
+		               Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
 		(void)unlink(filename.c_str());
 
 		assert(fd.fd != -1);
@@ -197,7 +197,7 @@ namespace Testcases
 		assert(old_size != 0);
 		auto fd = open(filename.c_str(),
 		               Wad64::IoMode::AllowWrite(),
-		               Wad64::FileCreationMode::AllowOverwrite());
+		               Wad64::FileCreationMode::AllowOverwriteWithTruncation());
 		(void)unlink(filename.c_str());
 		assert(fd.fd != -1);
 		fstat(fd.fd, &statbuf);
@@ -233,11 +233,11 @@ namespace Testcases
 		assert(old_size != 0);
 		auto fd = open(filename.c_str(),
 		               Wad64::IoMode::AllowWrite(),
-		               Wad64::FileCreationMode::AllowCreation().allowOverwrite());
+		               Wad64::FileCreationMode::AllowCreation().allowOverwriteWithoutTruncation());
 		(void)unlink(filename.c_str());
 		assert(fd.fd != -1);
 		fstat(fd.fd, &statbuf);
-		assert(statbuf.st_size == 0);
+		assert(statbuf.st_size == old_size);
 		close(fd.fd);
 	}
 
