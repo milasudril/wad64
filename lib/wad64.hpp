@@ -10,6 +10,8 @@
 #include "./archive_view.hpp"
 #include "./file_creation_mode.hpp"
 
+#include <filesystem>
+
 namespace Wad64
 {
 	struct BeginsWith:public std::string_view
@@ -33,10 +35,10 @@ namespace Wad64
 
 	void extract(ArchiveView const& archive, BeginsWith name, FileCreationMode mode);
 
-	void insert(Archive& archive, FileCreationMode mode, std::string_view name, char const* src_name);
+	void insert(Archive& archive, FileCreationMode mode,  char const* src_name, std::string_view name);
 
 	void insert(Archive& archive, FileCreationMode mode,
-				std::span<std::pair<char const*, std::string>> names, BeginsWith name);
+				std::span<std::pair<std::filesystem::path, std::string> const> names, BeginsWith name);
 
 	inline auto const& ls(ArchiveView const& archive)
 	{ return archive.ls(); }

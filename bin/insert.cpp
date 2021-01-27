@@ -17,7 +17,7 @@ namespace
 		throw std::runtime_error{"Constraint must be either into or over"};
 	}
 
-	std::vector<std::pair<char const*, std::string>> get_source_names(
+	std::vector<std::pair<std::filesystem::path, std::string>> get_source_names(
 		std::reference_wrapper<std::filesystem::path const> src,
 		std::string_view dest_prefix,
 		std::string_view dest_name)
@@ -30,7 +30,7 @@ namespace
 		auto name = std::size(dest_name)==0 ? std::string_view{src.get().c_str()} : dest_name;
 		auto fullname = std::size(dest_prefix) == 0? std::string{}: std::string{dest_prefix} + "/";
 		fullname.insert(std::end(fullname), std::begin(name), std::end(name));
-		return std::vector<std::pair<char const*, std::string>>{{src.get().c_str(), std::move(fullname)}};
+		return std::vector<std::pair<std::filesystem::path, std::string>>{{src.get().c_str(), std::move(fullname)}};
 	}
 }
 

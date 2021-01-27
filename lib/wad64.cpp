@@ -68,7 +68,7 @@ void Wad64::extract(ArchiveView const& archive, BeginsWith name, FileCreationMod
 	});
 }
 
-void Wad64::insert(Archive& archive, FileCreationMode mode, std::string_view name, char const* src_name)
+void Wad64::insert(Archive& archive, FileCreationMode mode, char const* src_name, std::string_view name)
 {
 	FdOwner file_in{src_name, IoMode::AllowRead(), FileCreationMode::DontCare()};
 	OutputFile file_out{archive, name, mode};
@@ -89,12 +89,11 @@ void Wad64::insert(Archive& archive, FileCreationMode mode, std::string_view nam
 }
 
 void Wad64::insert(Archive& archive, FileCreationMode mode,
-				   std::span<std::pair<char const*, std::string>> names,
+				   std::span<std::pair<std::filesystem::path, std::string> const> names,
 				   BeginsWith name)
 {
 	std::ranges::for_each(names, [&archive, mode, name](auto const& item) {
-		printf("%s %s\n", item.first, std::string{item.second}.c_str());
-		if(item.first == name)
-		{ insert(archive, mode, item.second, item.first); }
+		if(item.first.c_str() == name)
+		{ insert(archive, mode, item.first.c_str(), item.second); }
 	});
 }
