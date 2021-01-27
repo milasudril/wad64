@@ -19,10 +19,12 @@ namespace Wad64Cli
 	class Insert:public Command
 	{
 	public:
-		explicit Insert(std::filesystem::path&& src, Wad64::FileCreationMode mode, ArchivePath&& dest):
+		explicit Insert(std::filesystem::path&& src, Wad64::FileCreationMode mode, ArchivePath&& dest, std::string&& dest_name = ""):
 		m_src{std::move(src)},
 		m_mode{mode},
-		m_dest{std::move(dest)}{}
+		m_dest{std::move(dest)},
+		m_dest_name{std::move(dest_name)}
+		{}
 
 		void operator()() const override;
 
@@ -30,7 +32,7 @@ namespace Wad64Cli
 
 		static void help()
 		{
-			puts(R"msg(Syntax: wad64 insert <filesystem path> <into|over> <archive path>
+			puts(R"msg(Syntax: wad64 insert <filesystem path> <into|over> <archive path> [as <new name>]
 )msg");
 		}
 
@@ -38,6 +40,7 @@ namespace Wad64Cli
 		std::filesystem::path m_src;
 		Wad64::FileCreationMode m_mode;
 		ArchivePath m_dest;
+		std::string m_dest_name;
 	};
 };
 

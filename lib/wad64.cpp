@@ -89,10 +89,11 @@ void Wad64::insert(Archive& archive, FileCreationMode mode, std::string_view nam
 }
 
 void Wad64::insert(Archive& archive, FileCreationMode mode,
-				   std::span<std::pair<char const*, std::string_view>> names,
+				   std::span<std::pair<char const*, std::string>> names,
 				   BeginsWith name)
 {
 	std::ranges::for_each(names, [&archive, mode, name](auto const& item) {
+		printf("%s %s\n", item.first, std::string{item.second}.c_str());
 		if(item.first == name)
 		{ insert(archive, mode, item.second, item.first); }
 	});

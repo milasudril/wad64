@@ -17,28 +17,42 @@ namespace
 		throw std::runtime_error{"Constraint must be either into or over"};
 	}
 
-	std::vector<std::pair<char const*, std::string_view>> get_source_names(
+	std::vector<std::pair<char const*, std::string>> get_source_names(
 		std::reference_wrapper<std::filesystem::path const> src,
-		std::string_view dest)
+		std::string_view dest_prefix,
+		std::string_view dest_name)
 	{
 		if(is_directory(src))
 		{
 			throw std::runtime_error{"Support for directories is not implemented"};
 		}
-		return std::vector<std::pair<char const*, std::string_view>>{{src.get().c_str(), dest}};
+
+		auto name = std::size(dest_name)==0 ? std::string_view{src.get().c_str()} : dest_name;
+		auto fullname = std::size(dest_prefix) == 0? std::string{}: std::string{dest_prefix} + "/";
+		fullname.insert(std::end(fullname), std::begin(name), std::end(name));
+		return std::vector<std::pair<char const*, std::string>>{{src.get().c_str(), std::move(fullname)}};
 	}
 }
 
 std::unique_ptr<Wad64Cli::Command> Wad64Cli::Insert::create(int argc, char const* const* argv)
 {
-	if(argc != 3)
+	if(argc == 3)
 	{
-		throw std::runtime_error{"Wrong number of command arguments"};
+		return std::make_unique<Insert>(std::filesystem::path{argv[0]},
+										mode(std::string_view{argv[1]}),
+										ArchivePath::parse(std::string_view{argv[2]}));
 	}
+	if(argc == 5)
+	{
+		if(std::string_view{argv[3]} != "as")
+		{throw std::runtime_error{"Expected alias specifier"};}
 
-	return std::make_unique<Insert>(std::filesystem::path{argv[0]},
-									mode(std::string_view{argv[1]}),
-									ArchivePath::parse(std::string_view{argv[2]}));
+		return std::make_unique<Insert>(std::filesystem::path{argv[0]},
+										mode(std::string_view{argv[1]}),
+										ArchivePath::parse(std::string_view{argv[2]}),
+										std::string{argv[4]});
+	}
+	throw std::runtime_error{"Wrong number of command arguments"};
 }
 
 void Wad64Cli::Insert::operator()() const
@@ -48,6 +62,6 @@ void Wad64Cli::Insert::operator()() const
 		Wad64::FileCreationMode::AllowOverwriteWithoutTruncation().allowCreation()};
 	Wad64::Archive archive{std::ref(file)};
 
-	auto names = get_source_names(m_src, m_dest.entryPrefix());
+	auto names = get_source_names(m_src, m_dest.entryPrefix(), m_dest_name);
 	insert(archive, m_mode, names, Wad64::BeginsWith{m_src.c_str()});
 }
