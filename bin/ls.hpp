@@ -13,17 +13,14 @@
 
 namespace Wad64Cli
 {
-	class Ls:public Command
+	class Ls: public Command
 	{
 	public:
-		explicit Ls(ArchivePath&& path):m_path{std::move(path)}{}
+		explicit Ls(ArchivePath&& path): m_path{std::move(path)} {}
 
 		static std::unique_ptr<Command> create(int argc, char const* const* argv)
 		{
-			if(argc != 1)
-			{
-				throw std::runtime_error{"Archive path is missing"};
-			}
+			if(argc != 1) { throw std::runtime_error{"Archive path is missing"}; }
 
 			return std::make_unique<Ls>(ArchivePath::parse(std::string_view{argv[0]}));
 		}

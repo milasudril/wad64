@@ -67,9 +67,6 @@ namespace Wad64
 		return write(target.get(), src, target_offset);
 	}
 
-	inline size_t size(FdOwner const& owner)
-	{
-		return size(owner.get());
-	}
+	inline size_t size(FdOwner const& owner) { return size(owner.get()); }
 }
 #endif

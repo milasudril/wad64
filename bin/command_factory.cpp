@@ -14,16 +14,13 @@ namespace
 {
 	using CommandFactory = std::unique_ptr<Wad64Cli::Command> (*)(int, char const* const*);
 
-	class BadCommand:public Wad64Cli::Command
+	class BadCommand: public Wad64Cli::Command
 	{
 	public:
-		void operator()() const override
-		{
-			throw std::runtime_error{"Unsupported command line"};
-		}
+		void operator()() const override { throw std::runtime_error{"Unsupported command line"}; }
 	};
 
-	class AppHelp:public Wad64Cli::Command
+	class AppHelp: public Wad64Cli::Command
 	{
 	public:
 		void operator()() const override
@@ -42,19 +39,21 @@ rm              Removes an item from an archive
 		}
 	};
 
-	class CommandHelp:public Wad64Cli::Command
+	class CommandHelp: public Wad64Cli::Command
 	{
 	public:
 		static std::unique_ptr<Wad64Cli::Command> create(int argc, char const* const* argv)
-		{ return std::make_unique<CommandHelp>(argc, argv); }
+		{
+			return std::make_unique<CommandHelp>(argc, argv);
+		}
 
 		using HelpPrinter = void (*)();
 
-		explicit CommandHelp(int argc, char const* const* argv):
-		m_help_printer{[](){throw std::runtime_error{"What command do you want to know about?"};}}
+		explicit CommandHelp(int argc, char const* const* argv)
+		    : m_help_printer{
+		        []() { throw std::runtime_error{"What command do you want to know about?"}; }}
 		{
-			if(argc != 1)
-			{ return; }
+			if(argc != 1) { return; }
 
 			m_help_printer = getHelpPrinter(std::string_view{argv[0]});
 		}
@@ -76,12 +75,11 @@ rm
 )msg");
 		}
 
-		void operator()() const override{m_help_printer();}
+		void operator()() const override { m_help_printer(); }
 
 		static HelpPrinter getHelpPrinter(std::string_view command_name)
 		{
-			if(command_name == "help")
-			{ return help;}
+			if(command_name == "help") { return help; }
 #if 0
 			if(command_name == "insert")
 			{ return Insert::help; }
@@ -89,8 +87,7 @@ rm
 			if(command_name == "export")
 			{ return Export::help; }
 #endif
-			if(command_name == "ls")
-			{ return Wad64Cli::Ls::help; }
+			if(command_name == "ls") { return Wad64Cli::Ls::help; }
 #if 0
 			if(command_name == "update")
 			{ return Update::help; }
@@ -98,7 +95,7 @@ rm
 			if(command_name == "rm")
 			{ return Rm::help; }
 #endif
-			return [](){throw std::runtime_error{"Unsupported command"};};
+			return []() { throw std::runtime_error{"Unsupported command"}; };
 		}
 
 	private:
@@ -108,24 +105,17 @@ rm
 
 std::unique_ptr<Wad64Cli::Command> Wad64Cli::makeCommand(int argc, char const* const* argv)
 {
-	std::map<std::string_view, CommandFactory> commands
-	{{"help", CommandHelp::create},
-	 {"ls", Ls::create},
-	 {"insert", Insert::create}
-	};
+	std::map<std::string_view, CommandFactory> commands{
+	    {"help", CommandHelp::create}, {"ls", Ls::create}, {"insert", Insert::create}};
 
-	if(argc <= 1)
-	{ return std::make_unique<AppHelp>(); }
+	if(argc <= 1) { return std::make_unique<AppHelp>(); }
 
 	auto const command_name = std::string_view{argv[1]};
-	if(command_name == "--help")
-	{ return std::make_unique<AppHelp>(); }
-
+	if(command_name == "--help") { return std::make_unique<AppHelp>(); }
 
 
 	auto i = commands.find(command_name);
-	if(i == std::end(commands))
-	{ return std::make_unique<BadCommand>(); }
+	if(i == std::end(commands)) { return std::make_unique<BadCommand>(); }
 
 	return i->second(argc - 2, argv + 2);
 }

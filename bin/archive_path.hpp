@@ -15,15 +15,15 @@ namespace Wad64Cli
 	public:
 		static ArchivePath parse(std::string_view sv);
 
-		explicit ArchivePath(std::string&& archive, std::string&& entry_prefix):
-		m_archive{std::move(archive)}, m_entry_prefix{std::move(entry_prefix)}
-		{}
+		explicit ArchivePath(std::string&& archive, std::string&& entry_prefix)
+		    : m_archive{std::move(archive)}
+		    , m_entry_prefix{std::move(entry_prefix)}
+		{
+		}
 
-		auto const& archive() const
-		{ return m_archive; }
+		auto const& archive() const { return m_archive; }
 
-		auto const& entryPrefix() const
-		{ return m_entry_prefix; }
+		auto const& entryPrefix() const { return m_entry_prefix; }
 
 	private:
 		std::string m_archive;

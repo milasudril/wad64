@@ -17,18 +17,14 @@ namespace Wad64
 	class ArchiveView
 	{
 	public:
-		ArchiveView(Archive const&& a) = delete;
+		ArchiveView(Archive const&& a)         = delete;
 		ArchiveView(ReadonlyArchive const&& a) = delete;
 
-		ArchiveView(Archive const& a):
-		m_directory{a.directory()},
-		m_file_ref{a.fileReference()}
-		{
-		}
+		ArchiveView(Archive const& a): m_directory{a.directory()}, m_file_ref{a.fileReference()} {}
 
-		ArchiveView(ReadonlyArchive const& a):
-		m_directory{a.directory()},
-		m_file_ref{a.fileReference()}
+		ArchiveView(ReadonlyArchive const& a)
+		    : m_directory{a.directory()}
+		    , m_file_ref{a.fileReference()}
 		{
 		}
 

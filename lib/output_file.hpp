@@ -56,10 +56,7 @@ namespace Wad64
 		Directory::FilenameReservation m_reservation;
 	};
 
-	inline auto write(OutputFile& f, std::span<std::byte const> buffer)
-	{
-		return f.write(buffer);
-	}
+	inline auto write(OutputFile& f, std::span<std::byte const> buffer) { return f.write(buffer); }
 
 	inline auto write(OutputFile& f, std::span<std::byte const> buffer, int64_t offset)
 	{

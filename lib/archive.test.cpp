@@ -139,9 +139,8 @@ namespace Testcases
 				auto reservation = archive.reserve("Foobar");
 				assert(reservation.valid());
 				assert(reservation.itemInserted());
-				Wad64::FdOwner src{__FILE__,
-				                   Wad64::IoMode::AllowRead(),
-				                   Wad64::FileCreationMode::DontCare()};
+				Wad64::FdOwner src{
+				    __FILE__, Wad64::IoMode::AllowRead(), Wad64::FileCreationMode::DontCare()};
 				archive.commit(std::move(reservation), Wad64::FdAdapter{src.get()});
 			}
 

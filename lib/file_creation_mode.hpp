@@ -12,8 +12,7 @@ namespace Wad64
 	class FileCreationMode
 	{
 	public:
-		static constexpr FileCreationMode DontCare()
-		{ return FileCreationMode{0}; }
+		static constexpr FileCreationMode DontCare() { return FileCreationMode{0}; }
 
 		static constexpr FileCreationMode AllowOverwriteWithoutTruncation()
 		{
@@ -59,16 +58,20 @@ namespace Wad64
 	private:
 		constexpr explicit FileCreationMode(unsigned int flags): m_flags{flags} {}
 
-		static constexpr unsigned int AllowOverwriteFlag   = 0x1;
-		static constexpr unsigned int AllowCreationFlag    = 0x2;
-		static constexpr unsigned int TruncateFlag = 0x4;
+		static constexpr unsigned int AllowOverwriteFlag = 0x1;
+		static constexpr unsigned int AllowCreationFlag  = 0x2;
+		static constexpr unsigned int TruncateFlag       = 0x4;
 		unsigned int m_flags;
 	};
 
 	constexpr int fdFlags(FileCreationMode mode)
 	{
 		if(mode.creationAllowed())
-		{ return O_CREAT | (mode.overwriteAllowed() ? (mode.truncateExistingFile() ? O_TRUNC : 0) : O_EXCL); }
+		{
+			return O_CREAT
+			       | (mode.overwriteAllowed() ? (mode.truncateExistingFile() ? O_TRUNC : 0)
+			                                  : O_EXCL);
+		}
 		else
 		{
 			return mode.truncateExistingFile() ? O_TRUNC : 0;

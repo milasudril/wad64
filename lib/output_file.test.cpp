@@ -54,8 +54,7 @@ namespace Testcases
 	{
 		auto data = generateData();
 		Wad64::Archive archive{std::ref(data)};
-		Wad64::OutputFile output{
-		    archive, "New file", Wad64::FileCreationMode::AllowCreation()};
+		Wad64::OutputFile output{archive, "New file", Wad64::FileCreationMode::AllowCreation()};
 		assert(archive.stat("New file").has_value());
 	}
 
@@ -64,7 +63,8 @@ namespace Testcases
 		auto data = generateData();
 		Wad64::Archive archive{std::ref(data)};
 		auto const& dir = archive.ls();
-		Wad64::OutputFile output{archive, "Kaka", Wad64::FileCreationMode::AllowOverwriteWithTruncation()};
+		Wad64::OutputFile output{
+		    archive, "Kaka", Wad64::FileCreationMode::AllowOverwriteWithTruncation()};
 		assert(std::size(archive.ls()) == std::size(dir));
 	}
 
@@ -74,7 +74,8 @@ namespace Testcases
 		Wad64::Archive archive{std::ref(data)};
 		try
 		{
-			Wad64::OutputFile output{archive, "New file", Wad64::FileCreationMode::AllowOverwriteWithTruncation()};
+			Wad64::OutputFile output{
+			    archive, "New file", Wad64::FileCreationMode::AllowOverwriteWithTruncation()};
 			abort();
 		}
 		catch(...)
@@ -102,7 +103,10 @@ namespace Testcases
 		Wad64::Archive archive{std::ref(data)};
 
 		auto const& dir = archive.ls();
-		Wad64::OutputFile output{archive, "Kaka", Wad64::FileCreationMode::AllowCreation().allowOverwriteWithTruncation()};
+		Wad64::OutputFile output{
+		    archive,
+		    "Kaka",
+		    Wad64::FileCreationMode::AllowCreation().allowOverwriteWithTruncation()};
 		assert(std::size(archive.ls()) == std::size(dir));
 	}
 
@@ -112,9 +116,10 @@ namespace Testcases
 		Wad64::Archive archive{std::ref(data)};
 
 		auto const dir = archive.ls();
-		Wad64::OutputFile output{archive,
-		                         "New file",
-		                         Wad64::FileCreationMode::AllowCreation().allowOverwriteWithTruncation()};
+		Wad64::OutputFile output{
+		    archive,
+		    "New file",
+		    Wad64::FileCreationMode::AllowCreation().allowOverwriteWithTruncation()};
 		assert(std::size(archive.ls()) == std::size(dir) + 1);
 		assert(archive.stat("New file").has_value());
 	}
