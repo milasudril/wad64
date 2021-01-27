@@ -17,8 +17,16 @@ namespace
 		throw std::runtime_error{"Constraint must be either into or over"};
 	}
 
+	auto make_name_pair(std::filesystem::path&& src, std::string_view dest_prefix, std::string_view dest_name)
+	{
+		auto name = std::size(dest_name)==0 ? std::string_view{src.c_str()} : dest_name;
+		auto fullname = std::size(dest_prefix) == 0? std::string{}: std::string{dest_prefix} + "/";
+		fullname.insert(std::end(fullname), std::begin(name), std::end(name));
+		return std::pair{std::move(src), std::move(fullname)};
+	}
+
 	std::vector<std::pair<std::filesystem::path, std::string>> get_source_names(
-		std::reference_wrapper<std::filesystem::path const> src,
+		std::filesystem::path const& src,
 		std::string_view dest_prefix,
 		std::string_view dest_name)
 	{
@@ -27,10 +35,9 @@ namespace
 			throw std::runtime_error{"Support for directories is not implemented"};
 		}
 
-		auto name = std::size(dest_name)==0 ? std::string_view{src.get().c_str()} : dest_name;
-		auto fullname = std::size(dest_prefix) == 0? std::string{}: std::string{dest_prefix} + "/";
-		fullname.insert(std::end(fullname), std::begin(name), std::end(name));
-		return std::vector<std::pair<std::filesystem::path, std::string>>{{src.get().c_str(), std::move(fullname)}};
+
+		return std::vector<std::pair<std::filesystem::path, std::string>>{make_name_pair(
+			std::filesystem::path{src}, dest_prefix, dest_name)};
 	}
 }
 
