@@ -16,6 +16,17 @@ namespace
 
 		throw std::runtime_error{"Constraint must be either into or over"};
 	}
+
+	std::vector<std::pair<char const*, std::string_view>> get_source_names(
+		std::reference_wrapper<std::filesystem::path const> src,
+		std::string_view dest)
+	{
+		if(is_directory(src))
+		{
+			throw std::runtime_error{"Support for directories is not implemented"};
+		}
+		return std::vector<std::pair<char const*, std::string_view>>{{src.get().c_str(), dest}};
+	}
 }
 
 std::unique_ptr<Wad64Cli::Command> Wad64Cli::Insert::create(int argc, char const* const* argv)
@@ -37,8 +48,6 @@ void Wad64Cli::Insert::operator()() const
 		Wad64::FileCreationMode::AllowOverwriteWithoutTruncation().allowCreation()};
 	Wad64::Archive archive{std::ref(file)};
 
-
-	std::vector<std::pair<char const*, std::string_view>> names{{m_src.c_str(), m_dest.entryPrefix()}};
-
+	auto names = get_source_names(m_src, m_dest.entryPrefix());
 	insert(archive, m_mode, names, Wad64::BeginsWith{m_src.c_str()});
 }
