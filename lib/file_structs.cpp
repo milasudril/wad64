@@ -36,6 +36,9 @@ namespace
 	{
 		if(std::size(name) == 0) { return false; }
 
+		if(name.back() == '/' || name.back() == '\\')
+		{ return false; }
+
 		if(name[0] == '/' || name[0] == '\\' || name[0] == '-') { return false; }
 
 		auto ptr       = std::begin(name);
