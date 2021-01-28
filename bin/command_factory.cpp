@@ -6,6 +6,7 @@
 
 #include "./ls.hpp"
 #include "./insert.hpp"
+#include "./remove.hpp"
 
 #include <map>
 #include <cstdio>
@@ -37,9 +38,9 @@ Supported commands:
 --help          Shows this text
 help <command>  Shows help about <commanad>
 insert          Inserts a new item into an archive
-ls              Lists the content of an archive
+list            Lists the content of an archive
 update          Updates an item that already exists in an archive
-rm              Removes an item from an archive
+remove          Removes an item from an archive
 )msg");
 		}
 	};
@@ -95,10 +96,10 @@ remove
 #if 0
 			if(command_name == "update")
 			{ return Update::help; }
-
-			if(command_name == "rm")
-			{ return Rm::help; }
 #endif
+			if(command_name == "remove")
+			{ return Wad64Cli::Remove::help; }
+
 			return []() { throw std::runtime_error{"Unsupported command"}; };
 		}
 
@@ -110,7 +111,10 @@ remove
 std::unique_ptr<Wad64Cli::Command> Wad64Cli::makeCommand(int argc, char const* const* argv)
 {
 	std::map<std::string_view, CommandFactory> commands{
-	    {"help", CommandHelp::create}, {"list", Ls::create}, {"insert", Insert::create}};
+	    {"help", CommandHelp::create},
+		{"list", Ls::create},
+		{"insert", Insert::create},
+		{"remove", Remove::create}};
 
 	if(argc <= 1) { return std::make_unique<AppHelp>(); }
 

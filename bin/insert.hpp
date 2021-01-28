@@ -39,6 +39,15 @@ namespace Wad64Cli
 		{
 			puts(
 			    R"msg(Syntax: wad64 insert <filesystem path> <into|over> <archive path> [as <new name>]
+
+Inserts <filesystem path> into <archive path>, optionally under a <new name>. For example
+
+    wad64 insert foobar into file.wad64:directory as other_name
+
+will copy the content form foobar and to the entry directory/other_name
+
+If `over` is specified instead of `into`, an existing entry will be overwritten.
+
 )msg");
 		}
 
