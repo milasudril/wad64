@@ -29,7 +29,7 @@ namespace Wad64Cli
 
 		static void help()
 		{
-			puts(R"msg(Syntax: wad64 ls <archive path>
+			puts(R"msg(Syntax: wad64 list <archive path>
 
 Prints the directory content of <archive path>
 )msg");

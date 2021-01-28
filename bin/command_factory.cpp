@@ -17,7 +17,12 @@ namespace
 	class BadCommand: public Wad64Cli::Command
 	{
 	public:
-		void operator()() const override { throw std::runtime_error{"Unsupported command line"}; }
+		explicit BadCommand(std::string&& cmd): m_cmd{cmd}{}
+
+
+		void operator()() const override { throw std::runtime_error{"Unsupported command " + m_cmd}; }
+	private:
+		std::string m_cmd;
 	};
 
 	class AppHelp: public Wad64Cli::Command
@@ -67,11 +72,11 @@ Shows help about <command>
 <command> must be one of
 
 help
+extract
+list
 insert
-export
-ls
 update
-rm
+remove
 )msg");
 		}
 
@@ -80,14 +85,13 @@ rm
 		static HelpPrinter getHelpPrinter(std::string_view command_name)
 		{
 			if(command_name == "help") { return help; }
-#if 0
-			if(command_name == "insert")
-			{ return Insert::help; }
+ 			if(command_name == "insert") { return Wad64Cli::Insert::help; }
 
+#if 0
 			if(command_name == "export")
 			{ return Export::help; }
 #endif
-			if(command_name == "ls") { return Wad64Cli::Ls::help; }
+			if(command_name == "list") { return Wad64Cli::Ls::help; }
 #if 0
 			if(command_name == "update")
 			{ return Update::help; }
@@ -106,7 +110,7 @@ rm
 std::unique_ptr<Wad64Cli::Command> Wad64Cli::makeCommand(int argc, char const* const* argv)
 {
 	std::map<std::string_view, CommandFactory> commands{
-	    {"help", CommandHelp::create}, {"ls", Ls::create}, {"insert", Insert::create}};
+	    {"help", CommandHelp::create}, {"list", Ls::create}, {"insert", Insert::create}};
 
 	if(argc <= 1) { return std::make_unique<AppHelp>(); }
 
@@ -115,7 +119,7 @@ std::unique_ptr<Wad64Cli::Command> Wad64Cli::makeCommand(int argc, char const* c
 
 
 	auto i = commands.find(command_name);
-	if(i == std::end(commands)) { return std::make_unique<BadCommand>(); }
+	if(i == std::end(commands)) { return std::make_unique<BadCommand>(argv[1]); }
 
 	return i->second(argc - 2, argv + 2);
 }
