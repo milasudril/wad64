@@ -18,14 +18,29 @@ namespace
 		throw std::runtime_error{"Constraint must be either into or over"};
 	}
 
+	auto make_dest_name(std::filesystem::path const& src, std::string_view dest_name)
+	{
+		if(std::size(dest_name) == 0)
+		{ return src; }
+
+		std::filesystem::path ret;
+		ret /= dest_name;
+
+		auto i = std::begin(src);
+		assert(std::begin(src) != std::end(src));
+		++i;
+		std::for_each(i, std::end(src), [&ret](auto const& val) { ret /= val;});
+		return ret;
+	}
+
 	auto make_name_pair(std::filesystem::path&& src,
 	                    std::string_view dest_prefix,
 	                    std::string_view dest_name)
 	{
-		auto name = std::size(dest_name) == 0 ? std::string_view{src.c_str()} : dest_name;
+		auto name = make_dest_name(src, dest_name);
 		auto fullname =
-		    std::size(dest_prefix) == 0 ? std::string{} : std::string{dest_prefix} + "/";
-		fullname.insert(std::end(fullname), std::begin(name), std::end(name));
+		    std::size(dest_prefix) == 0 ? std::move(name) :
+		    std::filesystem::path{dest_prefix} / std::move(name);
 		return std::pair{std::move(src), std::move(fullname)};
 	}
 
