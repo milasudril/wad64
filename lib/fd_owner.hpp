@@ -18,7 +18,7 @@ namespace Wad64
 		explicit FdOwner(char const* filename, Args&&... args)
 		    : m_fd{open(filename, std::forward<Args>(args)...)}
 		{
-			if(m_fd.fd == -1) { throw std::runtime_error{"Failed to open file"}; }
+			if(m_fd.fd == -1) { throw std::runtime_error{std::string{"Failed to open file "} + filename}; }
 		}
 
 		struct TempFile

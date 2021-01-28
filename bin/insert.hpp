@@ -19,11 +19,12 @@ namespace Wad64Cli
 	class Insert: public Command
 	{
 	public:
-		explicit Insert(std::filesystem::path&& src,
+		explicit Insert(std::filesystem::path const& src,
 		                Wad64::FileCreationMode mode,
 		                ArchivePath&& dest,
 		                std::string&& dest_name = "")
-		    : m_src{std::move(src)}
+		    : m_src{src == "*"? "." : src}
+		    , m_filter{src == "*"? "" : src}
 		    , m_mode{mode}
 		    , m_dest{std::move(dest)}
 		    , m_dest_name{std::move(dest_name)}
@@ -43,6 +44,7 @@ namespace Wad64Cli
 
 	private:
 		std::filesystem::path m_src;
+		std::string m_filter;
 		Wad64::FileCreationMode m_mode;
 		ArchivePath m_dest;
 		std::string m_dest_name;
