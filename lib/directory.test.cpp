@@ -265,9 +265,6 @@ namespace Testcases
 		// This is does not consider any padding between last entry and previous one, but `remove`
 		// cannot know the previous item. Thus, it must set eof to filepos of the removed item.
 		assert(dir.eofOffset() == lumps.back().filepos);
-		auto const gaps = dir.gaps();
-		assert(gaps[0].begin == dir.eofOffset());
-		assert(gaps[0].size == std::numeric_limits<int64_t>::max() - dir.eofOffset());
 	}
 
 	void wad64DirectoryLoadEntriesAndSecureRemoveItem()

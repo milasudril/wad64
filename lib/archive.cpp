@@ -28,4 +28,6 @@ Wad64::Archive::~Archive()
 		ref.write(std::as_bytes(std::span{lumps.get(), static_cast<size_t>(info.numlumps)}),
 		          info.infotablesofs);
 	});
+
+	m_file_ref.truncate(m_directory.eofOffset());
 }

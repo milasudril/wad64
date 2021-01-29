@@ -60,11 +60,20 @@ namespace Wad64
 		 *
 		 * \note Any references to the corresponding directory entries
 		 */
-		bool remove(std::string_view filename) { return m_directory.remove(filename); }
+		bool remove(std::string_view filename)
+		{
+			auto const res = m_directory.remove(filename);
+			if(res)
+			{ m_file_ref.truncate(m_directory.eofOffset()); }
+			return res;
+		}
 
 		bool secureRemove(std::string_view filename)
 		{
-			return m_directory.secureRemove(filename, m_file_ref);
+			auto const res = m_directory.secureRemove(filename, m_file_ref);
+			if(res)
+			{ m_file_ref.truncate(m_directory.eofOffset()); }
+			return res;
 		}
 
 		/**

@@ -41,6 +41,11 @@ namespace Wad64
 
 		return read(src, std::span{std::data(f.data) + offset, s}, 0);
 	}
+
+	inline void truncate(MemBuffer& f, int64_t size)
+	{
+		f.data.resize(size);
+	}
 }
 
 #endif

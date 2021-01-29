@@ -45,10 +45,15 @@ Wad64::Directory::Directory(std::span<FileLump const> entries): m_eof{sizeof(Wad
 void Wad64::Directory::remove(Storage::iterator i_dir)
 {
 	auto const eof_old = m_eof;
-	if(i_dir->second.end == eof_old) { m_eof = i_dir->second.begin; }
-	auto const size = i_dir->second.end == eof_old ? std::numeric_limits<int64_t>::max() - m_eof
-	                                               : i_dir->second.end - i_dir->second.begin;
-	m_gaps.push(Gap{i_dir->second.begin, size});
+	if(i_dir->second.end == eof_old)
+	{
+		// Last item was removed. Update eof
+		m_eof = i_dir->second.begin;
+	}
+	else
+	{
+		m_gaps.push(Gap{i_dir->second.begin, i_dir->second.end - i_dir->second.begin});
+	}
 	m_content.erase(i_dir);
 	return;
 }

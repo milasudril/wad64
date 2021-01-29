@@ -29,6 +29,11 @@ namespace Wad64
 			write(a, std::declval<FdAdapter>(), std::declval<int64_t>())
 		}
 		->std::same_as<size_t>;
+
+		{
+			truncate(a, std::declval<int64_t>())
+		}
+		->std::same_as<void>;
 	};
 
 	namespace detail
@@ -50,6 +55,12 @@ namespace Wad64
 		{
 			return write(*static_cast<File*>(handle), fd, offset);
 		}
+
+		template<RandomAccessFile File>
+		void truncate(void* handle, int64_t new_size)
+		{
+			truncate(*static_cast<File*>(handle), new_size);
+		}
 	}
 
 	class FileReference
@@ -60,6 +71,7 @@ namespace Wad64
 		    : m_ref{&file.get()}
 		    , m_read{detail::read<File>}
 		    , m_write{detail::write<File>}
+		    , m_truncate{detail::truncate<File>}
 		    , m_write_from_fd{detail::write_from_fd<File>}
 		{
 		}
@@ -78,10 +90,16 @@ namespace Wad64
 
 		void* handle() const { return m_ref; }
 
+		void truncate(int64_t new_size)
+		{
+			m_truncate(m_ref, new_size);
+		}
+
 	private:
 		void* m_ref;
 		size_t (*m_read)(void*, std::span<std::byte>, int64_t offset);
 		size_t (*m_write)(void*, std::span<std::byte const>, int64_t offset);
+		void (*m_truncate)(void*, int64_t new_size);
 		size_t (*m_write_from_fd)(void*, FdAdapter, int64_t);
 	};
 }
