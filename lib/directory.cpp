@@ -128,6 +128,13 @@ void Wad64::Directory::commit(FilenameReservation&& reservation,
 
 void Wad64::Directory::commitDirentries(void* obj, CommitCallback cb)
 {
+	auto const i_eof = std::ranges::max_element(m_content, [](auto const& a, auto const& b) {
+		return a.second.end < b.second.end;
+	});
+
+	m_eof = i_eof != std::end(m_content) ? i_eof->second.end : sizeof(WadInfo);
+
+
 	// NOTE: The multiplication below should not wrap around. If it does, we are probably out of
 	//       memory
 	auto const req_size = static_cast<int64_t>(sizeof(FileLump) * std::size(m_content));
