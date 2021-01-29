@@ -64,17 +64,17 @@ bool Wad64::Directory::remove(std::string_view filename)
 
 namespace
 {
-	constexpr std::array<std::byte, 0x10000> Zeros{};
-
 	void clearRange(Wad64::DirEntry e, Wad64::FileReference ref)
 	{
+		auto zeros = std::make_unique<std::array<std::byte, 0x10000>>();
+		std::ranges::fill(*zeros, static_cast<std::byte>(0));
 		auto offset    = e.begin;
 		auto const end = e.end;
 		while(offset != end)
 		{
 			auto const bytes_left = end - offset;
-			auto const to_write   = std::min(static_cast<size_t>(bytes_left), std::size(Zeros));
-			offset += ref.write(std::span{std::data(Zeros), to_write}, offset);
+			auto const to_write   = std::min(static_cast<size_t>(bytes_left), zeros->size());
+			offset += ref.write(std::span{zeros->data(), to_write}, offset);
 		}
 	}
 }

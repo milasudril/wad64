@@ -76,7 +76,6 @@ help
 extract
 list
 insert
-update
 remove
 )msg");
 		}
@@ -94,8 +93,7 @@ remove
 #endif
 			if(command_name == "list") { return Wad64Cli::Ls::help; }
 #if 0
-			if(command_name == "update")
-			{ return Update::help; }
+
 #endif
 			if(command_name == "remove")
 			{ return Wad64Cli::Remove::help; }
