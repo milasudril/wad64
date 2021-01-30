@@ -1,0 +1,60 @@
+.TH wad64 1
+.SH NAME
+
+wad64 — Manipulates wad64 archives
+
+.SH SYNOPSIS
+
+.B wad64
+<command> [<command arguments>]
+
+.SH DESCRIPTION
+
+.B wad64
+is a command line utility to manipulate wad64 archives. It uses a SQL-like language to
+list, extrract or insert files into an archive. Suppored commands are
+
+.TP 10
+help <command>
+Shows help about <commanad>
+
+.TP
+list
+Lists the content of an archive
+
+.TP
+extract
+Extracts content from an arcive
+
+.TP
+insert
+Inserts a new item into an archive
+
+.TP
+remove
+Removes an item from an archive
+
+.SH OPTIONS
+.TP 10
+--help
+Prints a summary of all avaiable options
+
+.SH FILES
+
+wad64 does not use any configuration files
+
+.SH ENVIRONMENT
+
+wad64 is not affected by any environment variable
+
+.SH BUGS
+
+See GitHub Issues: <https://github.com/milasudril/wad64/issues>
+
+.SH AUTHOR
+
+Torbjörn Rathsman
+
+.SH SEE ALSO
+
+wad64(5)
