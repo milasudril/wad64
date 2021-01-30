@@ -23,7 +23,8 @@ archive file format, with larger fields.
 * Hierarchical directory structures. However, since it is possible to have longer lump names, it
   can be emulated by follwing some convtion. For example, it is possible to us `/` in lump names.
   Another possiblity is to have WAD:s inside WAD:s. This works, because the file format allows
-  full random access.
+  full random access. The utility application `wad64` uses the first approach because it is simpler
+  to implement.
 
 * Compression/encryption. It is possible to add compressed/encrypted lumps (in fact, a lump can
   contain anything), provided that the reader knows what compression/encryption scheme is used. The
