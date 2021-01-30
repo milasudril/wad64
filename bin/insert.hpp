@@ -46,7 +46,7 @@ Inserts <filesystem path> into <archive path>, optionally under a <new name>. Fo
 
 will copy the content form foobar and to the entry directory/other_name
 
-If `over` is specified instead of `into`, an existing entry will be overwritten.
+If `over` is specified instead of `into`, any existing entries will be overwritten.
 
 )msg");
 		}
