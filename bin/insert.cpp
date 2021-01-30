@@ -60,7 +60,6 @@ namespace
 		    [dest_prefix, dest_name, &ret](auto const& p) {
 			    if(is_regular_file(p))
 			    {
-					printf("%s\n", p.path().lexically_normal().c_str());
 				    ret.push_back(make_name_pair(p.path().lexically_normal(), dest_prefix, dest_name));
 			    }
 		    });
