@@ -27,7 +27,9 @@ namespace
 				if(::mkdir(buffer.c_str(), S_IRWXU) == -1)
 				{
 					auto saved_errno = errno;
-					struct stat statbuff{};
+					struct stat statbuff
+					{
+					};
 					stat(buffer.c_str(), &statbuff);
 					if(!(S_ISDIR(statbuff.st_mode) && saved_errno == EEXIST))
 					{ throw std::runtime_error{"Failed to create directory `" + buffer + "`"}; }
@@ -44,9 +46,9 @@ namespace
 }
 
 void Wad64::extract(ArchiveView const& archive,
-                 FileCreationMode mode,
-                 std::string_view src_name,
-                 char const* dest_name)
+                    FileCreationMode mode,
+                    std::string_view src_name,
+                    char const* dest_name)
 {
 	mkdirs(dest_name);
 	InputFile file_in{archive, src_name};
@@ -69,13 +71,12 @@ void Wad64::extract(ArchiveView const& archive,
 }
 
 void Wad64::extract(ArchiveView const& archive,
-                 FileCreationMode mode,
-                 std::span<std::pair<std::string, std::filesystem::path> const> names,
-                 BeginsWith name)
+                    FileCreationMode mode,
+                    std::span<std::pair<std::string, std::filesystem::path> const> names,
+                    BeginsWith name)
 {
 	std::ranges::for_each(names, [&archive, mode, name](auto const& item) {
-		if(item.first == name)
-		{ extract(archive, mode, item.first, item.second.c_str()); }
+		if(item.first == name) { extract(archive, mode, item.first, item.second.c_str()); }
 	});
 }
 

@@ -90,10 +90,7 @@ namespace Wad64
 
 		void* handle() const { return m_ref; }
 
-		void truncate(int64_t new_size)
-		{
-			m_truncate(m_ref, new_size);
-		}
+		void truncate(int64_t new_size) { m_truncate(m_ref, new_size); }
 
 	private:
 		void* m_ref;

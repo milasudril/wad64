@@ -40,9 +40,6 @@ namespace Wad64
 		return FdAdapter{::open(dir, O_RDWR | O_TMPFILE, S_IWUSR | S_IRUSR)};
 	}
 
-	inline void truncate(FdAdapter fd, int64_t size)
-	{
-		ftruncate(fd.fd, size);
-	}
+	inline void truncate(FdAdapter fd, int64_t size) { ftruncate(fd.fd, size); }
 }
 #endif

@@ -22,32 +22,31 @@ namespace
 
 	auto make_dest_name(fs::path const& src_root, fs::path const& src, std::string_view dest_name)
 	{
-		if(std::size(dest_name) == 0)
-		{ return src; }
+		if(std::size(dest_name) == 0) { return src; }
 
 		auto end_of_root = std::ranges::mismatch(src_root, src);
 
 		fs::path ret;
 		ret /= dest_name;
 
-		std::for_each(end_of_root.in2, std::end(src), [&ret](auto const& val) { ret /= val;});
+		std::for_each(end_of_root.in2, std::end(src), [&ret](auto const& val) { ret /= val; });
 		return ret;
 	}
 
 	auto make_name_pair(fs::path const& src_root,
-						fs::path&& src,
+	                    fs::path&& src,
 	                    std::string_view dest_prefix,
 	                    std::string_view dest_name)
 	{
 		auto name = make_dest_name(src_root, src, dest_name);
 		auto fullname =
-		    std::size(dest_prefix) == 0 ? std::move(name) :
-		    fs::path{dest_prefix} / std::move(name);
+		    std::size(dest_prefix) == 0 ? std::move(name) : fs::path{dest_prefix} / std::move(name);
 		return std::pair{std::move(src), std::move(fullname)};
 	}
 
-	std::vector<std::pair<fs::path, std::string>> get_source_names(
-	    fs::path const& src, std::string_view dest_prefix, std::string_view dest_name)
+	std::vector<std::pair<fs::path, std::string>> get_source_names(fs::path const& src,
+	                                                               std::string_view dest_prefix,
+	                                                               std::string_view dest_name)
 	{
 		if(!is_directory(src))
 		{
@@ -56,11 +55,13 @@ namespace
 		}
 
 		std::vector<std::pair<fs::path, std::string>> ret;
-		std::ranges::for_each( fs::recursive_directory_iterator{src},
+		std::ranges::for_each(
+		    fs::recursive_directory_iterator{src},
 		    [&src, dest_prefix, dest_name, &ret](auto const& p) {
 			    if(is_regular_file(p))
 			    {
-				    ret.push_back(make_name_pair(src, p.path().lexically_normal(), dest_prefix, dest_name));
+				    ret.push_back(
+				        make_name_pair(src, p.path().lexically_normal(), dest_prefix, dest_name));
 			    }
 		    });
 

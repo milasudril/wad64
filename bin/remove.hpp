@@ -16,7 +16,11 @@ namespace Wad64Cli
 	class Remove: public Command
 	{
 	public:
-		enum class Mode{Fast, Secure};
+		enum class Mode
+		{
+			Fast,
+			Secure
+		};
 
 		explicit Remove(ArchivePath&& path, Mode mode): m_path{std::move(path)}, m_mode{mode} {}
 

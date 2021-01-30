@@ -17,7 +17,7 @@ namespace
 
 	size_t write(File&, Wad64::FdAdapter, int64_t) { return 0; }
 
-	void truncate(File&, int64_t){}
+	void truncate(File&, int64_t) {}
 }
 
 namespace Testcases

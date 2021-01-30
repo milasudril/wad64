@@ -118,7 +118,7 @@ void Wad64::Directory::commit(FilenameReservation&& reservation,
 void Wad64::Directory::commitDirentries(void* obj, CommitCallback cb)
 {
 	auto entries = fileOffsets(*this);
-	m_eof = std::size(entries) == 0 ? sizeof(WadInfo) : entries.back().end;
+	m_eof        = std::size(entries) == 0 ? sizeof(WadInfo) : entries.back().end;
 	rebuildFreelist(entries);
 
 	// NOTE: The multiplication below should not wrap around. If it does, we are probably out of

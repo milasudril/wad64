@@ -20,14 +20,15 @@ namespace Wad64Cli
 	{
 	public:
 		explicit Extract(ArchivePath&& src,
-		                Wad64::FileCreationMode mode,
-		                std::filesystem::path&& dest,
-		                std::string&& dest_name = ""):
-		                m_src{std::move(src)},
-		                m_mode{mode},
-						m_dest{std::move(dest)},
-						m_dest_name{std::move(dest_name)}
-						{}
+		                 Wad64::FileCreationMode mode,
+		                 std::filesystem::path&& dest,
+		                 std::string&& dest_name = "")
+		    : m_src{std::move(src)}
+		    , m_mode{mode}
+		    , m_dest{std::move(dest)}
+		    , m_dest_name{std::move(dest_name)}
+		{
+		}
 
 		static std::unique_ptr<Command> create(int argc, char const* const* argv);
 
@@ -35,7 +36,8 @@ namespace Wad64Cli
 
 		static void help()
 		{
-			puts(R"msg(Syntax: wad64 extract <archive path> <into|over> <filesystem path> [ as <new name>]
+			puts(
+			    R"msg(Syntax: wad64 extract <archive path> <into|over> <filesystem path> [ as <new name>]
 
 Extracts <archive path> into <filesystem path>, optionally under a <new name>. For example
 

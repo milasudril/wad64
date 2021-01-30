@@ -18,7 +18,8 @@ namespace Wad64
 		explicit FdOwner(char const* filename, Args&&... args)
 		    : m_fd{open(filename, std::forward<Args>(args)...)}
 		{
-			if(m_fd.fd == -1) { throw std::runtime_error{std::string{"Failed to open file "} + filename}; }
+			if(m_fd.fd == -1)
+			{ throw std::runtime_error{std::string{"Failed to open file "} + filename}; }
 		}
 
 		struct TempFile
@@ -67,10 +68,7 @@ namespace Wad64
 		return write(target.get(), src, target_offset);
 	}
 
-	inline void truncate(FdOwner const& fd, int64_t f)
-	{
-		return truncate(fd.get(), f);
-	}
+	inline void truncate(FdOwner const& fd, int64_t f) { return truncate(fd.get(), f); }
 
 	inline size_t size(FdOwner const& owner) { return size(owner.get()); }
 }

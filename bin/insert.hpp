@@ -23,8 +23,8 @@ namespace Wad64Cli
 		                Wad64::FileCreationMode mode,
 		                ArchivePath&& dest,
 		                std::string&& dest_name = "")
-		    : m_src{src == "*"? "." : src}
-		    , m_filter{src == "*"? "" : src}
+		    : m_src{src == "*" ? "." : src}
+		    , m_filter{src == "*" ? "" : src}
 		    , m_mode{mode}
 		    , m_dest{std::move(dest)}
 		    , m_dest_name{std::move(dest_name)}

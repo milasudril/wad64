@@ -19,10 +19,14 @@ namespace
 	class BadCommand: public Wad64Cli::Command
 	{
 	public:
-		explicit BadCommand(std::string&& cmd): m_cmd{cmd}{}
+		explicit BadCommand(std::string&& cmd): m_cmd{cmd} {}
 
 
-		void operator()() const override { throw std::runtime_error{"Unsupported command " + m_cmd + ". Try wad64 help"}; }
+		void operator()() const override
+		{
+			throw std::runtime_error{"Unsupported command " + m_cmd + ". Try wad64 help"};
+		}
+
 	private:
 		std::string m_cmd;
 	};
@@ -57,8 +61,9 @@ remove          Removes an item from an archive
 		using HelpPrinter = void (*)();
 
 		explicit CommandHelp(int argc, char const* const* argv)
-		    : m_help_printer{
-		        []() { throw std::runtime_error{"What command do you want to know about? Try wad64 help."}; }}
+		    : m_help_printer{[]() {
+			    throw std::runtime_error{"What command do you want to know about? Try wad64 help."};
+		    }}
 		{
 			if(argc != 1) { return; }
 
@@ -86,14 +91,13 @@ remove
 		static HelpPrinter getHelpPrinter(std::string_view command_name)
 		{
 			if(command_name == "help") { return help; }
- 			if(command_name == "insert") { return Wad64Cli::Insert::help; }
+			if(command_name == "insert") { return Wad64Cli::Insert::help; }
 			if(command_name == "extract") { return Wad64Cli::Extract::help; }
 			if(command_name == "list") { return Wad64Cli::List::help; }
 #if 0
 
 #endif
-			if(command_name == "remove")
-			{ return Wad64Cli::Remove::help; }
+			if(command_name == "remove") { return Wad64Cli::Remove::help; }
 
 			return []() { throw std::runtime_error{"Unsupported command. Try wad64 help."}; };
 		}
@@ -105,13 +109,11 @@ remove
 
 std::unique_ptr<Wad64Cli::Command> Wad64Cli::makeCommand(int argc, char const* const* argv)
 {
-	std::map<std::string_view, CommandFactory> commands{
-	    {"help", CommandHelp::create},
-		{"list", List::create},
-		{"insert", Insert::create},
-		{"remove", Remove::create},
-		{"extract", Extract::create}
-	};
+	std::map<std::string_view, CommandFactory> commands{{"help", CommandHelp::create},
+	                                                    {"list", List::create},
+	                                                    {"insert", Insert::create},
+	                                                    {"remove", Remove::create},
+	                                                    {"extract", Extract::create}};
 
 	if(argc <= 1) { return std::make_unique<AppHelp>(); }
 
