@@ -5,7 +5,9 @@
 			"..",
 			".",
 			".git",
-			"__targets"
+			"__targets_gcov",
+			"__targets_dbg",
+			"__targets_rel"
 		],
 		"recursive": 1
 	},
@@ -33,23 +35,11 @@
 					],
 					"name": "g++-10"
 				},
-				"autorun_launcher": {
-					"args": [
-						"{target_directory}",
-						"{current_directory}",
-						"{target}"
-					],
-					"name": "./testrunner.sh"
-				},
 				"cflags_extra": [
 					"Wconversion",
 					"Wall",
 					"Werror",
-					"Wextra",
-					"mavx2",
-					"fprofile-arcs",
-					"ftest-coverage",
-					"g"
+					"Wextra"
 				],
 				"cflags_format": "-^",
 				"dllcompile": {
@@ -142,9 +132,5 @@
 			"name": "targetcxx_default",
 			"plugin": "targetcxx"
 		}
-	],
-	"targetinfo": {
-		"project_root": "",
-		"target_directory": "__targets"
-	}
+	]
 }
