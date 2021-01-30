@@ -21,7 +21,7 @@ namespace
 		explicit BadCommand(std::string&& cmd): m_cmd{cmd}{}
 
 
-		void operator()() const override { throw std::runtime_error{"Unsupported command " + m_cmd}; }
+		void operator()() const override { throw std::runtime_error{"Unsupported command " + m_cmd + ". Try wad64 help"}; }
 	private:
 		std::string m_cmd;
 	};
@@ -37,9 +37,9 @@ Supported commands:
 
 --help          Shows this text
 help <command>  Shows help about <commanad>
-insert          Inserts a new item into an archive
 list            Lists the content of an archive
-update          Updates an item that already exists in an archive
+extract         Extracts content from an arcive
+insert          Inserts a new item into an archive
 remove          Removes an item from an archive
 )msg");
 		}
@@ -57,7 +57,7 @@ remove          Removes an item from an archive
 
 		explicit CommandHelp(int argc, char const* const* argv)
 		    : m_help_printer{
-		        []() { throw std::runtime_error{"What command do you want to know about?"}; }}
+		        []() { throw std::runtime_error{"What command do you want to know about? Try wad64 help."}; }}
 		{
 			if(argc != 1) { return; }
 
@@ -98,7 +98,7 @@ remove
 			if(command_name == "remove")
 			{ return Wad64Cli::Remove::help; }
 
-			return []() { throw std::runtime_error{"Unsupported command"}; };
+			return []() { throw std::runtime_error{"Unsupported command. Try wad64 help."}; };
 		}
 
 	private:
