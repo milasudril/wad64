@@ -28,14 +28,7 @@ Wad64::Directory::Directory(std::span<FileLump const> entries): m_eof{sizeof(Wad
 	   != std::end(file_offsets))
 	{ throw ArchiveError{"Overlapping file offsets"}; }
 
-	std::ranges::for_each(
-	    file_offsets,
-	    [prev_end = static_cast<int64_t>(sizeof(WadInfo)), &gaps = m_gaps](auto val) mutable {
-		    auto const gap_size  = val.begin - prev_end;
-		    auto const gap_begin = prev_end;
-		    if(gap_size != 0) { gaps.push(Gap{gap_begin, gap_size}); }
-		    prev_end = val.end;
-	    });
+	rebuildFreelist(file_offsets);
 }
 
 void Wad64::Directory::remove(Storage::iterator i_dir)
@@ -181,4 +174,19 @@ std::vector<Wad64::DirEntry> Wad64::fileOffsets(Wad64::Directory const& dir)
 	std::ranges::sort(file_offsets, [](auto a, auto b) { return a.begin < b.begin; });
 
 	return file_offsets;
+}
+
+void Wad64::Directory::rebuildFreelist(std::vector<DirEntry> const& entries)
+{
+	GapStorage gaps_new;
+	std::ranges::for_each(
+	    entries,
+	    [prev_end = static_cast<int64_t>(sizeof(WadInfo)), &gaps = gaps_new](auto val) mutable {
+		    auto const gap_size  = val.begin - prev_end;
+		    auto const gap_begin = prev_end;
+		    if(gap_size != 0) { gaps.push(Gap{gap_begin, gap_size}); }
+		    prev_end = val.end;
+	    });
+
+	m_gaps = std::move(gaps_new);
 }

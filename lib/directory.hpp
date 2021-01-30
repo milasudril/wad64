@@ -143,6 +143,7 @@ namespace Wad64
 			});
 		}
 
+
 	private:
 		Storage m_content;
 
@@ -159,6 +160,8 @@ namespace Wad64
 		            CommitCallback cb);
 
 		void commitDirentries(void* obj, CommitCallback cb);
+
+		void rebuildFreelist(std::vector<DirEntry> const& entries);
 	};
 
 	Directory readDirectory(FileReference ref, WadInfo const& header);
