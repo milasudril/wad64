@@ -7,6 +7,7 @@
 #include "./list.hpp"
 #include "./insert.hpp"
 #include "./remove.hpp"
+#include "./extract.hpp"
 
 #include <map>
 #include <cstdio>
@@ -86,11 +87,7 @@ remove
 		{
 			if(command_name == "help") { return help; }
  			if(command_name == "insert") { return Wad64Cli::Insert::help; }
-
-#if 0
-			if(command_name == "export")
-			{ return Export::help; }
-#endif
+			if(command_name == "extract") { return Wad64Cli::Extract::help; }
 			if(command_name == "list") { return Wad64Cli::List::help; }
 #if 0
 
@@ -112,7 +109,9 @@ std::unique_ptr<Wad64Cli::Command> Wad64Cli::makeCommand(int argc, char const* c
 	    {"help", CommandHelp::create},
 		{"list", List::create},
 		{"insert", Insert::create},
-		{"remove", Remove::create}};
+		{"remove", Remove::create},
+		{"extract", Extract::create}
+	};
 
 	if(argc <= 1) { return std::make_unique<AppHelp>(); }
 

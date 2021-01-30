@@ -22,16 +22,23 @@ namespace
 		while(ptr != std::end(name))
 		{
 			auto ch_in = *ptr;
-			++ptr;
-			switch(ch_in)
+			if(ch_in == '/' && ptr != std::begin(name))
 			{
-				case '/':
-					if(::mkdir(buffer.c_str(), S_IRWXU) == -1)
-					{ throw std::runtime_error{"Failed to create directory"}; }
-					buffer += ch_in;
-					break;
-				default: buffer += ch_in;
+				if(::mkdir(buffer.c_str(), S_IRWXU) == -1)
+				{
+					auto saved_errno = errno;
+					struct stat statbuff{};
+					stat(buffer.c_str(), &statbuff);
+					if(!(S_ISDIR(statbuff.st_mode) && saved_errno == EEXIST))
+					{ throw std::runtime_error{"Failed to create directory `" + buffer + "`"}; }
+				}
+				buffer += ch_in;
 			}
+			else
+			{
+				buffer += ch_in;
+			}
+			++ptr;
 		}
 	}
 }
