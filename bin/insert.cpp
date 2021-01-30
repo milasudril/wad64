@@ -20,26 +20,26 @@ namespace
 		throw std::runtime_error{"Constraint must be either into or over"};
 	}
 
-	auto make_dest_name(fs::path const& src, std::string_view dest_name)
+	auto make_dest_name(fs::path const& src_root, fs::path const& src, std::string_view dest_name)
 	{
 		if(std::size(dest_name) == 0)
 		{ return src; }
 
+		auto end_of_root = std::ranges::mismatch(src_root, src);
+
 		fs::path ret;
 		ret /= dest_name;
 
-		auto i = std::begin(src);
-		assert(std::begin(src) != std::end(src));
-		++i;
-		std::for_each(i, std::end(src), [&ret](auto const& val) { ret /= val;});
+		std::for_each(end_of_root.in2, std::end(src), [&ret](auto const& val) { ret /= val;});
 		return ret;
 	}
 
-	auto make_name_pair(fs::path&& src,
+	auto make_name_pair(fs::path const& src_root,
+						fs::path&& src,
 	                    std::string_view dest_prefix,
 	                    std::string_view dest_name)
 	{
-		auto name = make_dest_name(src, dest_name);
+		auto name = make_dest_name(src_root, src, dest_name);
 		auto fullname =
 		    std::size(dest_prefix) == 0 ? std::move(name) :
 		    fs::path{dest_prefix} / std::move(name);
@@ -52,15 +52,15 @@ namespace
 		if(!is_directory(src))
 		{
 			return std::vector<std::pair<fs::path, std::string>>{
-			    make_name_pair(fs::path{src}, dest_prefix, dest_name)};
+			    make_name_pair(fs::path{src}, fs::path{src}, dest_prefix, dest_name)};
 		}
 
 		std::vector<std::pair<fs::path, std::string>> ret;
 		std::ranges::for_each( fs::recursive_directory_iterator{src},
-		    [dest_prefix, dest_name, &ret](auto const& p) {
+		    [&src, dest_prefix, dest_name, &ret](auto const& p) {
 			    if(is_regular_file(p))
 			    {
-				    ret.push_back(make_name_pair(p.path().lexically_normal(), dest_prefix, dest_name));
+				    ret.push_back(make_name_pair(src, p.path().lexically_normal(), dest_prefix, dest_name));
 			    }
 		    });
 
