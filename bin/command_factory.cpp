@@ -4,7 +4,7 @@
 
 #include "./command_factory.hpp"
 
-#include "./ls.hpp"
+#include "./list.hpp"
 #include "./insert.hpp"
 #include "./remove.hpp"
 
@@ -91,7 +91,7 @@ remove
 			if(command_name == "export")
 			{ return Export::help; }
 #endif
-			if(command_name == "list") { return Wad64Cli::Ls::help; }
+			if(command_name == "list") { return Wad64Cli::List::help; }
 #if 0
 
 #endif
@@ -110,7 +110,7 @@ std::unique_ptr<Wad64Cli::Command> Wad64Cli::makeCommand(int argc, char const* c
 {
 	std::map<std::string_view, CommandFactory> commands{
 	    {"help", CommandHelp::create},
-		{"list", Ls::create},
+		{"list", List::create},
 		{"insert", Insert::create},
 		{"remove", Remove::create}};
 

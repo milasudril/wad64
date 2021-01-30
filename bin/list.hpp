@@ -1,10 +1,10 @@
 //@	{
-//@	 "targets":[{"name":"ls.hpp", "type":"include"}]
-//@	,"dependencies_extra":[{"ref":"ls.o","rel":"implementation"}]
+//@	 "targets":[{"name":"list.hpp", "type":"include"}]
+//@	,"dependencies_extra":[{"ref":"list.o","rel":"implementation"}]
 //@	}
 
-#ifndef WAD64_BIN_LS_HPP
-#define WAD64_BIN_LS_HPP
+#ifndef WAD64_BIN_LIST_HPP
+#define WAD64_BIN_LIST_HPP
 
 #include "./archive_path.hpp"
 #include "./command.hpp"
@@ -13,16 +13,16 @@
 
 namespace Wad64Cli
 {
-	class Ls: public Command
+	class List: public Command
 	{
 	public:
-		explicit Ls(ArchivePath&& path): m_path{std::move(path)} {}
+		explicit List(ArchivePath&& path): m_path{std::move(path)} {}
 
 		static std::unique_ptr<Command> create(int argc, char const* const* argv)
 		{
 			if(argc != 1) { throw std::runtime_error{"Archive path is missing"}; }
 
-			return std::make_unique<Ls>(ArchivePath::parse(std::string_view{argv[0]}));
+			return std::make_unique<List>(ArchivePath::parse(std::string_view{argv[0]}));
 		}
 
 		void operator()() const override;
