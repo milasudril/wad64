@@ -1,0 +1,128 @@
+.TH wad64 5
+.SH NAME
+
+wad64 — A simple archive format for storing data
+
+.SH SYNOPSIS
+
+.IB filename .wad64
+
+.SH DESCRIPTION
+
+The
+.B wad64
+file format is a simplistic archive format based on the WAD file format used by id
+Tech 1 games, such as Doom and Heretic. Wad64 uses the exact same directory layout as a classic WAD
+file but uses 64 bit offsets, which both allows for larger archives, and larger contained files.
+Also, "lump" names may be up to 255 characters, instead of 8, and do not have to be all uppercase
+letters and numbers. Still some restrictions applies to names, in order to make sure that extrating
+archived files does not mess up the user's directory structure.
+
+.B wad64
+is suitable whenever full random access is needed to the archive content. Both the directory, and
+the file lumps, can be accessed directly, since all file offsets and sizes are known. Furthermore,
+.B wad64
+because
+.B wad64
+does not use any compression, it is possible to seek inside a lump.
+
+.SH FORMAT
+
+Numbers in a
+.B wad64
+are encoded in Little Endian byte order.
+
+
+.SS File header
+
+A
+.B wad64
+file begins with the following header:
+
+struct
+WadInfo {
+.br
+    char    identification[8];
+.br
+    int64_t numlumps;
+.br
+    int64_t infotablesofs;
+.br
+};
+
+.TP 16
+.B identification
+is the magic number that must read xWAD64, followed by a linefeed charachter (ASCII 10), and a nul
+byte.
+
+.TP
+.B numlumps
+is the number of "lumps" in the archive.
+
+.TP
+.B infotablesofs
+is the offset in bytes from the beginning of the file to the first entry in the directory. Since the
+file header is 24 bytes, it cannot be less than 24.
+
+
+.SS File lumps
+
+The directory entries have the following format:
+
+struct FileLump {
+.br
+    int64_t filepos;
+.br
+    int64_t size;
+.br
+    char    name[256];
+.br
+};
+
+.TP 16
+.B filepos
+is the offset in bytes from the beginning of the file to the current lump
+
+.TP
+.B size
+is the size of the current lump in bytes
+
+.TP
+.B name
+is the name of the lump. The name must be a valid UTF-8 string that satisfies the following rules:
+
+.RS
+.IP
+The name must end with a nul terminator
+.IP
+The name must not begin with '-'
+.IP
+The name must not contain any charachter with codepoints [0, 32[. Note: though the name itself
+cannot contain the nul byte, it must end with it.
+.IP
+The name must not contain any charachter that is forbidden by Microsoft® Windows® or DOS variants.
+It may contain path separators though.
+.IP
+If interpreted as a file path, it must not escape outside current working directory. Thus any '../'
+or '..\\' is forbidden. Also, the sequences './' and '.\\' are forbidden, as is two following
+slashes.
+.RE
+
+.SH MEDIA TYPE
+At the time of writing, there is no official media type. Applications can use
+
+application/x-wad64
+
+to identify wad64 files.
+
+.SH BUGS
+
+See GitHub Issues: <https://github.com/milasudril/wad64/issues>
+
+.SH AUTHOR
+
+Torbjörn Rathsman
+
+.SH SEE ALSO
+
+wad64(1)
