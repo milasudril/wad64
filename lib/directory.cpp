@@ -20,11 +20,7 @@ Wad64::Directory::Directory(std::span<FileLump const> entries): m_eof{sizeof(Wad
 		                     DirEntry{item.filepos, item.filepos + item.size}};
 	    });
 
-	std::vector<DirEntry> file_offsets;
-	file_offsets.reserve(std::size(entries));
-	std::ranges::transform(
-	    m_content, std::back_inserter(file_offsets), [](auto const& item) { return item.second; });
-	std::ranges::sort(file_offsets, [](auto a, auto b) { return a.begin < b.begin; });
+	auto file_offsets = fileOffsets(*this);
 
 	if(std::size(file_offsets) != 0) { m_eof = file_offsets.back().end; }
 
@@ -173,4 +169,16 @@ Wad64::Directory Wad64::readDirectory(FileReference ref, WadInfo const& header)
 {
 	auto dir_data = readInfoTables(ref, header);
 	return Directory{std::span(dir_data.get(), header.numlumps)};
+}
+
+std::vector<Wad64::DirEntry> Wad64::fileOffsets(Wad64::Directory const& dir)
+{
+	std::vector<DirEntry> file_offsets;
+	auto const& entries = dir.ls();
+	file_offsets.reserve(std::size(entries));
+	std::ranges::transform(
+	    entries, std::back_inserter(file_offsets), [](auto const& item) { return item.second; });
+	std::ranges::sort(file_offsets, [](auto a, auto b) { return a.begin < b.begin; });
+
+	return file_offsets;
 }

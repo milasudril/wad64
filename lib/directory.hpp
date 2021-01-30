@@ -162,6 +162,8 @@ namespace Wad64
 	};
 
 	Directory readDirectory(FileReference ref, WadInfo const& header);
+
+	std::vector<DirEntry> fileOffsets(Directory const& dir);
 }
 
 #endif
