@@ -36,12 +36,15 @@ namespace
 	}
 }
 
-void Wad64::extract(ArchiveView const& archive, std::string_view name, FileCreationMode mode)
+void Wad64::extract(ArchiveView const& archive,
+                 FileCreationMode mode,
+                 std::string_view src_name,
+                 char const* dest_name)
 {
-	mkdirs(name);
-	InputFile file_in{archive, name};
+	mkdirs(dest_name);
+	InputFile file_in{archive, src_name};
 	auto buffer = std::make_unique<std::array<std::byte, 0x10000>>();
-	FdOwner file_out{std::string{name}.c_str(), IoMode::AllowWrite(), mode};
+	FdOwner file_out{dest_name, IoMode::AllowWrite(), mode};
 
 	// TODO: This would allow for in-kernel data transfer
 	// read(file_in, file_out.get(), 0);
@@ -58,10 +61,14 @@ void Wad64::extract(ArchiveView const& archive, std::string_view name, FileCreat
 	}
 }
 
-void Wad64::extract(ArchiveView const& archive, BeginsWith name, FileCreationMode mode)
+void Wad64::extract(ArchiveView const& archive,
+                 FileCreationMode mode,
+                 std::span<std::pair<std::string, std::filesystem::path> const> names,
+                 BeginsWith name)
 {
-	std::ranges::for_each(archive.ls(), [&archive, name, mode](auto const& item) {
-		if(name == item.first) { extract(archive, name, mode); }
+	std::ranges::for_each(names, [&archive, mode, name](auto const& item) {
+		if(item.first == name)
+		{ extract(archive, mode, item.first, item.second.c_str()); }
 	});
 }
 

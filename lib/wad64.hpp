@@ -27,14 +27,20 @@ namespace Wad64
 
 	inline bool operator!=(std::string_view other, BeginsWith a) { return !(other == a); }
 
-	void extract(ArchiveView const& archive, std::string_view name, FileCreationMode mode);
+	void extract(ArchiveView const& archive,
+                 FileCreationMode mode,
+                 std::string_view src_name,
+                 char const* dest_name);
 
-	void extract(ArchiveView const& archive, BeginsWith name, FileCreationMode mode);
+	void extract(ArchiveView const& archive,
+                 FileCreationMode mode,
+                 std::span<std::pair<std::string, std::filesystem::path> const> names,
+                 BeginsWith name);
 
 	void insert(Archive& archive,
 	            FileCreationMode mode,
 	            char const* src_name,
-	            std::string_view name);
+	            std::string_view dest_name);
 
 	void insert(Archive& archive,
 	            FileCreationMode mode,

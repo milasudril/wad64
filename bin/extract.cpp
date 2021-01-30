@@ -3,6 +3,7 @@
 #include "./extract.hpp"
 
 #include "lib/fd_owner.hpp"
+#include "lib/wad64.hpp"
 
 #include <algorithm>
 
@@ -95,11 +96,11 @@ std::unique_ptr<Wad64Cli::Command> Wad64Cli::Extract::create(int argc, char cons
 
 void Wad64Cli::Extract::operator()() const
 {
+	Wad64::FdOwner file{m_dest.c_str(),
+	                    Wad64::IoMode::AllowRead(),
+	                    Wad64::FileCreationMode::DontCare()};
+	Wad64::ReadonlyArchive archive{std::ref(file)};
 #if 0
-	Wad64::FdOwner file{m_dest.archive().c_str(),
-	                    Wad64::IoMode::AllowRead().allowWrite(),
-	                    Wad64::FileCreationMode::AllowOverwriteWithoutTruncation().allowCreation()};
-	Wad64::Archive archive{std::ref(file)};
 
 	auto names = get_source_names(m_src, m_dest.entryPrefix(), m_dest_name);
 	insert(archive, m_mode, names, Wad64::BeginsWith{m_filter.c_str()});
