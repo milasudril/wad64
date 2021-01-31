@@ -62,5 +62,15 @@ namespace Wad64
 	{
 		return f.write(buffer, offset);
 	}
+
+	inline auto seek(OutputFile& f, int64_t offset)
+	{
+		return f.seek(offset, SeekMode::Set);
+	}
+
+	inline auto tell(OutputFile& f)
+	{
+		return f.tell();
+	}
 }
 #endif
