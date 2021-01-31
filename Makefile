@@ -40,5 +40,3 @@ install: release make_pkgconfig.sh
 	    | while read in; do grep -v '^//@' "$$in" \
 	    > $(DESTDIR)$(PREFIX)/include/wad64/$$in; done
 	./make_pkgconfig.sh $(PREFIX) $(DESTDIR)$(PREFIX)/lib/pkgconfig/wad64.pc
-
-

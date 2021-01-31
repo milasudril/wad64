@@ -16,6 +16,9 @@ namespace Wad64
 	class OutputFile
 	{
 	public:
+		OutputFile(OutputFile&&) = default;
+		OutputFile& operator=(OutputFile&&) = default;
+
 		explicit OutputFile(std::reference_wrapper<Archive> archive,
 		                    std::string_view filename,
 		                    FileCreationMode mode);
@@ -46,7 +49,11 @@ namespace Wad64
 
 		int64_t size() const { return m_range.end; }
 
-		~OutputFile() { m_archive.get().commit(std::move(m_reservation), m_tmp_file.get()); }
+		~OutputFile()
+		{
+			if(m_tmp_file.valid())
+			{ m_archive.get().commit(std::move(m_reservation), m_tmp_file.get()); }
+		}
 
 	private:
 		FdOwner m_tmp_file;
