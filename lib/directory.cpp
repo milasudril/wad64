@@ -14,10 +14,11 @@ Wad64::Directory::Directory(std::span<FileLump const> entries): m_eof{sizeof(Wad
 		{ throw ArchiveError{"Directory contains invalid items"}; }
 	});
 
-	std::ranges::transform(
-	    entries, std::inserter(m_content, std::end(m_content)), [](auto const& item) {
-		    return std::pair{std::string{std::data(item.name)},
-		                     DirEntry{item.filepos, item.filepos + item.size}};
+	std::ranges::for_each(entries, [&content = m_content](auto const& item) {
+			auto i = content.insert(std::pair{std::string{std::data(item.name)},
+		                     DirEntry{item.filepos, item.filepos + item.size}});
+			if(!i.second)
+			{ throw ArchiveError{"Directory contains duplicated entries"}; }
 	    });
 
 	auto file_offsets = fileOffsets(*this);

@@ -345,6 +345,20 @@ namespace Testcases
 		}
 	}
 
+	void wad64DIrectoryLoadEntriesDuplicatedName()
+	{
+		auto bad_lumps       = lumps;
+		bad_lumps[0] = bad_lumps[1];
+		try
+		{
+			Wad64::Directory dir{bad_lumps};
+			abort();
+		}
+		catch(...)
+		{
+		}
+	}
+
 	void wad64DirectoryLoadEntriesOverlappingOffsets()
 	{
 		auto bad_lumps = lumps;
@@ -520,6 +534,7 @@ int main()
 	Testcases::wad64DirectoryReserveExistingItem();
 	Testcases::wad64DirectoryUseExistingItem();
 	Testcases::wad64DirectoryLoadEntriesInvalidItem();
+	Testcases::wad64DIrectoryLoadEntriesDuplicatedName();
 	Testcases::wad64DirectoryLoadEntriesOverlappingOffsets();
 	Testcases::wad64DirectoryLoadEntriesAndCommitNewReservationSuitableGapExists();
 	Testcases::wad64DirectoryLoadEntriesAndCommitOldReservationSuitableGapExists();
