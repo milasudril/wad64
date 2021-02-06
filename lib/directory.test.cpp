@@ -348,7 +348,7 @@ namespace Testcases
 	void wad64DIrectoryLoadEntriesDuplicatedName()
 	{
 		auto bad_lumps       = lumps;
-		bad_lumps[0] = bad_lumps[1];
+		bad_lumps[0].name = bad_lumps[1].name;
 		try
 		{
 			Wad64::Directory dir{bad_lumps};
