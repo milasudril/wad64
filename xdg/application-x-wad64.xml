@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+	<mime-type type="application/x-wad64">
+		<comment>Wad64 file</comment>
+		<icon name="application-x-wad64"/>
+		<magic-deleteall/>
+		<magic>
+			<match type="string" offset="0" value="xWAD64\n\0"/>
+		</magic>
+		<comment>Wad64 archive</comment>
+	</mime-type>
+</mime-info>
