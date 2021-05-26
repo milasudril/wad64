@@ -1,6 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"output_file.hpp","type":"include"}]
-//@	,"dependencies_extra":[{"ref":"output_file.o","rel":"implementation"}]
+//@	 "dependencies_extra":[{"ref":"./output_file.o","rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_LIB_OUTPUTFILE_HPP

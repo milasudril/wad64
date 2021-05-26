@@ -1,6 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"extract.hpp", "type":"include"}]
-//@	,"dependencies_extra":[{"ref":"extract.o","rel":"implementation"}]
+//@	 "dependencies_extra":[{"ref":"./extract.o","rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_BIN_EXTRACT_HPP

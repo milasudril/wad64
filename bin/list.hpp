@@ -1,6 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"list.hpp", "type":"include"}]
-//@	,"dependencies_extra":[{"ref":"list.o","rel":"implementation"}]
+//@	 "dependencies_extra":[{"ref":"./list.o","rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_BIN_LIST_HPP

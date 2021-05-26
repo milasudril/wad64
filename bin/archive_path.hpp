@@ -1,6 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"archive_path.hpp", "type":"include"}]
-//@	,"dependencies_extra":[{"ref":"archive_path.o","rel":"implementation"}]
+//@	 "dependencies_extra":[{"ref":"./archive_path.o","rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_BIN_ARCHIVEPATH_HPP

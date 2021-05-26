@@ -1,6 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"command_factory.hpp", "type":"include"}]
-//@	,"dependencies_extra":[{"ref":"command_factory.o","rel":"implementation"}]
+//@	 "dependencies_extra":[{"ref":"./command_factory.o","rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_BIN_COMMANDFACTORY_HPP

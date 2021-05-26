@@ -1,6 +1,6 @@
 //@	{"targets":[{"name":"archive.test","type":"application","autorun":1}]}
 
-#include "archive.hpp"
+#include "./archive.hpp"
 
 #include "./membuffer.hpp"
 #include "./file_structs.hpp"

@@ -1,6 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"archive.hpp","type":"include"}]
-//@	,"dependencies_extra":[{"ref":"archive.o", "rel":"implementation"}]
+//@	 "dependencies_extra":[{"ref":"./archive.o", "rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_LIB_ARCHIVE_HPP

@@ -1,6 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"directory.hpp","type":"include"}]
-//@	,"dependencies_extra":[{"ref":"directory.o", "rel":"implementation"}]
+//@	 "dependencies_extra":[{"ref":"./directory.o", "rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_LIB_DIRECTORY_HPP

@@ -1,0 +1,78 @@
+{
+    "maikeconfig": {
+        "dir_compiler": {
+            "config": {},
+            "recipe": "make_directory.py",
+            "use_get_tags": 0
+        },
+        "source_file_info_loaders": {
+            "app": {
+                "compiler": {
+                    "config": {
+                        "cflags": [
+                            "-g"
+                        ]
+                    },
+                    "recipe": "cxx_linker.py",
+                    "use_get_tags": 0
+                },
+                "config": {},
+                "loader": "maikerule"
+            },
+            "cxx": {
+                "compiler": {
+                    "config": {
+                        "cflags": [
+                            "-g",
+                            "-Wall"
+                        ],
+                        "iquote": [
+                            "."
+                        ],
+                        "std_revision": {
+							"min":"c++20"
+                        }
+                    },
+                    "recipe": "cxx_compiler.py",
+                    "use_get_tags": 0
+                },
+                "config": {},
+                "loader": "cxx_src_loader"
+            },
+            "extension": {
+                "compiler": {
+                    "config": {},
+                    "recipe": "",
+                    "use_get_tags": 0
+                },
+                "config": {},
+                "loader": "extension"
+            },
+            "generic_example": {
+                "compiler": {
+                    "config": {},
+                    "recipe": "",
+                    "use_get_tags": 0
+                },
+                "config": {
+                    "filename_ext_replacement_mode": "append",
+                    "target_filename_ext": ""
+                },
+                "loader": "generic"
+            }
+        },
+        "source_tree_loader": {
+            "file_info_loaders": {
+                ".app.maikerule": "app",
+                ".cpp": "cxx",
+                ".hpp": "cxx",
+                ".py": "extension"
+            },
+            "input_filter": [
+                "^\\.",
+                "^__"
+            ],
+            "recursive": 1
+        }
+    }
+}

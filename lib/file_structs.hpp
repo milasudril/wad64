@@ -1,6 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"file_structs.hpp","type":"include"}]
-//@	,"dependencies_extra":[{"ref":"file_structs.o","rel":"implementation"}]
+//@	 "dependencies_extra":[{"ref":"./file_structs.o","rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_LIB_FILESTRUCTS_HPP

@@ -1,6 +1,5 @@
 //@	{
-//@	"targets":[{"name":"fd_adapter.hpp","type":"include"}]
-//@	,"dependencies_extra":[{"ref":"fd_adapter.o","rel":"implementation"}]
+//@	 "dependencies_extra":[{"ref":"./fd_adapter.o","rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_LIB_FDADAPTER_HPP

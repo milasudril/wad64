@@ -1,6 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"remove.hpp", "type":"include"}]
-//@	,"dependencies_extra":[{"ref":"remove.o","rel":"implementation"}]
+//@	 "dependencies_extra":[{"ref":"./remove.o","rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_BIN_REMOVE_HPP

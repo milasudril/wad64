@@ -1,6 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"insert.hpp", "type":"include"}]
-//@	,"dependencies_extra":[{"ref":"insert.o","rel":"implementation"}]
+//@	 "dependencies_extra":[{"ref":"./insert.o","rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_BIN_INSERT_HPP

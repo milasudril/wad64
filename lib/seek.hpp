@@ -1,6 +1,5 @@
 //@	{
-//@	 "targets":[{"name":"seek.hpp","type":"include"}]
-//@	,"dependencies_extra":[{"ref":"seek.o","rel":"implementation"}]
+//@	 "dependencies_extra":[{"ref":"./seek.o","rel":"implementation"}]
 //@	}
 
 #ifndef WAD64_LIB_SEEK_HPP
