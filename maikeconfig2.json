@@ -39,6 +39,27 @@
                 "config": {},
                 "loader": "cxx_src_loader"
             },
+            "cxx_test": {
+                "compiler": {
+                    "config": {
+						"actions":["link", "run"],
+                        "cflags": [
+                            "-g",
+                            "-Wall"
+                        ],
+                        "iquote": [
+                            "."
+                        ],
+                        "std_revision": {
+							"min":"c++20"
+                        }
+                    },
+                    "recipe": "cxx_compiler.py",
+                    "use_get_tags": 0
+                },
+                "config": {},
+                "loader": "cxx_src_loader"
+            },
             "extension": {
                 "compiler": {
                     "config": {},
@@ -66,7 +87,8 @@
                 ".app.maikerule": "app",
                 ".cpp": "cxx",
                 ".hpp": "cxx",
-                ".py": "extension"
+                ".py": "extension",
+                ".test.cpp": "cxx_test"
             },
             "input_filter": [
                 "^\\.",

@@ -51,11 +51,8 @@ namespace Testcases
 {
 	void wad64FdAdapterOpenFileDoesNotExistReadAllowedOverwriteAllowed()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename = test_dir / "my_file";
-
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename = test_dir / X_STR(MAIKE_TASKID);
 		(void)unlink(filename.c_str());
 		auto fd = open(filename.c_str(),
 		               Wad64::IoMode::AllowRead(),
@@ -65,11 +62,8 @@ namespace Testcases
 
 	void wad64FdAdapterOpenFileDoesNotExistReadAllowedCreationAllowed()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename = test_dir / "my_file";
-
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename = test_dir / X_STR(MAIKE_TASKID);
 		(void)unlink(filename.c_str());
 		auto fd = open(
 		    filename.c_str(), Wad64::IoMode::AllowRead(), Wad64::FileCreationMode::AllowCreation());
@@ -78,11 +72,8 @@ namespace Testcases
 
 	void wad64FdAdapterOpenFileDoesNotExistReadAllowedCreationAllowedOverwriteAllowed()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename = test_dir / "my_file";
-
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename = test_dir / X_STR(MAIKE_TASKID);
 		(void)unlink(filename.c_str());
 		auto fd = open(filename.c_str(),
 		               Wad64::IoMode::AllowRead(),
@@ -92,11 +83,8 @@ namespace Testcases
 
 	void wad64FdAdapterOpenFileDoesNotExistWriteAllowedOverwriteAllowed()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename = test_dir / "my_file";
-
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename = test_dir / X_STR(MAIKE_TASKID);
 		(void)unlink(filename.c_str());
 		auto fd = open(filename.c_str(),
 		               Wad64::IoMode::AllowWrite(),
@@ -106,11 +94,8 @@ namespace Testcases
 
 	void wad64FdAdapterOpenFileDoesNotExistWriteAllowedCreationAllowed()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename = test_dir / "my_file";
-
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename = test_dir / X_STR(MAIKE_TASKID);
 		(void)unlink(filename.c_str());
 		auto fd = open(filename.c_str(),
 		               Wad64::IoMode::AllowWrite(),
@@ -121,11 +106,8 @@ namespace Testcases
 
 	void wad64FdAdapterOpenFileDoesNotExistWriteAllowedCreationAllowedOverwriteAllowed()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename = test_dir / "my_file";
-
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename = test_dir / X_STR(MAIKE_TASKID);
 		auto fd = open(filename.c_str(),
 		               Wad64::IoMode::AllowWrite(),
 		               Wad64::FileCreationMode::AllowCreation().allowOverwriteWithoutTruncation());
@@ -137,10 +119,8 @@ namespace Testcases
 
 	void wad64FdAdapterOpenFileExistsReadAllowedOverwriteAllowed()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename = test_dir / "my_file";
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename = test_dir / X_STR(MAIKE_TASKID);
 		createFile(filename.c_str(), "This is a test file");
 
 		auto fd = open(filename.c_str(),
@@ -153,10 +133,8 @@ namespace Testcases
 
 	void wad64FdAdapterOpenFileExistsReadAllowedCreationAllowed()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename = test_dir / "my_file";
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename = test_dir / X_STR(MAIKE_TASKID);
 		createFile(filename.c_str(), "This is a test file");
 
 		auto fd = open(
@@ -169,10 +147,8 @@ namespace Testcases
 
 	void wad64FdAdapterOpenFileExistsReadAllowedCreationAllowedOverwriteAllowed()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename = test_dir / "my_file";
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename = test_dir / X_STR(MAIKE_TASKID);
 		createFile(filename.c_str(), "This is a test file");
 
 		auto fd = open(filename.c_str(),
@@ -186,10 +162,8 @@ namespace Testcases
 
 	void wad64FdAdapterOpenFileExistsWriteAllowedOverwriteAllowed()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename = test_dir / "my_file";
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename = test_dir / X_STR(MAIKE_TASKID);
 		createFile(filename.c_str(), "This is a test file");
 		struct stat statbuf;
 		stat(filename.c_str(), &statbuf);
@@ -207,10 +181,8 @@ namespace Testcases
 
 	void wad64FdAdapterOpenFileExistsWriteAllowedCreationAllowed()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename = test_dir / "my_file";
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename = test_dir / X_STR(MAIKE_TASKID);
 		createFile(filename.c_str(), "This is a test file");
 
 		auto fd = open(filename.c_str(),
@@ -222,10 +194,8 @@ namespace Testcases
 
 	void wad64FdAdapterOpenFileExistsWriteAllowedCreationAllowedOverwriteAllowed()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename = test_dir / "my_file";
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename = test_dir / X_STR(MAIKE_TASKID);
 		createFile(filename.c_str(), "This is a test file");
 		struct stat statbuf;
 		stat(filename.c_str(), &statbuf);
@@ -243,10 +213,8 @@ namespace Testcases
 
 	void wad64FdAdapterReadFromOffset()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename       = test_dir / "my_file";
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename       = test_dir / X_STR(MAIKE_TASKID);
 		constexpr auto content_sv = std::string_view{"This is a test file"};
 		auto content              = std::string{content_sv};
 		createFile(filename.c_str(), content);
@@ -265,10 +233,8 @@ namespace Testcases
 
 	void wad64FdAdapterReadCompleted()
 	{
-		auto const test_dir =
-		    std::filesystem::path{X_STR(MAIKE_TARGET_DIRECTORY)} / X_STR(MAIKE_CURRENT_DIRECTORY);
-
-		auto const filename       = test_dir / "my_file";
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename       = test_dir / X_STR(MAIKE_TASKID);
 		constexpr auto content_sv = std::string_view{"This is a test file"};
 		auto content              = std::string{content_sv};
 		createFile(filename.c_str(), content);
