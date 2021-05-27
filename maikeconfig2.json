@@ -19,6 +19,15 @@
                 "config": {},
                 "loader": "maikerule"
             },
+            "lib": {
+                "compiler": {
+                    "config": {},
+                    "recipe": "make_lib.py",
+                    "use_get_tags": 0
+                },
+                "config": {},
+                "loader": "maikerule"
+            },
             "cxx": {
                 "compiler": {
                     "config": {
@@ -85,6 +94,7 @@
         "source_tree_loader": {
             "file_info_loaders": {
                 ".app.maikerule": "app",
+				".lib.maikerule": "lib",
                 ".cpp": "cxx",
                 ".hpp": "cxx",
                 ".py": "extension",

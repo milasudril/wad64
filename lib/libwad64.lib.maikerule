@@ -1,0 +1,4 @@
+{
+	 "target":{"name":"libwad64.a"}
+	,"dependencies":[{"ref":"./libwad64.o", "origin":"generated", "rel":"implementation"}]
+}

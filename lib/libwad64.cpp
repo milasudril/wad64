@@ -1,4 +1,4 @@
-//@	{"targets":[{"type":"lib_static", "name":"libwad64.a"}]}
+//@	{ "target":{"name":"libwad64.o"} }
 
 #include "./io_mode.hpp"
 #include "./temp_file.hpp"
