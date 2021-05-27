@@ -1,0 +1,38 @@
+{
+	"maikeconfig":
+	{
+		"source_file_info_loaders":
+		{
+			"app":
+			{
+				"compiler":
+				{
+					"config":
+					{
+						"cflags":["-s"]
+					}
+				}
+			},
+			"cxx":
+			{
+				"compiler":
+				{
+					"config":
+					{
+						"cflags": ["-O3"]
+					}
+				}
+			},
+			"cxx_test":
+			{
+				"compiler":
+				{
+					"config":
+					{
+						"cflags": ["-O3"]
+					}
+				}
+			}
+		}
+	}
+}

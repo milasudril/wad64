@@ -9,9 +9,6 @@
             "app": {
                 "compiler": {
                     "config": {
-                        "cflags": [
-                            "-g"
-                        ]
                     },
                     "recipe": "cxx_linker.py",
                     "use_get_tags": 0
@@ -32,8 +29,10 @@
                 "compiler": {
                     "config": {
                         "cflags": [
-                            "-g",
-                            "-Wall"
+							"-Wconversion",
+                            "-Wall",
+                            "-Wextra",
+                            "-Werror"
                         ],
                         "iquote": [
                             "."
@@ -53,8 +52,10 @@
                     "config": {
 						"actions":["link", "run"],
                         "cflags": [
-                            "-g",
-                            "-Wall"
+							"-Wconversion",
+                            "-Wall",
+                            "-Wextra",
+                            "-Werror"
                         ],
                         "iquote": [
                             "."

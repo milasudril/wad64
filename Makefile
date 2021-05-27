@@ -7,10 +7,10 @@
 .PHONY: install
 
 release:
-	maike --configfiles=maikeconfig.json,maikeconfig-rel.json
+	maike2 --configfiles=maikeconfig2.json,maikeconfig2-rel.json --target-dir=__targets_rel
 
 debug:
-	maike --configfiles=maikeconfig.json,maikeconfig-dbg.json
+	maike2 --configfiles=maikeconfig2.json,maikeconfig2-dbg.json --target-dir=__targets_dbg
 
 clean:
 	rm -rf __targets_*
