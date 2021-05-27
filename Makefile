@@ -17,8 +17,8 @@ clean:
 
 coverage: __targets_gcov/.coverage/coverage.html
 
-coverage-build: maikeconfig.json maikeconfig-gcov.json
-	maike --configfiles=maikeconfig.json,maikeconfig-gcov.json
+coverage-build:
+	maike2 --configfiles=maikeconfig2.json,maikeconfig2-gcov.json --target-dir=__targets_gcov
 
 __targets_gcov/.coverage/coverage.html: coverage-build ./coverage_collect.sh
 	./coverage_collect.sh

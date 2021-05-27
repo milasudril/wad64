@@ -1,0 +1,38 @@
+{
+	"maikeconfig":
+	{
+		"source_file_info_loaders":
+		{
+			"app":
+			{
+				"compiler":
+				{
+					"config":
+					{
+						"cflags":["-g", "-fprofile-arcs", "-ftest-coverage"]
+					}
+				}
+			},
+			"cxx":
+			{
+				"compiler":
+				{
+					"config":
+					{
+						"cflags":["-g", "-fprofile-arcs", "-ftest-coverage"]
+					}
+				}
+			},
+			"cxx_test":
+			{
+				"compiler":
+				{
+					"config":
+					{
+						"cflags":["-g", "-fprofile-arcs", "-ftest-coverage"]
+					}
+				}
+			}
+		}
+	}
+}
