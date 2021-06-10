@@ -1,23 +1,23 @@
 {
 	 "target":{"name":"libwad64.a"}
 	,"dependencies":[
-{"ref":"./io_mode.hpp"             , "origin":"project"},
-{"ref":"./temp_file.hpp"           , "origin":"project"},
-{"ref":"./archive.hpp"             , "origin":"project"},
-{"ref":"./io_policy.hpp"           , "origin":"project"},
-{"ref":"./membuffer.hpp"           , "origin":"project"},
-{"ref":"./output_file.hpp"         , "origin":"project"},
-{"ref":"./archive_error.hpp"       , "origin":"project"},
-{"ref":"./wad64.hpp"               , "origin":"project"},
-{"ref":"./file_creation_mode.hpp"  , "origin":"project"},
-{"ref":"./seek.hpp"                , "origin":"project"},
-{"ref":"./map_insertion.hpp"       , "origin":"project"},
-{"ref":"./directory.hpp"           , "origin":"project"},
-{"ref":"./input_file.hpp"          , "origin":"project"},
-{"ref":"./fd_owner.hpp"            , "origin":"project"},
-{"ref":"./fd_adapter.hpp"          , "origin":"project"},
-{"ref":"./file_structs.hpp"        , "origin":"project"},
-{"ref":"./archive_view.hpp"        , "origin":"project"},
-{"ref":"./readonly_archive.hpp"    , "origin":"project"}
+		{"ref":"./io_mode.hpp"             , "origin":"project"},
+		{"ref":"./temp_file.hpp"           , "origin":"project"},
+		{"ref":"./archive.hpp"             , "origin":"project"},
+		{"ref":"./io_policy.hpp"           , "origin":"project"},
+		{"ref":"./membuffer.hpp"           , "origin":"project"},
+		{"ref":"./output_file.hpp"         , "origin":"project"},
+		{"ref":"./archive_error.hpp"       , "origin":"project"},
+		{"ref":"./wad64.hpp"               , "origin":"project"},
+		{"ref":"./file_creation_mode.hpp"  , "origin":"project"},
+		{"ref":"./seek.hpp"                , "origin":"project"},
+		{"ref":"./map_insertion.hpp"       , "origin":"project"},
+		{"ref":"./directory.hpp"           , "origin":"project"},
+		{"ref":"./input_file.hpp"          , "origin":"project"},
+		{"ref":"./fd_owner.hpp"            , "origin":"project"},
+		{"ref":"./fd_adapter.hpp"          , "origin":"project"},
+		{"ref":"./file_structs.hpp"        , "origin":"project"},
+		{"ref":"./archive_view.hpp"        , "origin":"project"},
+		{"ref":"./readonly_archive.hpp"    , "origin":"project"}
 	]
 }
