@@ -23,7 +23,7 @@
                     "use_get_tags": 0
                 },
                 "config": {},
-                "loader": "maikerule"
+                "loader": "lib"
             },
             "cxx": {
                 "compiler": {
