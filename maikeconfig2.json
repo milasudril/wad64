@@ -105,6 +105,10 @@
                 "^\\.",
                 "^__"
             ],
+            "fullpath_input_filter": [
+                "^\\.",
+                "^__"
+            ],
             "recursive": 1
         }
     }
