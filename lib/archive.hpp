@@ -11,6 +11,8 @@
 #include "./file_structs.hpp"
 #include "./directory.hpp"
 
+#include <optional>
+
 namespace Wad64
 {
 	/**
