@@ -14,6 +14,7 @@
 #include <queue>
 #include <span>
 #include <string>
+#include <optional>
 
 namespace Wad64
 {
