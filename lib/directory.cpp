@@ -5,6 +5,7 @@
 #include "./directory.hpp"
 
 #include <algorithm>
+#include <limits>
 
 Wad64::Directory::Directory(std::span<FileLump const> entries): m_eof{sizeof(Wad64::WadInfo)}
 {
