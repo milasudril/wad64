@@ -9,6 +9,7 @@
 #include <cassert>
 #include <algorithm>
 #include <cstring>
+#include <limits>
 
 namespace
 {

@@ -3,10 +3,12 @@
 #include "./file_structs.hpp"
 
 #include "./membuffer.hpp"
+
 #include <type_traits>
 #include <algorithm>
 #include <cassert>
 #include <cstring>
+#include <limits>
 
 static_assert(sizeof(Wad64::WadInfo) == 24);
 static_assert(std::is_trivial_v<Wad64::WadInfo>);
