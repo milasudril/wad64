@@ -1,0 +1,6 @@
+{
+	 "target":{"name":"wad64"}
+	,"dependencies":[
+		{"ref":"./wad64.o", "origin":"generated", "rel":"implementation"}
+	]
+}

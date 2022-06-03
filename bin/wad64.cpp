@@ -1,4 +1,4 @@
-//@	{"targets":[{"name":"wad64", "type":"application"}]}
+//@	{"target":{"name":"wad64.o"}}
 
 #include "./command_factory.hpp"
 
