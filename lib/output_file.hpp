@@ -50,8 +50,15 @@ namespace Wad64
 
 		~OutputFile()
 		{
-			if(m_tmp_file.valid())
-			{ m_archive.get().commit(std::move(m_reservation), m_tmp_file.get()); }
+			try
+			{
+				if(m_tmp_file.valid())
+				{ m_archive.get().commit(std::move(m_reservation), m_tmp_file.get()); }
+			}
+			catch(std::exception const& e)
+			{
+				fprintf(stderr,"Wad64: Failed to commit data to archive: %s\n", e.what());
+			}
 		}
 
 	private:
