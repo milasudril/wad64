@@ -271,6 +271,37 @@ namespace Testcases
 		close(fd);
 	}
 
+	void wad64FdAdapterWriteFromFdEmptyFile()
+	{
+		failCopyFileRange = [](){return false;};
+
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto filename_a       = test_dir / X_STR(MAIKE_TASKID);
+		filename_a.concat("_a");
+		auto  filename_b       = test_dir / X_STR(MAIKE_TASKID);
+		filename_b.concat("_b");
+
+		fflush(stdout);
+		auto fd_a = open(filename_a.c_str(),
+				Wad64::IoMode::AllowWrite().allowRead(),
+				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
+		unlink(filename_a.c_str());
+		assert(fd_a.fd != -1);
+
+		auto fd_b = open(filename_b.c_str(),
+				Wad64::IoMode::AllowWrite().allowRead(),
+				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
+		unlink(filename_b.c_str());
+		assert(fd_b.fd != -1);
+
+		auto res = write(fd_b, fd_a, 3);
+		assert(res == size(fd_a));
+		assert(size(fd_b) == 0);
+
+		close(fd_a);
+		close(fd_b);
+	}
+
 	void wad64FdAdapterWriteFromFdAdapterKernelTransfer()
 	{
 		failCopyFileRange = [](){return false;};
@@ -335,6 +366,7 @@ int main()
 
 	Testcases::wad64FdAdapterCreateTempFile();
 
+	Testcases::wad64FdAdapterWriteFromFdEmptyFile();
 	Testcases::wad64FdAdapterWriteFromFdAdapterKernelTransfer();
 	return 0;
 }

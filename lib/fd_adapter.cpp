@@ -65,9 +65,6 @@ size_t Wad64::write(FdAdapter target, FdAdapter src, int64_t target_offset)
 	loff_t src_offset = 0;
 	auto remaining   = size(src);
 
-	if(remaining == 0)
-	{ return src_offset; }
-
 	{
 		auto const n_written =
 		    copy_file_range(src.fd, &src_offset, target.fd, &target_offset, remaining, 0);
