@@ -59,7 +59,7 @@ extern "C"
 
 		auto real_func = reinterpret_cast<WriteFuncFd>(dlsym(RTLD_NEXT, "copy_file_range"));
 
-		return real_func(fdIn, offIn, fdOut, offOut, count, flags);
+		return real_func(fdIn, offIn, fdOut, offOut, std::min(count, static_cast<size_t>(5)), flags);
 	}
 }
 
@@ -292,7 +292,7 @@ namespace Testcases
 		write(fd_a, std::as_bytes(std::span{content}), 0);
 
 		auto fd_b = open(filename_b.c_str(),
-				Wad64::IoMode::AllowWrite(),
+				Wad64::IoMode::AllowWrite().allowRead(),
 				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
 		unlink(filename_b.c_str());
 		assert(fd_b.fd != -1);
@@ -302,8 +302,15 @@ namespace Testcases
 		assert(size(fd_b) == 5 + size(fd_a));
 
 		close(fd_a);
-		close(fd_b);
 
+		std::array<char, std::size(content_sv)> buffer;
+
+		auto n = read(fd_b, std::as_writable_bytes(std::span{buffer}), 0);
+		assert(n == std::size(content_sv));
+		assert((std::equal(std::begin(buffer) + 5,
+		                   std::end(buffer),
+		                   std::begin(content_sv))));
+		close(fd_b);
 	}
 }
 
