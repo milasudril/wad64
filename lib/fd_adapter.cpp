@@ -37,7 +37,7 @@ size_t Wad64::write(FdAdapter fd, std::span<std::byte const> buffer, int64_t off
 	while(ptr != end)
 	{
 		auto const bytes_left = end - ptr;
-		auto const n_written  = ::pwrite(fd.fd, std::data(buffer), bytes_left, offset);
+		auto const n_written  = ::pwrite(fd.fd, ptr, bytes_left, offset);
 		if(n_written == -1) [[unlikely]]
 		{
 			if(errno == EAGAIN || errno == EWOULDBLOCK) [[likely]]

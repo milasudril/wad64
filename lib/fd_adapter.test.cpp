@@ -43,13 +43,13 @@ extern "C"
 	ssize_t pread(int fd, void* buf, size_t count, off_t offset)
 	{
 		auto real_func = reinterpret_cast<ReadFunc>(dlsym(RTLD_NEXT, "pread"));
-		return real_func(fd, buf, std::max(count, static_cast<size_t>(4)), offset);
+		return real_func(fd, buf, std::min(count, static_cast<size_t>(4)), offset);
 	}
 
 	ssize_t pwrite(int fd, void const* buf, size_t count, off_t offset)
 	{
 		auto real_func = reinterpret_cast<WriteFunc>(dlsym(RTLD_NEXT, "pwrite"));
-		return real_func(fd, buf, std::max(count, static_cast<size_t>(3)), offset);
+		return real_func(fd, buf, std::min(count, static_cast<size_t>(3)), offset);
 	}
 
 	ssize_t copy_file_range(int fdIn, loff_t* offIn,  int fdOut, loff_t* offOut, size_t count, unsigned int flags)
@@ -131,7 +131,6 @@ namespace Testcases
 		assert(fd.fd != -1);
 		close(fd);
 	}
-	//
 
 	void wad64FdAdapterOpenFileExistsReadAllowedOverwriteAllowed()
 	{
@@ -288,12 +287,14 @@ namespace Testcases
 		auto fd_a = open(filename_a.c_str(),
 				Wad64::IoMode::AllowWrite().allowRead(),
 				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
+		unlink(filename_a.c_str());
 		assert(fd_a.fd != -1);
 		write(fd_a, std::as_bytes(std::span{content}), 0);
 
 		auto fd_b = open(filename_b.c_str(),
 				Wad64::IoMode::AllowWrite(),
 				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
+		unlink(filename_b.c_str());
 		assert(fd_b.fd != -1);
 
 		auto res = write(fd_b, fd_a, 5);
