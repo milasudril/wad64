@@ -18,13 +18,11 @@ size_t Wad64::read(FdAdapter fd, std::span<std::byte> buffer, int64_t offset)
 		auto const bytes_left = end - ptr;
 		auto const n_read     = ::pread(fd.fd, ptr, bytes_left, offset);
 		if(n_read == -1) [[unlikely]]
-			{
-				if(errno == EAGAIN || errno == EWOULDBLOCK) [[likely]]
-					{
-						continue;
-					}
-				throw std::runtime_error{"I/O error"};
-			}
+		{
+			if(errno == EAGAIN || errno == EWOULDBLOCK) [[likely]]
+			{ continue; }
+			throw std::runtime_error{"I/O error"};
+		}
 		if(n_read == 0) { return ptr - std::data(buffer); }
 		offset += n_read;
 		ptr += n_read;
@@ -41,13 +39,11 @@ size_t Wad64::write(FdAdapter fd, std::span<std::byte const> buffer, int64_t off
 		auto const bytes_left = end - ptr;
 		auto const n_written  = ::pwrite(fd.fd, std::data(buffer), bytes_left, offset);
 		if(n_written == -1) [[unlikely]]
-			{
-				if(errno == EAGAIN || errno == EWOULDBLOCK) [[likely]]
-					{
-						continue;
-					}
-				throw std::runtime_error{"I/O error"};
-			}
+		{
+			if(errno == EAGAIN || errno == EWOULDBLOCK) [[likely]]
+			{ continue; }
+			throw std::runtime_error{"I/O error"};
+		}
 
 		if(n_written == 0) { return ptr - std::data(buffer); }
 
@@ -72,7 +68,10 @@ size_t Wad64::write(FdAdapter target, FdAdapter src, int64_t target_offset)
 	{
 		auto const n_written =
 		    copy_file_range(src.fd, &src_offet, target.fd, &target_offset, remaining, 0);
-		if(n_written == -1) { throw std::runtime_error{"I/O error"}; }
+		if(n_written == -1)
+		{
+			throw std::runtime_error{std::string{"I/O error "}.append(std::to_string(errno))};
+		}
 
 		if(n_written == 0) { return src_offet; }
 
@@ -83,9 +82,7 @@ size_t Wad64::write(FdAdapter target, FdAdapter src, int64_t target_offset)
 
 size_t Wad64::size(FdAdapter fd)
 {
-	struct stat statbuf
-	{
-	};
+	struct stat statbuf{};
 
 	fstat(fd.fd, &statbuf);
 	return statbuf.st_size;

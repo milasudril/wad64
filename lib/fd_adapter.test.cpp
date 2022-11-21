@@ -27,10 +27,16 @@ namespace
 		write(fd, std::as_bytes(std::span{content}), 0);
 		close(fd);
 	}
+
+	using ReadFunc  = ssize_t (*)(int, void* buf, size_t count, off_t offset);
+	using WriteFunc = ssize_t (*)(int, void const* buf, size_t count, off_t offset);
+	using WriteFuncFd = ssize_t (*)(int fdIn, loff_t* offIn,  int fdOut, loff_t* offOut, size_t len, unsigned int flags);
+
+	using FailTest = bool (*)();
+
+	constinit FailTest failCopyFileRange = [](){return false;};
 }
 
-using ReadFunc  = ssize_t (*)(int, void* buf, size_t count, off_t offset);
-using WriteFunc = ssize_t (*)(int, void const* buf, size_t count, off_t offset);
 
 extern "C"
 {
@@ -44,6 +50,16 @@ extern "C"
 	{
 		auto real_func = reinterpret_cast<WriteFunc>(dlsym(RTLD_NEXT, "pwrite"));
 		return real_func(fd, buf, std::max(count, static_cast<size_t>(3)), offset);
+	}
+
+	ssize_t copy_file_range(int fdIn, loff_t* offIn,  int fdOut, loff_t* offOut, size_t count, unsigned int flags)
+	{
+		if(failCopyFileRange())
+		{ return -1;}
+
+		auto real_func = reinterpret_cast<WriteFuncFd>(dlsym(RTLD_NEXT, "copy_file_range"));
+
+		return real_func(fdIn, offIn, fdOut, offOut, count, flags);
 	}
 }
 
@@ -255,6 +271,39 @@ namespace Testcases
 		assert(fd.fd != -1);
 		close(fd);
 	}
+
+	void wad64FdAdapterWriteFromFdAdapterKernelTransfer()
+	{
+		failCopyFileRange = [](){return false;};
+
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto filename_a       = test_dir / X_STR(MAIKE_TASKID);
+		filename_a.concat("_a");
+		auto  filename_b       = test_dir / X_STR(MAIKE_TASKID);
+		filename_b.concat("_b");
+		constexpr auto content_sv = std::string_view{"This is a test file"};
+		auto content              = std::string{content_sv};
+
+		fflush(stdout);
+		auto fd_a = open(filename_a.c_str(),
+				Wad64::IoMode::AllowWrite().allowRead(),
+				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
+		assert(fd_a.fd != -1);
+		write(fd_a, std::as_bytes(std::span{content}), 0);
+
+		auto fd_b = open(filename_b.c_str(),
+				Wad64::IoMode::AllowWrite(),
+				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
+		assert(fd_b.fd != -1);
+
+		auto res = write(fd_b, fd_a, 5);
+		assert(res == size(fd_a));
+		assert(size(fd_b) == 5 + size(fd_a));
+
+		close(fd_a);
+		close(fd_b);
+
+	}
 }
 
 int main()
@@ -277,5 +326,7 @@ int main()
 	Testcases::wad64FdAdapterReadCompleted();
 
 	Testcases::wad64FdAdapterCreateTempFile();
+
+	Testcases::wad64FdAdapterWriteFromFdAdapterKernelTransfer();
 	return 0;
 }
