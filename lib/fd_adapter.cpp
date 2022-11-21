@@ -60,6 +60,25 @@ Wad64::FdAdapter Wad64::open(char const* filename, IoMode io_mode, FileCreationM
 	return FdAdapter{::open(filename, flags, S_IRUSR | S_IWUSR)};
 }
 
+
+size_t Wad64::writeThroughUserSpace(FdAdapter target, FdAdapter src, int64_t target_offset)
+{
+	std::array<std::byte, 65536> buffer{};
+
+	size_t src_offset = 0;
+	auto const src_size = size(src);
+	while(src_offset != src_size)
+	{
+		puts("Hej");
+		auto const bytes_read = read(src, buffer, src_offset);
+		auto const bytes_written = write(target, std::span{std::data(buffer), bytes_read}, target_offset);
+		src_offset += bytes_written;
+		target_offset += bytes_written;
+	}
+
+	return src_offset;
+}
+
 size_t Wad64::write(FdAdapter target, FdAdapter src, int64_t target_offset)
 {
 	loff_t src_offset = 0;
@@ -70,8 +89,7 @@ size_t Wad64::write(FdAdapter target, FdAdapter src, int64_t target_offset)
 		    copy_file_range(src.fd, &src_offset, target.fd, &target_offset, remaining, 0);
 		if(n_written == -1) [[unlikely]]
 		{
-			// FIXME: Fallback to copy through user-space
-			abort();
+			return writeThroughUserSpace(target, src, target_offset);
 		}
 
 		remaining -= n_written;

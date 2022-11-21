@@ -389,6 +389,48 @@ namespace Testcases
 		close(fd_a);
 		close(fd_b);
 	}
+
+	void wad64FdAdapterWriteFromFdAdapterFailKernelTransfer()
+	{
+		failCopyFileRange = [](){return true;};
+
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto filename_a       = test_dir / X_STR(MAIKE_TASKID);
+		filename_a.concat("_a");
+		auto  filename_b       = test_dir / X_STR(MAIKE_TASKID);
+		filename_b.concat("_b");
+		constexpr auto content_sv = std::string_view{"This is a test file"};
+		auto content              = std::string{content_sv};
+
+		fflush(stdout);
+		auto fd_a = open(filename_a.c_str(),
+				Wad64::IoMode::AllowWrite().allowRead(),
+				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
+		unlink(filename_a.c_str());
+		assert(fd_a.fd != -1);
+		write(fd_a, std::as_bytes(std::span{content}), 0);
+
+		auto fd_b = open(filename_b.c_str(),
+				Wad64::IoMode::AllowWrite().allowRead(),
+				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
+		unlink(filename_b.c_str());
+		assert(fd_b.fd != -1);
+
+		auto res = write(fd_b, fd_a, 5);
+		assert(res == size(fd_a));
+		assert(size(fd_b) == 5 + size(fd_a));
+
+		close(fd_a);
+
+		std::array<char, std::size(content_sv)> buffer;
+
+		auto n = read(fd_b, std::as_writable_bytes(std::span{buffer}), 0);
+		assert(n == std::size(content_sv));
+		assert((std::equal(std::begin(buffer) + 5,
+		                   std::end(buffer),
+		                   std::begin(content_sv))));
+		close(fd_b);
+	}
 }
 
 int main()
@@ -415,5 +457,6 @@ int main()
 	Testcases::wad64FdAdapterWriteFromFdEmptyFile();
 	Testcases::wad64FdAdapterWriteFromFdAdapterKernelTransfer();
 	Testcases::wad64FdAdapterWriteFromFdAdapterKernelTransferFailSecondWrite();
+	Testcases::wad64FdAdapterWriteFromFdAdapterFailKernelTransfer();
 	return 0;
 }

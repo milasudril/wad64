@@ -28,6 +28,8 @@ namespace Wad64
 
 	size_t write(FdAdapter target, FdAdapter src, int64_t target_offset);
 
+	size_t writeThroughUserSpace(FdAdapter target, FdAdapter src, int64_t target_offset);
+
 	size_t size(FdAdapter fd);
 
 	inline void close(FdAdapter fd) { ::close(fd.fd); }
@@ -43,5 +45,6 @@ namespace Wad64
 	{
 		[[maybe_unused]] auto dummy = ftruncate(fd.fd, size);
 	}
+
 }
 #endif
