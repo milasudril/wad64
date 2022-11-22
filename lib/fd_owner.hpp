@@ -68,8 +68,10 @@ namespace Wad64
 		return write(target.get(), src, target_offset);
 	}
 
-	inline void truncate(FdOwner const& fd, int64_t f) { return truncate(fd.get(), f); }
+	inline void truncate(FdOwner const& owner, int64_t f) { return truncate(owner.get(), f); }
 
 	inline size_t size(FdOwner const& owner) { return size(owner.get()); }
+
+	inline auto getPath(FdOwner const& owner) { return getPath(owner.get()); }
 }
 #endif

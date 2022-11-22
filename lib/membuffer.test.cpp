@@ -7,6 +7,7 @@
 #include <algorithm>
 
 static_assert(Wad64::RandomAccessFile<Wad64::MemBuffer>);
+static_assert(!Wad64::DiskFile<Wad64::MemBuffer>);
 
 namespace Testcases
 {

@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <span>
 #include <functional>
+#include <optional>
 
 namespace Wad64
 {
@@ -36,12 +37,21 @@ namespace Wad64
 		->std::same_as<void>;
 	};
 
+	template<class T>
+	concept DiskFile = RandomAccessFile<T> && requires(T a)
+	{
+		{
+			getPath(a)
+		}
+		-> std::same_as<std::filesystem::path>;
+	};
+
 	namespace detail
 	{
 		template<RandomAccessFile File>
-		auto read(void* handle, std::span<std::byte> buffer, int64_t offset)
+		auto read(void const* handle, std::span<std::byte> buffer, int64_t offset)
 		{
-			return read(*static_cast<File*>(handle), buffer, offset);
+			return read(*static_cast<File const*>(handle), buffer, offset);
 		}
 
 		template<RandomAccessFile File>
@@ -61,6 +71,19 @@ namespace Wad64
 		{
 			truncate(*static_cast<File*>(handle), new_size);
 		}
+
+		template<DiskFile File>
+		std::optional<std::filesystem::path> get_path(void const* handle)
+		{
+			return getPath(*static_cast<File const*>(handle));
+		}
+
+		template<RandomAccessFile File>
+		requires (!DiskFile<File>)
+		std::optional<std::filesystem::path> get_path(void const*)
+		{
+			return std::nullopt;
+		}
 	}
 
 	class FileReference
@@ -73,6 +96,7 @@ namespace Wad64
 		    , m_write{detail::write<File>}
 		    , m_truncate{detail::truncate<File>}
 		    , m_write_from_fd{detail::write_from_fd<File>}
+		    , m_get_path(detail::get_path<File>)
 		{
 		}
 
@@ -92,12 +116,15 @@ namespace Wad64
 
 		void truncate(int64_t new_size) { m_truncate(m_ref, new_size); }
 
+		std::optional<std::filesystem::path> getPath() const { return m_get_path(m_ref); }
+
 	private:
 		void* m_ref;
-		size_t (*m_read)(void*, std::span<std::byte>, int64_t offset);
+		size_t (*m_read)(void const*, std::span<std::byte>, int64_t offset);
 		size_t (*m_write)(void*, std::span<std::byte const>, int64_t offset);
 		void (*m_truncate)(void*, int64_t new_size);
 		size_t (*m_write_from_fd)(void*, FdAdapter, int64_t);
+		std::optional<std::filesystem::path> (*m_get_path)(void const*);
 	};
 }
 
