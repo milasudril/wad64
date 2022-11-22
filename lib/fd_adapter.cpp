@@ -55,8 +55,7 @@ size_t Wad64::write(FdAdapter fd, std::span<std::byte const> buffer, int64_t off
 
 Wad64::FdAdapter Wad64::open(char const* filename, IoMode io_mode, FileCreationMode creation_mode)
 {
-	auto const flags =
-	    O_CLOEXEC | fdFlags(io_mode) | (io_mode.writeAllowed() ? fdFlags(creation_mode) : 0);
+	auto const flags = fdFlags(io_mode) | (io_mode.writeAllowed() ? fdFlags(creation_mode) : 0);
 	return FdAdapter{::open(filename, flags, S_IRUSR | S_IWUSR)};
 }
 
@@ -69,7 +68,6 @@ size_t Wad64::writeThroughUserSpace(FdAdapter target, FdAdapter src, int64_t tar
 	auto const src_size = size(src);
 	while(src_offset != src_size)
 	{
-		puts("Hej");
 		auto const bytes_read = read(src, buffer, src_offset);
 		auto const bytes_written = write(target, std::span{std::data(buffer), bytes_read}, target_offset);
 		src_offset += bytes_written;
@@ -89,6 +87,7 @@ size_t Wad64::write(FdAdapter target, FdAdapter src, int64_t target_offset)
 		    copy_file_range(src.fd, &src_offset, target.fd, &target_offset, remaining, 0);
 		if(n_written == -1) [[unlikely]]
 		{
+			fprintf(stderr, "Wad64: Fallback to write through user-space\n");
 			return writeThroughUserSpace(target, src, target_offset);
 		}
 
@@ -118,4 +117,9 @@ size_t Wad64::size(FdAdapter fd)
 
 	fstat(fd.fd, &statbuf);
 	return statbuf.st_size;
+}
+
+std::filesystem::path Wad64::getPath(FdAdapter fd)
+{
+	return read_symlink(std::filesystem::path{"/proc/self/fd"}.append(std::to_string(fd.fd)));
 }

@@ -431,6 +431,61 @@ namespace Testcases
 		                   std::begin(content_sv))));
 		close(fd_b);
 	}
+
+	void wad64FdAdapterGetPath()
+	{
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto const filename       = test_dir / X_STR(MAIKE_TASKID);
+
+		auto fd = open(filename.c_str()
+		    , Wad64::IoMode::AllowWrite(), Wad64::FileCreationMode::AllowCreation());
+
+		assert(fd.fd != -1);
+		auto path = getPath(fd);
+		assert(path == absolute(filename));
+		close(fd);
+		(void)unlink(filename.c_str());
+	}
+
+	void wad64FdAdapterGetPathOfTempFile()
+	{
+		auto fd = Wad64::createTempFile("/tmp");
+
+		assert(fd.fd != -1);
+		auto path = getPath(fd);
+		assert(path.parent_path() == "/tmp");
+
+		close(fd);
+	}
+
+	void wad64FdAdapterGetPathOfThroughSymlink()
+	{
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto filename_a       = test_dir / X_STR(MAIKE_TASKID);
+		filename_a.concat("_a");
+		auto  filename_b       = test_dir / X_STR(MAIKE_TASKID);
+		filename_b.concat("_b");
+
+		auto fd_a = open(filename_a.c_str()
+		    , Wad64::IoMode::AllowWrite(), Wad64::FileCreationMode::AllowCreation());
+
+		assert(fd_a.fd != -1);
+		assert(getPath(fd_a) == absolute(filename_a));
+		assert(symlink(filename_a.c_str(), filename_b.c_str()) != - 1);
+
+		auto fd_b = open(filename_a.c_str()
+		    , Wad64::IoMode::AllowRead(), Wad64::FileCreationMode::DontCare());
+
+		assert(getPath(fd_a) == getPath(fd_b));
+
+		assert(fd_b.fd != -1);
+
+		close(fd_a);
+		close(fd_b);
+
+		unlink(filename_a.c_str());
+		unlink(filename_b.c_str());
+	}
 }
 
 int main()
@@ -458,5 +513,10 @@ int main()
 	Testcases::wad64FdAdapterWriteFromFdAdapterKernelTransfer();
 	Testcases::wad64FdAdapterWriteFromFdAdapterKernelTransferFailSecondWrite();
 	Testcases::wad64FdAdapterWriteFromFdAdapterFailKernelTransfer();
+
+	Testcases::wad64FdAdapterGetPath();
+ 	Testcases::wad64FdAdapterGetPathOfTempFile();
+	Testcases::wad64FdAdapterGetPathOfThroughSymlink();
+
 	return 0;
 }

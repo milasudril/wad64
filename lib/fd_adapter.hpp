@@ -10,6 +10,7 @@
 
 #include <cstdint>
 #include <span>
+#include <filesystem>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -46,5 +47,6 @@ namespace Wad64
 		[[maybe_unused]] auto dummy = ftruncate(fd.fd, size);
 	}
 
+	std::filesystem::path getPath(FdAdapter fd);
 }
 #endif
