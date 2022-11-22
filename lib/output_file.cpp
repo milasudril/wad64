@@ -5,10 +5,21 @@
 #include "./output_file.hpp"
 #include "./archive_error.hpp"
 
+namespace
+{
+	std::filesystem::path gen_temp_path(std::optional<std::filesystem::path> const& path)
+	{
+		if(path.has_value())
+		{ return path->parent_path(); }
+
+		return std::filesystem::path{"/tmp"};
+	}
+}
+
 Wad64::OutputFile::OutputFile(std::reference_wrapper<Archive> archive,
                               std::string_view filename,
                               FileCreationMode mode)
-    : m_tmp_file{"/tmp", FdOwner::TempFile{}}
+    : m_tmp_file{gen_temp_path(archive.get().getPath()).c_str(), FdOwner::TempFile{}}
     , m_write_offset{0}
     , m_range{0, 0}
     , m_archive{archive}

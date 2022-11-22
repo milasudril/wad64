@@ -6,10 +6,14 @@
 
 #include "./membuffer.hpp"
 #include "./file_structs.hpp"
+
 #include <cassert>
 #include <algorithm>
 #include <random>
 #include <cstring>
+
+#define X_STR(s) STR(s)
+#define STR(s) #s
 
 namespace
 {
@@ -124,7 +128,7 @@ namespace Testcases
 		assert(archive.stat("New file").has_value());
 	}
 
-	void wad64OoutputFileWrite()
+	void wad64OutputFileWrite()
 	{
 		auto data           = generateData();
 		auto const data_old = data.data;
@@ -155,6 +159,26 @@ namespace Testcases
 			assert(item->end - item->begin == strlen("This is a foobar"));
 		}
 	}
+
+	void wad64OutputFileCreationAllowedFileDoesNotExistArchiveOnDisk()
+	{
+		auto const test_dir = std::filesystem::path{MAIKE_BUILDINFO_TARGETDIR};
+		auto archive_file       = test_dir / X_STR(MAIKE_TASKID);
+
+		{
+			Wad64::FdOwner file{archive_file.c_str(),
+				Wad64::IoMode::AllowWrite().allowRead(),
+				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation()};
+			Wad64::Archive archive{std::ref(file)};
+
+			assert(archive.getPath() == absolute(archive_file));
+
+			Wad64::OutputFile output{archive, "New file", Wad64::FileCreationMode::AllowCreation()};
+			assert(archive.stat("New file").has_value());
+		}
+
+		(void)unlink(archive_file.c_str());
+	}
 }
 
 int main()
@@ -165,7 +189,8 @@ int main()
 	Testcases::wad64OutputFileCreationAllowedOverwriteDisallowedFileExists();
 	Testcases::wad64OutputFileCreationAllowedOverwriteAllowedFileExists();
 	Testcases::wad64OutputFileCreationAllowedOverwriteAllowedFileDoesNotExist();
+	Testcases::wad64OutputFileCreationAllowedFileDoesNotExistArchiveOnDisk();
 
-	Testcases::wad64OoutputFileWrite();
+	Testcases::wad64OutputFileWrite();
 	return 0;
 }

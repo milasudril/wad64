@@ -12,6 +12,7 @@
 #include <cstring>
 
 static_assert(Wad64::RandomAccessFile<Wad64::FdAdapter>);
+static_assert(Wad64::DiskFile<Wad64::FdAdapter>);
 
 #define X_STR(s) STR(s)
 #define STR(s) #s
@@ -281,7 +282,6 @@ namespace Testcases
 		auto  filename_b       = test_dir / X_STR(MAIKE_TASKID);
 		filename_b.concat("_b");
 
-		fflush(stdout);
 		auto fd_a = open(filename_a.c_str(),
 				Wad64::IoMode::AllowWrite().allowRead(),
 				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
@@ -314,7 +314,6 @@ namespace Testcases
 		constexpr auto content_sv = std::string_view{"This is a test file"};
 		auto content              = std::string{content_sv};
 
-		fflush(stdout);
 		auto fd_a = open(filename_a.c_str(),
 				Wad64::IoMode::AllowWrite().allowRead(),
 				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
@@ -363,8 +362,6 @@ namespace Testcases
 		filename_b.concat("_b");
 		constexpr auto content_sv = std::string_view{"This is a test file"};
 		auto content              = std::string{content_sv};
-
-		fflush(stdout);
 		auto fd_a = open(filename_a.c_str(),
 				Wad64::IoMode::AllowWrite().allowRead(),
 				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());
@@ -402,7 +399,6 @@ namespace Testcases
 		constexpr auto content_sv = std::string_view{"This is a test file"};
 		auto content              = std::string{content_sv};
 
-		fflush(stdout);
 		auto fd_a = open(filename_a.c_str(),
 				Wad64::IoMode::AllowWrite().allowRead(),
 				Wad64::FileCreationMode::AllowOverwriteWithTruncation().allowCreation());

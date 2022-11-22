@@ -108,6 +108,9 @@ namespace Wad64
 
 		Directory const& directory() const { return m_directory; }
 
+		std::optional<std::filesystem::path> getPath() const
+		{ return m_file_ref.getPath(); }
+
 	private:
 		Directory m_directory;
 		FileReference m_file_ref;
