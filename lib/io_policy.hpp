@@ -84,6 +84,25 @@ namespace Wad64
 		{
 			return std::nullopt;
 		}
+
+		struct file_reference_vtable
+		{
+			size_t (*read)(void const*, std::span<std::byte>, int64_t offset);
+			size_t (*write)(void*, std::span<std::byte const>, int64_t offset);
+			size_t (*write_from_fd)(void*, FdAdapter, int64_t);
+			void (*truncate)(void*, int64_t new_size);
+			std::optional<std::filesystem::path> (*get_path)(void const*);
+		};
+
+		template<RandomAccessFile File>
+		inline constexpr file_reference_vtable file_ref_vtable
+		{
+			read<File>,
+			write<File>,
+			write_from_fd<File>,
+			truncate<File>,
+			get_path<File>
+		};
 	}
 
 	class FileReference
@@ -92,39 +111,35 @@ namespace Wad64
 		template<RandomAccessFile File>
 		explicit FileReference(std::reference_wrapper<File> file)
 		    : m_ref{&file.get()}
-		    , m_read{detail::read<File>}
-		    , m_write{detail::write<File>}
-		    , m_truncate{detail::truncate<File>}
-		    , m_write_from_fd{detail::write_from_fd<File>}
-		    , m_get_path(detail::get_path<File>)
+		    , m_vt{std::ref(detail::file_ref_vtable<File>)}
 		{
 		}
 
 		size_t read(std::span<std::byte> buffer, int64_t offset) const
 		{
-			return m_read(m_ref, buffer, offset);
+			return m_vt.get().read(m_ref, buffer, offset);
 		}
 
 		size_t write(std::span<std::byte const> buffer, int64_t offset) const
 		{
-			return m_write(m_ref, buffer, offset);
+			return m_vt.get().write(m_ref, buffer, offset);
 		}
 
-		size_t write(FdAdapter src, int64_t offset) { return m_write_from_fd(m_ref, src, offset); }
+		size_t write(FdAdapter src, int64_t offset) const
+		{ return m_vt.get().write_from_fd(m_ref, src, offset); }
 
-		void* handle() const { return m_ref; }
+		void truncate(int64_t new_size) const
+		{ m_vt.get().truncate(m_ref, new_size); }
 
-		void truncate(int64_t new_size) { m_truncate(m_ref, new_size); }
+		std::optional<std::filesystem::path> getPath() const
+		{ return m_vt.get().get_path(m_ref); }
 
-		std::optional<std::filesystem::path> getPath() const { return m_get_path(m_ref); }
+		void* handle() const
+		{ return m_ref; }
 
 	private:
 		void* m_ref;
-		size_t (*m_read)(void const*, std::span<std::byte>, int64_t offset);
-		size_t (*m_write)(void*, std::span<std::byte const>, int64_t offset);
-		void (*m_truncate)(void*, int64_t new_size);
-		size_t (*m_write_from_fd)(void*, FdAdapter, int64_t);
-		std::optional<std::filesystem::path> (*m_get_path)(void const*);
+		std::reference_wrapper<detail::file_reference_vtable const> m_vt;
 	};
 }
 
