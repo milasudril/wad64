@@ -1,0 +1,4 @@
+{
+	"target":{"name":"wad64py.so"}
+	,"dependencies":[{"ref":"./wad64py.o", "rel":"implementation"}]
+}
