@@ -1,0 +1,78 @@
+{
+  "maikeconfig": {
+    "dir_compiler": {
+      "config": {},
+      "recipe": "make_directory.py",
+      "use_get_tags": 0
+    },
+    "source_file_info_loaders": {
+			"app":
+			{
+				"compiler":
+				{
+					"config":
+					{
+						"cflags":["-g", "-O3"]
+					}
+				}
+			},
+      "dll": {
+        "compiler": {
+          "config": {
+            "cflags": [
+              "-g",
+              "-O3",
+              "-shared"
+            ]
+          },
+          "recipe": "cxx_linker.py",
+          "use_get_tags": 0
+        },
+        "config": {},
+        "loader": "app"
+      },
+      "cxx": {
+        "compiler": {
+          "config": {
+            "cflags": [
+              "-fpic"
+            ]
+          },
+          "recipe": "cxx_compiler.py",
+          "use_get_tags": 0
+        },
+        "config": {},
+        "loader": "cxx_src_loader"
+      },
+      "cxx_test": {
+        "compiler": {
+          "config": {
+            "actions": [
+              "link",
+              "run"
+            ],
+            "iquote": [
+              "."
+            ],
+            "std_revision": {
+              "min": "c++20"
+            }
+          },
+          "recipe": "cxx_compiler.py",
+          "use_get_tags": 0
+        },
+        "config": {},
+        "loader": "cxx_src_loader"
+      }
+    },
+    "source_tree_loader": {
+      "file_info_loaders": {
+        ".dll.maikerule": "dll"
+      },
+      "fullpath_input_filter": [
+      ],
+      "input_filter": [
+      ]
+    }
+  }
+}

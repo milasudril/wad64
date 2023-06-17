@@ -1,5 +1,8 @@
-.PHONY: release
+.PHONY: all
+all: release dynlib
 
+.PHONY: release
+.PHONY: dynlib
 .PHONY: debug
 .PHONY: clean
 .PHONY: coverage
@@ -8,6 +11,9 @@
 
 release:
 	maike2 --configfiles=maikeconfig2.json,maikeconfig2-rel.json --target-dir=__targets_rel
+
+dynlib:
+	maike2 --configfiles=maikeconfig2.json,maikeconfig-dynlib.json --target-dir=__targets_dynlib
 
 debug:
 	maike2 --configfiles=maikeconfig2.json,maikeconfig2-dbg.json --target-dir=__targets_dbg
@@ -30,13 +36,13 @@ install: release make_pkgconfig.sh
 	mkdir -p $(DESTDIR)$(PREFIX)/include/wad64
 	mkdir -p $(DESTDIR)$(PREFIX)/lib
 	mkdir -p $(DESTDIR)$(PREFIX)/lib/pkgconfig
-	mkdir -p $(DESTDIR)$(PREFIX)/man/man1
-	mkdir -p $(DESTDIR)$(PREFIX)/man/man5
+	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man1
+	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man5
 	mkdir -p $(DESTDIR)$(PREFIX)/share/mime/packages
 	mkdir -p $(DESTDIR)$(PREFIX)/share/thumbnailers
 	cp __targets_rel/bin/wad64 $(DESTDIR)$(PREFIX)/bin/wad64
-	cp bin/wad64.1.man $(DESTDIR)$(PREFIX)/man/man1/wad64.1
-	cp doc/wad64.5.man $(DESTDIR)$(PREFIX)/man/man5/wad64.5
+	cp bin/wad64.1.man $(DESTDIR)$(PREFIX)/share/man/man1/wad64.1
+	cp doc/wad64.5.man $(DESTDIR)$(PREFIX)/share/man/man5/wad64.5
 	cp __targets_rel/lib/libwad64.a $(DESTDIR)$(PREFIX)/lib/libwad64.a
 	cd lib && find -name '*.hpp' \
 	    | while read in; do grep -v '^//@' "$$in" \
