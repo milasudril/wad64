@@ -22,6 +22,12 @@ class Archive:
 	def insert_file(self, file_creation_mode, src_name, dest_name):
 		wad64py.insert_file(self.handle, file_creation_mode, src_name, dest_name)
 
+	def remove_file(self, filename):
+		wad64py.remove_file(self.handle, filename)
+
+	def wipe_file(self, filename):
+		wad64py.wipe_file(self.handle, filename)
+
 if __name__ == '__main__':
 	with Archive(path = 'test.wad64', io_mode = 'rw', file_creation_mode = 'cot') as archive:
 		archive.insert_file('toc', '/etc/fstab', 'fstab')

@@ -147,13 +147,63 @@ namespace
 		return Py_None;
 	}
 
-	constinit std::array<PyMethodDef, 6> method_table
+	PyObject* remove_file(PyObject*, PyObject* args)
+	{
+		PyObject* obj{};
+		char const* filename{};
+
+		assert(PyArg_ParseTuple(args, "Os", &obj, &filename));
+
+		auto const obj_ptr = PyLong_AsVoidPtr(obj);
+		assert(obj_ptr != nullptr);
+		auto& archive = *reinterpret_cast<Archive*>(obj_ptr);
+
+		try
+		{
+			archive.archive.remove(filename);
+		}
+		catch(std::exception const& err)
+		{
+			PyErr_SetString(PyExc_RuntimeError, err.what());
+			return nullptr;
+		}
+
+		return Py_None;
+	}
+
+	PyObject* wipe_file(PyObject*, PyObject* args)
+	{
+		PyObject* obj{};
+		char const* filename{};
+
+		assert(PyArg_ParseTuple(args, "Os", &obj, &filename));
+
+		auto const obj_ptr = PyLong_AsVoidPtr(obj);
+		assert(obj_ptr != nullptr);
+		auto& archive = *reinterpret_cast<Archive*>(obj_ptr);
+
+		try
+		{
+			archive.archive.secureRemove(filename);
+		}
+		catch(std::exception const& err)
+		{
+			PyErr_SetString(PyExc_RuntimeError, err.what());
+			return nullptr;
+		}
+
+		return Py_None;
+	}
+
+	constinit std::array<PyMethodDef, 8> method_table
 	{
 		PyMethodDef{"open_archive_from_path", open_archive_from_path, METH_VARARGS, ""},
 		PyMethodDef{"close_archive", close_archive, METH_VARARGS, ""},
 		PyMethodDef{"list_archive", list_archive, METH_VARARGS, ""},
 		PyMethodDef{"extract_file", extract_file, METH_VARARGS, ""},
 		PyMethodDef{"insert_file", insert_file, METH_VARARGS, ""},
+		PyMethodDef{"remove_file", remove_file, METH_VARARGS, ""},
+		PyMethodDef{"wipe_file", wipe_file, METH_VARARGS, ""},
 		PyMethodDef{nullptr, nullptr, 0, nullptr}
 	};
 
