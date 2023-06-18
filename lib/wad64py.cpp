@@ -18,12 +18,10 @@ namespace
 		explicit Archive(char const* path, FileArgs&&... file_args):
 			file{path, std::forward<FileArgs>(file_args)...},
 			archive{Wad64::FileReference{std::ref(file)}}
-		{
-			printf("created %p\n", this);
-		}
+		{}
 
 		~Archive()
-		{ printf("destroyed %p\n", this); }
+		{ }
 
 		Wad64::FdOwner file;
 		Wad64::Archive archive;
