@@ -40,6 +40,7 @@ install: release make_pkgconfig.sh
 	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man5
 	mkdir -p $(DESTDIR)$(PREFIX)/share/mime/packages
 	mkdir -p $(DESTDIR)$(PREFIX)/share/thumbnailers
+	mkdir -p $(DESTDIR)$(PREFIX)/lib/python3/dist-packages
 	cp __targets_rel/bin/wad64 $(DESTDIR)$(PREFIX)/bin/wad64
 	cp bin/wad64.1.man $(DESTDIR)$(PREFIX)/share/man/man1/wad64.1
 	cp doc/wad64.5.man $(DESTDIR)$(PREFIX)/share/man/man5/wad64.5
@@ -48,6 +49,8 @@ install: release make_pkgconfig.sh
 	    | while read in; do grep -v '^//@' "$$in" \
 	    > $(DESTDIR)$(PREFIX)/include/wad64/$$in; done
 	cp xdg/application-x-wad64.xml $(DESTDIR)$(PREFIX)/share/mime/packages
+	cp __targets_dynlib/lib/wad64py.so $(DESTDIR)$(PREFIX)/lib/python3/dist-packages/
+	cp lib/wad64.py $(DESTDIR)$(PREFIX)/lib/python3/dist-packages/
 
 	./make_pkgconfig.sh $(PREFIX) $(DESTDIR)$(PREFIX)/lib/pkgconfig/wad64.pc
 	./make_thumbnailer.sh $(PREFIX) $(DESTDIR)$(PREFIX)/share/thumbnailers/wad64.thumbnailer
