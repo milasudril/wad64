@@ -22,6 +22,9 @@ class Archive:
 	def insert_file(self, file_creation_mode, src_name, dest_name):
 		wad64py.insert_file(self.handle, file_creation_mode, src_name, dest_name)
 
+	def insert_data(self, file_creation_mode, src_data, dest_name):
+		wad64py.insert_data(self.handle, file_creation_mode, src_data, dest_name)
+
 	def remove_file(self, filename):
 		wad64py.remove_file(self.handle, filename)
 

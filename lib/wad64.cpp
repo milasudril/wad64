@@ -105,6 +105,22 @@ void Wad64::insert(Archive& archive,
 }
 
 void Wad64::insert(Archive& archive,
+	                FileCreationMode mode,
+	                std::span<std::byte const> data,
+	                std::string_view name)
+{
+	auto bytes_left = std::size(data);
+	auto ptr = std::data(data);
+	OutputFile file_out{archive, name, mode};
+	while(bytes_left != 0)
+	{
+		auto const bytes_written = write(file_out, std::span{ptr, bytes_left});
+		bytes_left -= bytes_written;
+		ptr += bytes_written;
+	}
+}
+
+void Wad64::insert(Archive& archive,
                    FileCreationMode mode,
                    std::span<std::pair<std::filesystem::path, std::string> const> names,
                    BeginsWith name)
