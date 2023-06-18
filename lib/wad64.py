@@ -16,9 +16,12 @@ class Archive:
 	def ls(self):
 		return wad64py.list_archive(self.handle)
 
-	def extract(self, file_creation_mode, src_name ,dest_name):
+	def extract_file(self, file_creation_mode, src_name ,dest_name):
 		wad64py.extract_file(self.handle, file_creation_mode, src_name, dest_name)
 
+	def insert_file(self, file_creation_mode, src_name, dest_name):
+		wad64py.insert_file(self.handle, file_creation_mode, src_name, dest_name)
+
 if __name__ == '__main__':
-	with Archive(path = 'test.wad64', io_mode = 'rw', file_creation_mode = 'co') as archive:
-		archive.extract('cot', 'lib/archive.hpp', '/tmp/test.hpp')
+	with Archive(path = 'test.wad64', io_mode = 'rw', file_creation_mode = 'cot') as archive:
+		archive.insert_file('toc', '/etc/fstab', 'fstab')

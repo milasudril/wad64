@@ -118,12 +118,42 @@ namespace
 		return Py_None;
 	}
 
-	constinit std::array<PyMethodDef, 5> method_table
+	PyObject* insert_file(PyObject*, PyObject* args)
+	{
+		PyObject* obj{};
+		char const* file_creation_mode_str{};
+		char const* src_name{};
+		char const* dest_name{};
+
+		assert(PyArg_ParseTuple(args, "Osss", &obj, &file_creation_mode_str, &src_name, &dest_name));
+
+		auto const obj_ptr = PyLong_AsVoidPtr(obj);
+		assert(obj_ptr != nullptr);
+		auto& archive = *reinterpret_cast<Archive*>(obj_ptr);
+
+		try
+		{
+			auto const file_creation_mode = fromString(std::type_identity<Wad64::FileCreationMode>{},
+				file_creation_mode_str
+			);
+			insert(archive.archive, file_creation_mode, src_name, dest_name);
+		}
+		catch(std::exception const& err)
+		{
+			PyErr_SetString(PyExc_RuntimeError, err.what());
+			return nullptr;
+		}
+
+		return Py_None;
+	}
+
+	constinit std::array<PyMethodDef, 6> method_table
 	{
 		PyMethodDef{"open_archive_from_path", open_archive_from_path, METH_VARARGS, ""},
 		PyMethodDef{"close_archive", close_archive, METH_VARARGS, ""},
 		PyMethodDef{"list_archive", list_archive, METH_VARARGS, ""},
 		PyMethodDef{"extract_file", extract_file, METH_VARARGS, ""},
+		PyMethodDef{"insert_file", insert_file, METH_VARARGS, ""},
 		PyMethodDef{nullptr, nullptr, 0, nullptr}
 	};
 
