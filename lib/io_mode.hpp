@@ -6,6 +6,8 @@
 #define WAD64_LIB_IOMODE_HPP
 
 #include <fcntl.h>
+#include <stdexcept>
+#include <array>
 
 namespace Wad64
 {
@@ -32,6 +34,12 @@ namespace Wad64
 
 		constexpr bool writeAllowed() const { return m_flags & AllowWriteFlag; }
 
+		constexpr auto bits() const { return m_flags; }
+
+		constexpr bool operator==(IoMode const&) const = default;
+
+		constexpr bool operator!=(IoMode const&) const = default;
+
 	private:
 		constexpr explicit IoMode(unsigned int flags): m_flags{flags} {}
 
@@ -47,6 +55,53 @@ namespace Wad64
 		{
 			return O_WRONLY;
 		}
+	}
+
+	inline constexpr std::array<char const*, 8> IoModeStrings = {
+		"",
+		"r",
+		"w",
+		"rw"
+	};
+
+	constexpr char const* to_string(IoMode mode)
+	{
+		auto const bits = mode.bits();
+		return IoModeStrings[bits];
+	}
+
+	constexpr IoMode fromString(std::type_identity<IoMode>, char const* string)
+	{
+		auto ptr = string;
+
+		auto ret = [](char first_char) {
+			switch(first_char)
+			{
+				case 'r':
+					return IoMode::AllowRead();
+				case 'w':
+					return IoMode::AllowWrite();
+				default:
+					throw std::runtime_error{"Invalid IoMode"};
+			}
+		}(*ptr);
+		++ptr;
+
+		while(*ptr != '\0')
+		{
+			switch(*ptr)
+			{
+				case 'r':
+					ret.allowRead();
+					break;
+
+				case 'c':
+					ret.allowWrite();
+					break;
+			}
+			++ptr;
+		}
+		return ret;
 	}
 }
 #endif

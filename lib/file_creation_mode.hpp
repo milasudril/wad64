@@ -116,7 +116,7 @@ namespace Wad64
 	{
 		auto ret = FileCreationMode::DontCare();
 		auto ptr = string;
-		while(*ptr != 0)
+		while(*ptr != '\0')
 		{
 			switch(*ptr)
 			{
