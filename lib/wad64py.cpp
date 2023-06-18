@@ -76,14 +76,17 @@ namespace
 		auto& archive = get_archive_ref(args);
 		auto& content = archive.archive.ls();
 
-//		using Storage = std::map<std::string, DirEntry, std::less<>>;
+		auto ret = PyDict_New();
 
 		for(auto& item : content)
 		{
-			printf("%s\t%zu\t%zu\n", item.first.c_str(), item.second.begin, item.second.end);
+			auto tup = PyTuple_New(2);
+			PyTuple_SET_ITEM(tup, 0, PyLong_FromSsize_t(item.second.begin));
+			PyTuple_SET_ITEM(tup, 1, PyLong_FromSsize_t(item.second.end));
+			PyDict_SetItemString(ret, item.first.c_str(), tup);
 		}
 
-		return Py_None;
+		return ret;
 	}
 
 	constinit std::array<PyMethodDef, 4> method_table

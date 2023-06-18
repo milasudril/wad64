@@ -18,4 +18,4 @@ class Archive:
 
 if __name__ == '__main__':
 	with Archive(path = 'test.wad64', io_mode = 'rw', file_creation_mode = 'co') as archive:
-		archive.ls()
+		print(archive.ls())
