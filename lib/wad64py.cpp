@@ -12,35 +12,45 @@
 
 namespace
 {
-	struct ArchiveFileRw
+	struct ArchiveFile
 	{
 		template<class ... FileArgs>
-		explicit ArchiveFileRw(char const* path, FileArgs&&... file_args):
+		explicit ArchiveFile(char const* path, FileArgs&&... file_args):
 			file{path, std::forward<FileArgs>(file_args)...},
 			archive{Wad64::FileReference{std::ref(file)}}
 		{
 			printf("created %p\n", this);
 		}
 
-		~ArchiveFileRw()
+		~ArchiveFile()
 		{ printf("destroyed %p\n", this); }
 
 		Wad64::FdOwner file;
 		Wad64::Archive archive;
 	};
 
-	PyObject* open_file_for_insertion(PyObject*, PyObject* args)
+	PyObject* open_archive_file(PyObject*, PyObject* args)
 	{
 		try
 		{
 			char const* src_file{};
-			if(!PyArg_ParseTuple(args, "s", &src_file))
+			char const* io_mode_str;
+			char const* file_creation_mode_str;
+			if(!PyArg_ParseTuple(args, "sss", &src_file, &io_mode_str, &file_creation_mode_str))
 			{ return nullptr; }
 
+			auto const io_mode = fromString(std::type_identity<Wad64::IoMode>{}, io_mode_str);
+
+			auto const file_creation_mode = fromString(std::type_identity<Wad64::FileCreationMode>{},
+				file_creation_mode_str
+			);
+
+			printf("%s = %x, %s = %x\n", io_mode_str, io_mode.bits(), file_creation_mode_str, file_creation_mode.bits());
+
 			return PyLong_FromVoidPtr(
-				new ArchiveFileRw{src_file,
-					Wad64::IoMode::AllowRead().allowWrite(),
-					Wad64::FileCreationMode::AllowOverwriteWithoutTruncation().allowCreation()
+				new ArchiveFile{src_file,
+					io_mode,
+					file_creation_mode
 				}
 			);
 		}
@@ -53,7 +63,7 @@ namespace
 		return Py_None;
 	}
 
-	PyObject* close_archive_file_rw(PyObject*, PyObject* args)
+	PyObject* close_archive_file(PyObject*, PyObject* args)
 	{
 		PyObject* obj{};
 		if(!PyArg_ParseTuple(args, "O", &obj))
@@ -62,15 +72,15 @@ namespace
 		auto const ptr = PyLong_AsVoidPtr(obj);
 		assert(ptr != nullptr);
 
-		delete reinterpret_cast<ArchiveFileRw*>(ptr);
+		delete reinterpret_cast<ArchiveFile*>(ptr);
 
 		return Py_None;
 	}
 
 	constinit std::array<PyMethodDef, 3> method_table
 	{
-		PyMethodDef{"open_file_for_insertion", open_file_for_insertion, METH_VARARGS, ""},
-		PyMethodDef{"close_archive_file_rw", close_archive_file_rw, METH_VARARGS, ""},
+		PyMethodDef{"open_archive_file", open_archive_file, METH_VARARGS, ""},
+		PyMethodDef{"close_archive_file", close_archive_file, METH_VARARGS, ""},
 		PyMethodDef{nullptr, nullptr, 0, nullptr}
 	};
 

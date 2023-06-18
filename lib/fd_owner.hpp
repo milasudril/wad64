@@ -8,6 +8,8 @@
 #include "./fd_adapter.hpp"
 
 #include <stdexcept>
+#include <cstring>
+#include <cerrno>
 
 namespace Wad64
 {
@@ -19,7 +21,7 @@ namespace Wad64
 		    : m_fd{open(filename, std::forward<Args>(args)...)}
 		{
 			if(m_fd.fd == -1)
-			{ throw std::runtime_error{std::string{"Failed to open file "} + filename}; }
+			{ throw std::runtime_error{std::string{"Failed to open file "} + filename + ": " + strerrordesc_np(errno)}; }
 		}
 
 		struct TempFile

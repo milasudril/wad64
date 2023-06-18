@@ -95,7 +95,7 @@ namespace Wad64
 					ret.allowRead();
 					break;
 
-				case 'c':
+				case 'w':
 					ret.allowWrite();
 					break;
 			}
