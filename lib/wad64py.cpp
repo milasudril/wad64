@@ -54,17 +54,20 @@ namespace
 		return Py_None;
 	}
 
-	PyObject* close_archive(PyObject*, PyObject* args)
+	Archive& get_archive_ref(PyObject* args)
 	{
 		PyObject* obj{};
-		if(!PyArg_ParseTuple(args, "O", &obj))
-		{ return nullptr; }
+		assert(PyArg_ParseTuple(args, "O", &obj));
 
 		auto const ptr = PyLong_AsVoidPtr(obj);
 		assert(ptr != nullptr);
 
-		delete reinterpret_cast<Archive*>(ptr);
+		return *reinterpret_cast<Archive*>(ptr);
+	}
 
+	PyObject* close_archive(PyObject*, PyObject* args)
+	{
+		delete &get_archive_ref(args);
 		return Py_None;
 	}
 
