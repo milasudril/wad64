@@ -7,6 +7,7 @@
 #include <cassert>
 
 #include <cstdio>
+#include <string_view>
 
 namespace Testcases
 {
@@ -65,7 +66,39 @@ namespace Testcases
 		assert(flags == 0);
 	}
 
-	// TODO: Add new tc with truncation
+	void wad64FileCreationModeStringConversion()
+	{
+		std::array<std::string_view, 8> strings{
+			"",
+			"o",
+			"c",
+			"oc",
+			"t",
+			"to",
+			"tc",
+			"toc"
+		};
+
+		std::array<Wad64::FileCreationMode, 8> modes{
+			Wad64::FileCreationMode::DontCare(),
+			Wad64::FileCreationMode::DontCare().allowOverwrite(),
+			Wad64::FileCreationMode::DontCare().allowCreation(),
+			Wad64::FileCreationMode::DontCare().allowCreation().allowOverwrite(),
+			Wad64::FileCreationMode::DontCare().truncate(),
+			Wad64::FileCreationMode::DontCare().allowOverwrite().truncate(),
+			Wad64::FileCreationMode::DontCare().allowCreation().truncate(),
+			Wad64::FileCreationMode::DontCare().allowCreation().allowOverwrite().truncate(),
+
+		};
+
+		for(size_t k = 0; k != 8; ++k)
+		{
+			auto const mode = fromString(std::type_identity<Wad64::FileCreationMode>{}, strings[k].data());
+			assert(mode == modes[k]);
+			auto const str = to_string(mode);
+			assert(str == strings[k]);
+		}
+	}
 }
 
 int main()
@@ -78,5 +111,7 @@ int main()
 	Testcases::wad64FileCreationModeToFdFlagsCreationAllowedOverwriteNotAllowed();
 	Testcases::wad64FileCreationModeToFdFlagsCreationAllowedOverwriteAllowed();
 	Testcases::wad64FileCreationModeToFdFlagsCreationNotAllowed();
+
+	Testcases::wad64FileCreationModeStringConversion();
 	return 0;
 }

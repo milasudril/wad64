@@ -6,6 +6,8 @@
 #define WAD64_LIB_FILECREATIONMODE_HPP
 
 #include <fcntl.h>
+#include <array>
+#include <type_traits>
 
 namespace Wad64
 {
@@ -43,6 +45,18 @@ namespace Wad64
 
 		constexpr bool overwriteAllowed() const { return m_flags & AllowOverwriteFlag; }
 
+		constexpr FileCreationMode& allowOverwrite()
+		{
+			m_flags |= AllowOverwriteFlag;
+			return *this;
+		}
+
+		constexpr FileCreationMode& truncate()
+		{
+			m_flags |= TruncateFlag;
+			return *this;
+		}
+
 		constexpr FileCreationMode& allowCreation()
 		{
 			m_flags |= AllowCreationFlag;
@@ -54,6 +68,9 @@ namespace Wad64
 		constexpr bool truncateExistingFile() const { return m_flags & TruncateFlag; }
 
 		constexpr auto bits() const { return m_flags; }
+
+		constexpr bool operator==(FileCreationMode const&) const = default;
+		constexpr bool operator!=(FileCreationMode const&) const = default;
 
 	private:
 		constexpr explicit FileCreationMode(unsigned int flags): m_flags{flags} {}
@@ -76,6 +93,48 @@ namespace Wad64
 		{
 			return mode.truncateExistingFile() ? O_TRUNC : 0;
 		}
+	}
+
+	inline constexpr std::array<char const*, 8> FileCreationModeStrings = {
+		"",
+		"o",
+		"c",
+		"oc",
+		"t",
+		"to",
+		"tc",
+		"toc"
+	};
+
+	constexpr char const* to_string(FileCreationMode mode)
+	{
+		auto const bits = mode.bits();
+		return FileCreationModeStrings[bits];
+	}
+
+	constexpr FileCreationMode fromString(std::type_identity<FileCreationMode>, char const* string)
+	{
+		auto ret = FileCreationMode::DontCare();
+		auto ptr = string;
+		while(*ptr != 0)
+		{
+			switch(*ptr)
+			{
+				case 'o':
+					ret.allowOverwrite();
+					break;
+
+				case 'c':
+					ret.allowCreation();
+					break;
+
+				case 't':
+					ret.truncate();
+					break;
+			}
+			++ptr;
+		}
+		return ret;
 	}
 }
 #endif
