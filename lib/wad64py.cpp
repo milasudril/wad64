@@ -12,30 +12,30 @@
 
 namespace
 {
-	struct ArchiveFile
+	struct Archive
 	{
 		template<class ... FileArgs>
-		explicit ArchiveFile(char const* path, FileArgs&&... file_args):
+		explicit Archive(char const* path, FileArgs&&... file_args):
 			file{path, std::forward<FileArgs>(file_args)...},
 			archive{Wad64::FileReference{std::ref(file)}}
 		{
 			printf("created %p\n", this);
 		}
 
-		~ArchiveFile()
+		~Archive()
 		{ printf("destroyed %p\n", this); }
 
 		Wad64::FdOwner file;
 		Wad64::Archive archive;
 	};
 
-	PyObject* open_archive_file(PyObject*, PyObject* args)
+	PyObject* open_archive_from_path(PyObject*, PyObject* args)
 	{
 		try
 		{
 			char const* src_file{};
-			char const* io_mode_str;
-			char const* file_creation_mode_str;
+			char const* io_mode_str{};
+			char const* file_creation_mode_str{};
 			if(!PyArg_ParseTuple(args, "sss", &src_file, &io_mode_str, &file_creation_mode_str))
 			{ return nullptr; }
 
@@ -45,14 +45,7 @@ namespace
 				file_creation_mode_str
 			);
 
-			printf("%s = %x, %s = %x\n", io_mode_str, io_mode.bits(), file_creation_mode_str, file_creation_mode.bits());
-
-			return PyLong_FromVoidPtr(
-				new ArchiveFile{src_file,
-					io_mode,
-					file_creation_mode
-				}
-			);
+			return PyLong_FromVoidPtr(new Archive{src_file, io_mode, file_creation_mode});
 		}
 		catch(std::exception const& err)
 		{
@@ -63,7 +56,7 @@ namespace
 		return Py_None;
 	}
 
-	PyObject* close_archive_file(PyObject*, PyObject* args)
+	PyObject* close_archive(PyObject*, PyObject* args)
 	{
 		PyObject* obj{};
 		if(!PyArg_ParseTuple(args, "O", &obj))
@@ -72,15 +65,15 @@ namespace
 		auto const ptr = PyLong_AsVoidPtr(obj);
 		assert(ptr != nullptr);
 
-		delete reinterpret_cast<ArchiveFile*>(ptr);
+		delete reinterpret_cast<Archive*>(ptr);
 
 		return Py_None;
 	}
 
 	constinit std::array<PyMethodDef, 3> method_table
 	{
-		PyMethodDef{"open_archive_file", open_archive_file, METH_VARARGS, ""},
-		PyMethodDef{"close_archive_file", close_archive_file, METH_VARARGS, ""},
+		PyMethodDef{"open_archive_from_path", open_archive_from_path, METH_VARARGS, ""},
+		PyMethodDef{"close_archive", close_archive, METH_VARARGS, ""},
 		PyMethodDef{nullptr, nullptr, 0, nullptr}
 	};
 
