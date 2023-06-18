@@ -32,6 +32,10 @@ namespace Wad64
 	             char const* dest_name);
 
 	void extract(ArchiveView const& archive,
+	             std::string_view src_name,
+	             std::vector<std::byte>& dest);
+
+	void extract(ArchiveView const& archive,
 	             FileCreationMode mode,
 	             std::span<std::pair<std::string, std::filesystem::path> const> names,
 	             BeginsWith name);

@@ -19,6 +19,9 @@ class Archive:
 	def extract_file(self, file_creation_mode, src_name ,dest_name):
 		wad64py.extract_file(self.handle, file_creation_mode, src_name, dest_name)
 
+	def extract_data(self, src_file):
+		return wad64py.extract_data(self.handle, src_file)
+
 	def insert_file(self, file_creation_mode, src_name, dest_name):
 		wad64py.insert_file(self.handle, file_creation_mode, src_name, dest_name)
 

@@ -118,6 +118,33 @@ namespace
 		return Py_None;
 	}
 
+	PyObject* extract_data(PyObject*, PyObject* args)
+	{
+		PyObject* obj{};
+		char const* src_file{};
+
+		assert(PyArg_ParseTuple(args, "Os", &obj, &src_file));
+
+		auto const obj_ptr = PyLong_AsVoidPtr(obj);
+		assert(obj_ptr != nullptr);
+		auto& archive = *reinterpret_cast<Archive*>(obj_ptr);
+
+		try
+		{
+			std::vector<std::byte> buffer{};
+			extract(archive.archive, src_file, buffer);
+
+			return PyBytes_FromStringAndSize(reinterpret_cast<char const*>(std::data(buffer)), std::ssize(buffer));
+		}
+		catch(std::exception const& err)
+		{
+			PyErr_SetString(PyExc_RuntimeError, err.what());
+			return nullptr;
+		}
+
+		return Py_None;
+	}
+
 	PyObject* insert_file(PyObject*, PyObject* args)
 	{
 		PyObject* obj{};
@@ -226,12 +253,13 @@ namespace
 		return Py_None;
 	}
 
-	constinit std::array<PyMethodDef, 9> method_table
+	constinit std::array<PyMethodDef, 10> method_table
 	{
 		PyMethodDef{"open_archive_from_path", open_archive_from_path, METH_VARARGS, ""},
 		PyMethodDef{"close_archive", close_archive, METH_VARARGS, ""},
 		PyMethodDef{"list_archive", list_archive, METH_VARARGS, ""},
 		PyMethodDef{"extract_file", extract_file, METH_VARARGS, ""},
+		PyMethodDef{"extract_data", extract_data, METH_VARARGS, ""},
 		PyMethodDef{"insert_file", insert_file, METH_VARARGS, ""},
 		PyMethodDef{"insert_data", insert_data, METH_VARARGS, ""},
 		PyMethodDef{"remove_file", remove_file, METH_VARARGS, ""},

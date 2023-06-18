@@ -71,6 +71,25 @@ void Wad64::extract(ArchiveView const& archive,
 }
 
 void Wad64::extract(ArchiveView const& archive,
+                    std::string_view src_name,
+                    std::vector<std::byte>& dest)
+{
+	InputFile file_in{archive, src_name};
+	auto buffer = std::make_unique<std::array<std::byte, 0x10000>>();
+
+	auto bytes_left = static_cast<size_t>(file_in.size());
+	dest.reserve(bytes_left);
+
+	while(bytes_left != 0)
+	{
+		auto const n =
+		    read(file_in, std::span{buffer->data(), std::min(buffer->size(), bytes_left)});
+		dest.insert(std::end(dest), buffer->data(), buffer->data() + n);
+		bytes_left -= n;
+	}
+}
+
+void Wad64::extract(ArchiveView const& archive,
                     FileCreationMode mode,
                     std::span<std::pair<std::string, std::filesystem::path> const> names,
                     BeginsWith name)
