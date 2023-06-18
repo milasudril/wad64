@@ -71,10 +71,26 @@ namespace
 		return Py_None;
 	}
 
-	constinit std::array<PyMethodDef, 3> method_table
+	PyObject* list_archive(PyObject*, PyObject* args)
+	{
+		auto& archive = get_archive_ref(args);
+		auto& content = archive.archive.ls();
+
+//		using Storage = std::map<std::string, DirEntry, std::less<>>;
+
+		for(auto& item : content)
+		{
+			printf("%s\t%zu\t%zu\n", item.first.c_str(), item.second.begin, item.second.end);
+		}
+
+		return Py_None;
+	}
+
+	constinit std::array<PyMethodDef, 4> method_table
 	{
 		PyMethodDef{"open_archive_from_path", open_archive_from_path, METH_VARARGS, ""},
 		PyMethodDef{"close_archive", close_archive, METH_VARARGS, ""},
+		PyMethodDef{"list_archive", list_archive, METH_VARARGS, ""},
 		PyMethodDef{nullptr, nullptr, 0, nullptr}
 	};
 

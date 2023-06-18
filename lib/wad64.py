@@ -13,6 +13,9 @@ class Archive:
 	def __exit__(self, type, value, traceback):
 		wad64py.close_archive(self.handle)
 
+	def ls(self):
+		return wad64py.list_archive(self.handle)
+
 if __name__ == '__main__':
 	with Archive(path = 'test.wad64', io_mode = 'rw', file_creation_mode = 'co') as archive:
-		pass
+		archive.ls()
