@@ -168,6 +168,16 @@ namespace Testcases
 		assert(!Wad64::validateFilename("-this filename is not good"));
 	}
 
+	void wad64ValidateFilenameIsSingleDot()
+	{
+		assert(!Wad64::validateFilename("."));
+	}
+
+	void wad64ValidateFilenameIsDoubleDot()
+	{
+		assert(!Wad64::validateFilename(".."));
+	}
+
 	void wad64ValidateFilenameOneCharacter() { assert(Wad64::validateFilename("a")); }
 
 	void wad64ValidateFilenameWin32PathWithDriveLetter()
@@ -182,6 +192,8 @@ namespace Testcases
 		assert(Wad64::validateFilename("foo/bar/kaka"));
 		assert(!Wad64::validateFilename("foo/./bar/kaka"));
 		assert(!Wad64::validateFilename("foo/../bar/kaka"));
+		assert(!Wad64::validateFilename("foo/-in the middle/bar/kaka"));
+		assert(!Wad64::validateFilename("foo/-/bar/kaka"));
 		assert(!Wad64::validateFilename("foo//bar/kaka"));
 		assert(Wad64::validateFilename("foo\\bar\\kaka"));
 		assert(!Wad64::validateFilename("foo\\\\bar\\kaka"));

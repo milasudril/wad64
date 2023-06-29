@@ -47,7 +47,7 @@ namespace
 			auto ch_in = *ptr;
 			auto check = [ptr, ptr_saved]() {
 				auto sv = std::string_view{ptr_saved, ptr};
-				return sv == "." || sv == ".." || sv == "";
+				return sv == "." || sv == ".." || sv == "" || sv[0] == '-';
 			};
 			++ptr;
 			switch(ch_in)
