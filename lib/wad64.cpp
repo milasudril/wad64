@@ -124,6 +124,28 @@ void Wad64::insert(Archive& archive,
 }
 
 void Wad64::insert(Archive& archive,
+                   FileCreationMode mode,
+                   ArchiveView const& src_archive,
+                   std::string_view src_name,
+                   std::string_view dest_name)
+{
+	InputFile file_in{src_archive, src_name};
+	OutputFile file_out{archive, dest_name, mode};
+
+	auto buffer         = std::make_unique<std::array<std::byte, 0x10000>>();
+	auto bytes_left     = static_cast<size_t>(file_in.size());
+	int64_t read_offset = 0;
+	while(bytes_left != 0)
+	{
+		auto const n = read(
+		    file_in, std::span{buffer->data(), std::min(buffer->size(), bytes_left)}, read_offset);
+		write(file_out, std::span{buffer->data(), n});
+		bytes_left -= n;
+		read_offset += n;
+	}
+}
+
+void Wad64::insert(Archive& archive,
 	                FileCreationMode mode,
 	                std::span<std::byte const> data,
 	                std::string_view name)

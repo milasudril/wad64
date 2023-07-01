@@ -47,6 +47,12 @@ namespace Wad64
 
 	void insert(Archive& archive,
 	            FileCreationMode mode,
+	            ArchiveView const& src_archive,
+	            std::string_view src_name,
+	            std::string_view dest_name);
+
+	void insert(Archive& archive,
+	            FileCreationMode mode,
 	            std::span<std::byte const> data,
 	            std::string_view name);
 
