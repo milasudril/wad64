@@ -42,6 +42,11 @@ namespace Wad64
 
 	void insert(Archive& archive,
 	            FileCreationMode mode,
+	            FdAdapter src,
+	            std::string_view dest_name);
+
+	void insert(Archive& archive,
+	            FileCreationMode mode,
 	            char const* src_name,
 	            std::string_view dest_name);
 
