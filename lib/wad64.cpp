@@ -46,17 +46,14 @@ namespace
 }
 
 void Wad64::extract(ArchiveView const& archive,
-                    FileCreationMode mode,
                     std::string_view src_name,
-                    char const* dest_name)
+                    FdAdapter dest)
 {
-	mkdirs(dest_name);
 	InputFile file_in{archive, src_name};
 	auto buffer = std::make_unique<std::array<std::byte, 0x10000>>();
-	FdOwner file_out{dest_name, IoMode::AllowWrite(), mode};
 
 	// TODO: This would allow for in-kernel data transfer
-	// read(file_in, file_out.get(), 0);
+	// read(file_in, dest.get(), 0);
 
 	auto bytes_left      = static_cast<size_t>(file_in.size());
 	int64_t write_offset = 0;
@@ -64,10 +61,20 @@ void Wad64::extract(ArchiveView const& archive,
 	{
 		auto const n =
 		    read(file_in, std::span{buffer->data(), std::min(buffer->size(), bytes_left)});
-		write(file_out, std::span{buffer->data(), n}, write_offset);
+		write(dest, std::span{buffer->data(), n}, write_offset);
 		bytes_left -= n;
 		write_offset += n;
 	}
+}
+
+void Wad64::extract(ArchiveView const& archive,
+                    FileCreationMode mode,
+                    std::string_view src_name,
+                    char const* dest_name)
+{
+	mkdirs(dest_name);
+	FdOwner file_out{dest_name, IoMode::AllowWrite(), mode};
+	extract(archive, src_name, file_out.get());
 }
 
 void Wad64::extract(ArchiveView const& archive,
@@ -106,7 +113,7 @@ void Wad64::insert(Archive& archive,
 {
 	OutputFile file_out{archive, name, mode};
 	// TODO: This would allow for in-kernel data transfer
-	// write(output_file, file_in.get(), 0);
+	// write(output_file, src.get(), 0);
 
 	auto buffer         = std::make_unique<std::array<std::byte, 0x10000>>();
 	auto bytes_left     = static_cast<size_t>(size(src));
