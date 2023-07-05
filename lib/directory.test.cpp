@@ -514,6 +514,20 @@ namespace Testcases
 
 		assert(dir.eofOffset() == lumps.back().filepos + lumps.back().size);
 	}
+
+	void wad64DirectoryZeroLengthEntries()
+	{
+		std::array<Wad64::FileLump, 6> entries{
+			Wad64::FileLump{0xde, 0x0, {'A'}},
+			Wad64::FileLump{0xde, 0x0, {'B'}},
+			Wad64::FileLump{0x18, 0xc6, {'C'}},
+			Wad64::FileLump{0x18 + 0xc6, 0x0, {'D'}},
+			Wad64::FileLump{0x18 + 0xc6, 0x0, {'E'}},
+			Wad64::FileLump{0xed, 0xd4, {'F'}}
+		};
+
+		Wad64::Directory dir{entries};
+	}
 }
 
 int main()
@@ -542,5 +556,6 @@ int main()
 	Testcases::wad64DirectoryLoadEntriesAndCommitNewReservationGapWasFilled();
 	Testcases::wad64DirectoryLoadEntriesAndCommitNewReservationNoGapFound();
 	Testcases::wad64DirectoryReadFromFile();
+	Testcases::wad64DirectoryZeroLengthEntries();
 	return 0;
 }
