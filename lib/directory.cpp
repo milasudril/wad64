@@ -170,7 +170,7 @@ std::vector<Wad64::DirEntry> Wad64::fileOffsets(Wad64::Directory const& dir)
 	file_offsets.reserve(std::size(entries));
 	std::ranges::transform(
 	    entries, std::back_inserter(file_offsets), [](auto const& item) { return item.second; });
-	std::ranges::sort(file_offsets, [](auto a, auto b) { return a.begin < b.begin; });
+	std::ranges::sort(file_offsets);
 
 	return file_offsets;
 }

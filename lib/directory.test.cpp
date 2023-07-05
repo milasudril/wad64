@@ -521,8 +521,8 @@ namespace Testcases
 			Wad64::FileLump{0xde, 0x0, {'A'}},
 			Wad64::FileLump{0xde, 0x0, {'B'}},
 			Wad64::FileLump{0x18, 0xc6, {'C'}},
-			Wad64::FileLump{0x18 + 0xc6, 0x0, {'D'}},
-			Wad64::FileLump{0x18 + 0xc6, 0x0, {'E'}},
+			Wad64::FileLump{0x18, 0x0, {'D'}},
+			Wad64::FileLump{0x18, 0x0, {'E'}},
 			Wad64::FileLump{0xed, 0xd4, {'F'}}
 		};
 

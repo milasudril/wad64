@@ -23,7 +23,7 @@ namespace Wad64
 		int64_t begin;
 		int64_t end;
 
-		auto operator<=>(DirEntry const& a) const = default;
+		constexpr auto operator<=>(DirEntry const& a) const = default;
 	};
 
 	struct Gap
