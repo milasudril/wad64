@@ -16,13 +16,14 @@ archive file format, with larger fields.
   appear last. Also, the lump name must end with a null byte. That is why only 255 bytes are
   allowed. The last byte must always be a null byte.
 
-* WAD64 forbids overlapping lumps
+* WAD64 forbids overlapping lumps. Note however, that a file of zero length, may have the same start
+  offset as any other file. This is similar to `[[no_unique_address]]` attribute in C++.
 
 ## Common archive features that are not supported nativly
 
 * Hierarchical directory structures. However, since it is possible to have longer lump names, it
-  can be emulated by follwing some convtion. For example, it is possible to us `/` in lump names.
-  Another possiblity is to have WAD:s inside WAD:s. This works, because the file format allows
+  can be emulated by following some convention. For example, it is possible to us `/` in lump names.
+  Another possibility is to have WAD:s inside WAD:s. This works, because the file format allows
   full random access. The utility application `wad64` uses the first approach because it is simpler
   to implement.
 
@@ -30,6 +31,7 @@ archive file format, with larger fields.
   contain anything), provided that the reader knows what compression/encryption scheme is used. The
   directory cannot be compressed/encryption, because then it is not possible to find the data.
 
-* File metadata
+* File metadata. If desired, a special file such as a `medadata.json` file can be added to the
+  archive
 
-* Checksum
+* Any checksums. If desired, this can also be added by adding a special file to the archive
