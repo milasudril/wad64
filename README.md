@@ -17,7 +17,7 @@ archive file format, with larger fields.
   allowed. The last byte must always be a null byte.
 
 * WAD64 forbids overlapping lumps. Note however, that a file of zero length, may have the same start
-  offset as any other file. This is similar to `[[no_unique_address]]` attribute in C++.
+  offset as any other file. This is similar to the `[[no_unique_address]]` attribute in C++.
 
 ## Common archive features that are not supported nativly
 
