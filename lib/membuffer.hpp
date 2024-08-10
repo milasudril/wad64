@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstddef>
 #include <span>
+#include <algorithm>
 
 namespace Wad64
 {
